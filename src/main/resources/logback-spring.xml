@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
-
+    <!-- Configure the Console appender -->
     <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %highlight(%5level) %cyan(%logger) - %msg%n" />
     <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n" />
 
@@ -9,10 +9,31 @@
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>
         </encoder>
     </appender>
+
+    <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
+    <appender name="Sentry" class="io.sentry.logback.SentryAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <!-- Optionally add an encoder -->
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!--로컬 환경-->
     <springProfile name="local">
         <logger name="org.project.nuwabackend" level="DEBUG"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <!--개발 환경 -->
+    <springProfile name="dev">
+        <root level="INFO">
+            <appender-ref ref="Console" />
+            <appender-ref ref="Sentry" />
         </root>
     </springProfile>
 </configuration>
