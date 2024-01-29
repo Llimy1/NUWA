@@ -1,0 +1,47 @@
+version: '3'
+services:
+
+  green:
+    container_name: green
+    image: llimy1/nuwa
+    ports:
+      - "8081:8080"
+    environment:
+      MARIADB_URL: ${MARIADB_URL}
+      MARIADB_USERNAME: ${MARIADB_USERNAME}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_NAME: ${MARIADB_NAME}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      MONGODB_USERNAME: ${MONGODB_IP}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_NAME: ${MONGODB_NAME}
+
+  blue:
+    container_name: blue
+    image: llimy1/nuwa
+    ports:
+      - "8082:8080"
+    environment:
+      MARIADB_URL: ${MARIADB_URL}
+      MARIADB_USERNAME: ${MARIADB_USERNAME}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_NAME: ${MARIADB_NAME}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      MONGODB_USERNAME: ${MONGODB_IP}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_NAME: ${MONGODB_NAME}
+
+  redis:
+    image: redis:alpine
+    command: redis-server /usr/local/etc/nuwa-redis/redis.conf --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/nuwa-redis:/data
+      - ./data/nuwa-redis/redis.conf:/usr/local/etc/nuwa-redis/redis.conf
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}

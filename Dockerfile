@@ -1,0 +1,19 @@
+# base-image
+FROM openjdk:17-alpine
+# 변수 설정 (빌드 파일 경로)
+ARG JAR_FILE=build/libs/nuwa-backend-0.0.1-SNAPSHOT.jar
+# 환경 변수 설정
+ENV MARIADB_URL=${MARIADB_URL} \
+MARIADB_USERNAME=${MARIADB_USERNAME} \
+MARIADB_PASSWORD=${MARIADB_PASSWORD} \
+MARIADB_NAME=${MARIADB_NAME} \
+REDIS_USERNAME=${REDIS_USERNAME} \
+REDIS_PORT=${REDIS_PORT} \
+REDIS_PASSWORD=${REDIS_PASSWORD} \
+MONGODB_USERNAME=${MONGODB_IP} \
+MONGODB_PORT=${MONGODB_PORT} \
+MONGODB_NAME=${MONGODB_NAME}
+# 빌드 파일 컨테이너로 복사
+COPY ${JAR_FILE} nuwa.jar
+# jar 파일 실행
+ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "/nuwa.jar"]

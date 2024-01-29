@@ -1,1 +1,17 @@
+spring:
+  profiles:
+    active: dev
+    include:
+      - db
+      - sentry
 
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+#        dialect: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MariaDB103Dialect

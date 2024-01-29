@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: ${MARIADB_USERNAME}
+    password: ${MARIADB_PASSWORD}
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://${MARIADB_URL}/${MARIADB_NAME}?characterEncoding=UTF-8&characterSetResults=UTF-8&serverTimezone=Asia/Seoul&useLegacyDatetimeCode=false
+#  datasource:
+#    username: ${MYSQL_USERNAME}
+#    password: ${MYSQL_PASSWORD}
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://${MYSQL_URL}/${MYSQL_NAME}?characterEncoding=UTF-8&characterSetResults=UTF-8
+
+  data:
+    redis:
+      host: ${REDIS_USERNAME}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+    mongodb:
+      uri: mongodb://${MONGODB_IP}:${MONGODB_PORT}/${MONGODB_NAME}
