@@ -31,7 +31,6 @@
 
     <!--개발 환경 -->
     <springProfile name="dev">
-        <logger name="org.project.nuwabackend" level="DEBUG"/>
         <root level="INFO">
             <appender-ref ref="Console" />
             <appender-ref ref="Sentry" />
