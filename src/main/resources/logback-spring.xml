@@ -22,7 +22,7 @@
     </appender>
 
     <!--로컬 환경-->
-    <springProfile name="local">
+    <springProfile name="dev">
         <logger name="org.project.nuwabackend" level="DEBUG"/>
         <root level="INFO">
             <appender-ref ref="CONSOLE" />
