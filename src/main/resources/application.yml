@@ -14,11 +14,3 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
         dialect: org.hibernate.dialect.MySQLDialect
-
-sentry:
-  dsn: ${SENTRY_KEY}
-  exception-resolver-order: -2147483647
-  enable-tracing: true
-  send-default-pii: true # 사용자 정보 기록
-  environment: dev # 개발 환경
-  sample-rate: 1
