@@ -17,6 +17,7 @@ services:
       MONGODB_USERNAME: ${MONGODB_IP}
       MONGODB_PORT: ${MONGODB_PORT}
       MONGODB_NAME: ${MONGODB_NAME}
+      SENTRY_KEY: ${SENTRY_KEY}
 
   blue:
     container_name: blue
@@ -34,6 +35,7 @@ services:
       MONGODB_USERNAME: ${MONGODB_IP}
       MONGODB_PORT: ${MONGODB_PORT}
       MONGODB_NAME: ${MONGODB_NAME}
+      SENTRY_KEY: ${SENTRY_KEY}
 
   redis:
     image: redis:alpine
