@@ -1,6 +1,8 @@
 package org.project.nuwabackend.global.service;
 
-import org.project.nuwabackend.global.dto.GlobalResponseDto;
+import org.project.nuwabackend.global.dto.GlobalErrorResponseDto;
+import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.*;
@@ -8,20 +10,18 @@ import static org.project.nuwabackend.global.type.GlobalResponseStatus.*;
 @Service
 public class GlobalService {
 
-
-    public GlobalResponseDto<Object> successResponse(String message, Object data) {
-        return GlobalResponseDto.builder()
+    public GlobalSuccessResponseDto<Object> successResponse(String message, Object data) {
+        return GlobalSuccessResponseDto.builder()
                 .status(SUCCESS.getValue())
                 .message(message)
                 .data(data)
                 .build();
     }
 
-    public GlobalResponseDto<Object> errorResponse(String message) {
-        return GlobalResponseDto.builder()
+    public GlobalErrorResponseDto errorResponse(String message) {
+        return GlobalErrorResponseDto.builder()
                 .status(FAIL.getValue())
                 .message(message)
-                .data(null)
                 .build();
     }
 }
