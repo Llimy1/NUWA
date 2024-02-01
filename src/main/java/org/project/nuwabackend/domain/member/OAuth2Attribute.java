@@ -3,7 +3,6 @@ package org.project.nuwabackend.domain.member;
 import lombok.Builder;
 import lombok.Getter;
 import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.global.type.ErrorMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +30,7 @@ public class OAuth2Attribute {
                               Map<String, Object> attributes) {
         return switch (provider) {
             case "google" -> ofGoogle(provider, attributeKey, attributes);
+            case "kakao" -> ofKakao(provider, "email", attributes);
             case "naver" -> ofNaver(provider, "id", attributes);
             default -> throw new NotFoundException(OAUTH_PROVIDER_NOT_FOUND);
         };
@@ -60,6 +60,21 @@ public class OAuth2Attribute {
                 .email((String) response.get("email"))
                 .provider(provider)
                 .attributes(response)
+                .attributeKey(attributeKey)
+                .build();
+    }
+
+    /*
+     *   Kakao 로그인일 경우 사용하는 메서드, 필요한 사용자 정보가 kakaoAccount -> kakaoProfile 두번 감싸져 있어서,
+     *   두번 get() 메서드를 이용해 사용자 정보를 담고있는 Map을 꺼내야한다.
+     * */
+    private static OAuth2Attribute ofKakao(String provider, String attributeKey, Map<String, Object> attributes) {
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+
+        return OAuth2Attribute.builder()
+                .email((String) kakaoAccount.get("email"))
+                .provider(provider)
+                .attributes(kakaoAccount)
                 .attributeKey(attributeKey)
                 .build();
     }
