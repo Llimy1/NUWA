@@ -26,8 +26,6 @@ spring:
             client-authentication-method: POST
             authorization-grant-type: authorization_code
             scope:
-              - profile_nickname
-              - profile_image
               - account_email
             client-name: Kakao
 
