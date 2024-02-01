@@ -1,0 +1,18 @@
+spring:
+  profiles:
+    active: local
+    include:
+      - db
+      - sentry
+      - jwt
+      - oauth
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+#        dialect: org.hibernate.dialect.MySQLDialect
