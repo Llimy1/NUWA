@@ -1,10 +1,11 @@
 package org.project.nuwabackend.service.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.project.nuwabackend.domain.Member;
+import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
-import org.project.nuwabackend.global.exception.Duplication;
-import org.project.nuwabackend.global.type.ErrorMessage;
+import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
+import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.MemberRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,8 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class SignUpService {
 
     private final MemberRepository memberRepository;
@@ -21,7 +24,7 @@ public class SignUpService {
 
     @Transactional
     public Long signUp(SingUpRequestDto singUpRequestDto) {
-
+        log.info("Signup Service 호출");
         String email = singUpRequestDto.email();
         String password = singUpRequestDto.password();
         String nickname = singUpRequestDto.nickname();
@@ -43,17 +46,40 @@ public class SignUpService {
         return saveMember.getId();
     }
 
+    @Transactional
+    public Long socialSignUp(SocialSignUpRequestDto socialSignUpRequestDto) {
+        log.info("Social SignUp Service 호출");
+        String email = socialSignUpRequestDto.email();
+        String nickname = socialSignUpRequestDto.nickname();
+        String phoneNumber = socialSignUpRequestDto.phoneNumber();
+        String provider = socialSignUpRequestDto.provider();
+
+        duplicateEmail(email);
+        duplicateNickname(nickname);
+
+        Member socialMember =
+                Member.createSocialMember(email, nickname, phoneNumber, provider);
+
+        Member saveSocialMember = memberRepository.save(socialMember);
+
+        return saveSocialMember.getId();
+    }
+
+
+
     // 닉네임 중복
     public void duplicateNickname(String nickname) {
+        log.info("duplicateNickname 호출");
         memberRepository.findByNickname(nickname).ifPresent(e -> {
-            throw new Duplication(DUPLICATE_NICKNAME);
+            throw new DuplicationException(DUPLICATE_NICKNAME);
         });
     }
 
     // 이메일 중복
     public void duplicateEmail(String email) {
+        log.info("duplicateEmail 호출");
         memberRepository.findByEmail(email).ifPresent(e -> {
-            throw new Duplication(DUPLICATE_EMAIL);
+            throw new DuplicationException(DUPLICATE_EMAIL);
         });
     }
 }

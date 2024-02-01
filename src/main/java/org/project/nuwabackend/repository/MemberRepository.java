@@ -1,6 +1,6 @@
 package org.project.nuwabackend.repository;
 
-import org.project.nuwabackend.domain.Member;
+import org.project.nuwabackend.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
