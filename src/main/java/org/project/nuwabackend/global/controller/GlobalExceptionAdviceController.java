@@ -32,7 +32,7 @@ public class GlobalExceptionAdviceController {
     // Duplicate Exception
     @ExceptionHandler(DuplicationException.class)
     public ResponseEntity<Object> duplicateException(DuplicationException dci) {
-        log.warn("Duplicate Exception = {}", dci.getMessage());
+        log.error("Duplicate Exception = {}", dci.getMessage());
         GlobalErrorResponseDto duplicateExceptionResponse =
                 globalService.errorResponse(dci.getMessage());
 
@@ -42,7 +42,7 @@ public class GlobalExceptionAdviceController {
     // JwtException
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<Object> jwtException(JwtException jep) {
-        log.warn("Jwt Exception = {}", jep.getMessage());
+        log.error("Jwt Exception = {}", jep.getMessage());
         GlobalErrorResponseDto jwtExceptionResponse =
                 globalService.errorResponse(jep.getMessage());
 
@@ -52,7 +52,7 @@ public class GlobalExceptionAdviceController {
     // NotFoundException
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> notFoundException(NotFoundException nfe) {
-        log.warn("NotFound Exception = {}", nfe.getMessage());
+        log.error("NotFound Exception = {}", nfe.getMessage());
         GlobalErrorResponseDto notFoundExceptionResponse =
                 globalService.errorResponse(nfe.getMessage());
 
@@ -62,7 +62,7 @@ public class GlobalExceptionAdviceController {
     // LoginException
     @ExceptionHandler(LoginException.class)
     public ResponseEntity<Object> loginException(LoginException lep) {
-        log.warn("Login Exception = {}", lep.getMessage());
+        log.error("Login Exception = {}", lep.getMessage());
         GlobalErrorResponseDto loginExceptionResponse =
                 globalService.errorResponse(lep.getMessage());
 
@@ -72,7 +72,7 @@ public class GlobalExceptionAdviceController {
     // UsernameNotFoundException
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> usernameNotFoundException(UsernameNotFoundException unf) {
-        log.warn("Username NotFound Exception = {}", unf.getMessage());
+        log.error("Username NotFound Exception = {}", unf.getMessage());
         GlobalErrorResponseDto loginExceptionResponse =
                 globalService.errorResponse(unf.getMessage());
 
@@ -82,7 +82,7 @@ public class GlobalExceptionAdviceController {
     // IlleagalAccessError
     @ExceptionHandler(IllegalAccessError.class)
     public ResponseEntity<Object> IllegalAccessError(IllegalAccessError iae) {
-        log.warn("Illegal Access Error = {}", iae.getMessage());
+        log.error("Illegal Access Error = {}", iae.getMessage());
         GlobalErrorResponseDto illegalAccessErrorResponse =
                 globalService.errorResponse(iae.getMessage());
 
@@ -92,7 +92,7 @@ public class GlobalExceptionAdviceController {
     // Exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> exception(Exception e) {
-        log.warn("Exception = {}", e.getMessage());
+        log.error("Exception = {}", e.getMessage());
         GlobalErrorResponseDto exceptionResponse =
                 globalService.errorResponse(e.getMessage());
 

@@ -15,7 +15,7 @@ import java.io.IOException;
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        log.warn("AuthenticationEntryPoint = {}", authException.getMessage());
+        log.error("AuthenticationEntryPoint = {}", authException.getMessage());
         response.setCharacterEncoding("utf-8");
         response.sendError(401, "잘못된 접근 입니다.");
     }
