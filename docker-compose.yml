@@ -25,6 +25,8 @@ services:
       NAVER_ID: ${NAVER_ID}
       NAVER_SECRET: ${NAVER_SECRET}
       NAVER_URI: ${NAVER_URI}
+      KAKAO_ID: ${KAKAO_ID}
+      KAKAO_URI: ${KAKAO_URI}
 
   blue:
     container_name: blue
@@ -50,6 +52,8 @@ services:
       NAVER_ID: ${NAVER_ID}
       NAVER_SECRET: ${NAVER_SECRET}
       NAVER_URI: ${NAVER_URI}
+      KAKAO_ID: ${KAKAO_ID}
+      KAKAO_URI: ${KAKAO_URI}
 
   redis:
     image: redis:alpine
