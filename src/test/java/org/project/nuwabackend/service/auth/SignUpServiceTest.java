@@ -7,9 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.domain.Member;
+import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
-import org.project.nuwabackend.global.exception.Duplication;
+import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
+import org.project.nuwabackend.global.exception.DuplicationException;
+import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +24,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
+import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_NICKNAME;
+import static org.project.nuwabackend.global.type.ErrorMessage.EMAIL_NOT_FOUND_MEMBER;
 
 
 @DisplayName("[Service] SignUp Service Test")
@@ -38,16 +43,20 @@ class SignUpServiceTest {
     SignUpService signUpService;
 
     private SingUpRequestDto singUpRequestDto;
+    private SocialSignUpRequestDto socialSignUpRequestDto;
 
     @BeforeEach
-    void init() {
+    void setup() {
         String nickname = "nickname";
         String email = "email";
         String password = "password";
         String phoneNumber = "01000000000";
+        String provider = "provider";
 
         singUpRequestDto = new SingUpRequestDto(nickname, email, password, phoneNumber);
         passwordEncoder = new BCryptPasswordEncoder();
+
+        socialSignUpRequestDto = new SocialSignUpRequestDto(nickname, email, phoneNumber, provider);
     }
 
     @Test
@@ -69,7 +78,28 @@ class SignUpServiceTest {
 
         //when
         Long memberId = signUpService.signUp(singUpRequestDto);
-        System.out.println("memberId = " + memberId);
+
+        //then
+        assertThat(memberId).isEqualTo(member.getId());
+    }
+
+    @Test
+    @DisplayName("[Service] Social SignUp Success")
+    void socialSignUpSuccess() {
+        //given
+        Member member = Member.createSocialMember(
+                socialSignUpRequestDto.email(),
+                socialSignUpRequestDto.nickname(),
+                socialSignUpRequestDto.phoneNumber(),
+                socialSignUpRequestDto.provider());
+
+        given(memberRepository.save(any()))
+                .willReturn(member);
+
+        ReflectionTestUtils.setField(member, "id", 1L);
+
+        //when
+        Long memberId = signUpService.socialSignUp(socialSignUpRequestDto);
 
         //then
         assertThat(memberId).isEqualTo(member.getId());
@@ -79,41 +109,26 @@ class SignUpServiceTest {
     @DisplayName("[Service] Nickname Duplicate")
     void nicknameDuplicate() {
         //given
-        Member member = Member.createMember(
-                singUpRequestDto.email(),
-                singUpRequestDto.password(),
-                singUpRequestDto.nickname(),
-                singUpRequestDto.phoneNumber());
-
-        member.passwordEncoder(passwordEncoder);
-
         given(memberRepository.findByNickname(anyString()))
-                .willReturn(Optional.of(member));
+                .willThrow(new DuplicationException(DUPLICATE_NICKNAME));
 
         //when
         //then
         assertThatThrownBy(() -> signUpService.duplicateNickname(singUpRequestDto.nickname()))
-                .isInstanceOf(Duplication.class);
+                .isInstanceOf(DuplicationException.class);
     }
 
     @Test
     @DisplayName("[Service] Email Duplicate")
     void emailDuplicate() {
         //given
-        Member member = Member.createMember(
-                singUpRequestDto.email(),
-                singUpRequestDto.password(),
-                singUpRequestDto.nickname(),
-                singUpRequestDto.phoneNumber());
-
-        member.passwordEncoder(passwordEncoder);
-
         given(memberRepository.findByEmail(anyString()))
-                .willReturn(Optional.of(member));
+                .willThrow(new DuplicationException(DUPLICATE_EMAIL));
 
         //when
         //then
         assertThatThrownBy(() -> signUpService.duplicateEmail(singUpRequestDto.email()))
-                .isInstanceOf(Duplication.class);
+                .isInstanceOf(DuplicationException.class);
     }
+
 }

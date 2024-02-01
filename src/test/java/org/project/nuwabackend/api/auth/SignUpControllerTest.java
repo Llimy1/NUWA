@@ -9,8 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
+import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
 import org.project.nuwabackend.dto.auth.response.MemberIdResponseDto;
-import org.project.nuwabackend.global.dto.GlobalErrorResponseDto;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.auth.SignUpService;
@@ -21,7 +21,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.project.nuwabackend.global.type.ErrorMessage.*;
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.*;
 import static org.project.nuwabackend.global.type.SuccessMessage.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,8 +55,16 @@ class SignUpControllerTest {
         return new SingUpRequestDto(nickname, email, password, phoneNumber);
     }
 
+    private SocialSignUpRequestDto socialSignUpRequestDto(){
+        String nickname = "nickname";
+        String email = "email";
+        String phoneNumber = "01000000000";
+        String provider = "provider";
+        return new SocialSignUpRequestDto(nickname, email, provider, phoneNumber);
+    }
+
     @BeforeEach
-    public void init() {
+    public void setup() {
         mvc = MockMvcBuilders.standaloneSetup(signUpController).build();
     }
 
@@ -98,6 +105,41 @@ class SignUpControllerTest {
     }
 
     @Test
+    @DisplayName("[Controller] Social SignUp Success")
+    void socialSignUpSuccess() throws Exception {
+        //given
+        String body = objectMapper.writeValueAsString(socialSignUpRequestDto());
+        Long memberId = 1L;
+        MemberIdResponseDto memberIdResponseDto = new MemberIdResponseDto(memberId);
+
+        GlobalSuccessResponseDto<Object> signUpSuccessResponse =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(SOCIAL_LOGIN_SUCCESS.getMessage())
+                        .data(memberIdResponseDto)
+                        .build();
+
+        given(signUpService.socialSignUp(any()))
+                .willReturn(memberId);
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(signUpSuccessResponse);
+
+        //when
+        //then
+        mvc.perform(post("/api/signup/social")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status")
+                        .value(SUCCESS.getValue()))
+                .andExpect(jsonPath("$.message")
+                        .value(SOCIAL_LOGIN_SUCCESS.getMessage()))
+                .andExpect(jsonPath("$.data.memberId")
+                        .value(memberId))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("[Controller] Nickname Use Success")
     void nicknameUse() throws Exception {
         //given
@@ -113,7 +155,7 @@ class SignUpControllerTest {
 
         //when
         //then
-        mvc.perform(get("/api/signup/check/nickname")
+        mvc.perform(get("/api/check/nickname")
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("nickname", "nickname"))
                 .andExpect(status().isOk())
@@ -123,7 +165,6 @@ class SignUpControllerTest {
                         .value(NICKNAME_USE_OK.getMessage()))
                 .andDo(print());
     }
-
 
     @Test
     @DisplayName("[Controller] email Use Success")
@@ -141,7 +182,7 @@ class SignUpControllerTest {
 
         //when
         //then
-        mvc.perform(get("/api/signup/check/email")
+        mvc.perform(get("/api/check/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .param("email", "email"))
                 .andExpect(status().isOk())
