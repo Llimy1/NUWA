@@ -18,6 +18,13 @@ services:
       MONGODB_PORT: ${MONGODB_PORT}
       MONGODB_NAME: ${MONGODB_NAME}
       SENTRY_KEY: ${SENTRY_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_ID: ${GOOGLE_ID}
+      GOOGLE_SECRET: ${GOOGLE_SECRET}
+      GOOGLE_URI: ${GOOGLE_URI}
+      NAVER_ID: ${NAVER_ID}
+      NAVER_SECRET: ${NAVER_SECRET}
+      NAVER_URI: ${NAVER_URI}
 
   blue:
     container_name: blue
@@ -36,6 +43,13 @@ services:
       MONGODB_PORT: ${MONGODB_PORT}
       MONGODB_NAME: ${MONGODB_NAME}
       SENTRY_KEY: ${SENTRY_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_ID: ${GOOGLE_ID}
+      GOOGLE_SECRET: ${GOOGLE_SECRET}
+      GOOGLE_URI: ${GOOGLE_URI}
+      NAVER_ID: ${NAVER_ID}
+      NAVER_SECRET: ${NAVER_SECRET}
+      NAVER_URI: ${NAVER_URI}
 
   redis:
     image: redis:alpine
