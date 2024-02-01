@@ -2,12 +2,15 @@ package org.project.nuwabackend.api.auth;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
 import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
+import org.project.nuwabackend.dto.auth.response.AccessTokenResponse;
 import org.project.nuwabackend.dto.auth.response.MemberIdResponseDto;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.auth.SignUpService;
+import org.project.nuwabackend.service.auth.TokenService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +30,7 @@ public class SignUpController {
 
     private final GlobalService globalService;
     private final SignUpService signUpService;
+    private final TokenService tokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<Object> signUp(@RequestBody SingUpRequestDto singUpRequestDto) {
@@ -43,11 +47,18 @@ public class SignUpController {
     @PostMapping("/signup/social")
     public ResponseEntity<Object> socialSignUp(@RequestBody SocialSignUpRequestDto socialSignUpRequestDto) {
         log.info("Social SignUp API 호출");
-        Long memberId = signUpService.socialSignUp(socialSignUpRequestDto);
-        MemberIdResponseDto memberIdResponseDto = new MemberIdResponseDto(memberId);
+        GeneratedTokenDto generatedTokenDto = signUpService.socialSignUp(socialSignUpRequestDto);
+        String accessToken = generatedTokenDto.accessToken();
+        String refreshToken = generatedTokenDto.refreshToken();
+        String email = socialSignUpRequestDto.email();
+
+        log.info("Redis 토큰 저장");
+        tokenService.saveTokenInfo(email, refreshToken);
+
+        AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
 
         GlobalSuccessResponseDto<Object> socialSignUpSuccessResponse =
-                globalService.successResponse(SOCIAL_LOGIN_SUCCESS.getMessage(), memberIdResponseDto);
+                globalService.successResponse(SOCIAL_LOGIN_SUCCESS.getMessage(), accessTokenResponse);
 
         return ResponseEntity.status(CREATED).body(socialSignUpSuccessResponse);
     }

@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.domain.member.Member;
+import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
 import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
 import org.project.nuwabackend.global.exception.DuplicationException;
@@ -38,6 +39,9 @@ class SignUpServiceTest {
 
     @Mock
     PasswordEncoder passwordEncoder;
+
+    @Mock
+    JwtUtil jwtUtil;
 
     @InjectMocks
     SignUpService signUpService;
@@ -87,22 +91,32 @@ class SignUpServiceTest {
     @DisplayName("[Service] Social SignUp Success")
     void socialSignUpSuccess() {
         //given
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+
         Member member = Member.createSocialMember(
                 socialSignUpRequestDto.email(),
                 socialSignUpRequestDto.nickname(),
                 socialSignUpRequestDto.phoneNumber(),
                 socialSignUpRequestDto.provider());
 
+        GeneratedTokenDto generatedTokenDto =
+                GeneratedTokenDto.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+
         given(memberRepository.save(any()))
                 .willReturn(member);
+        given(jwtUtil.generatedToken(singUpRequestDto.email(), member.getRoleKey()))
+                .willReturn(generatedTokenDto);
 
-        ReflectionTestUtils.setField(member, "id", 1L);
 
         //when
-        Long memberId = signUpService.socialSignUp(socialSignUpRequestDto);
+        GeneratedTokenDto tokenDto = signUpService.socialSignUp(socialSignUpRequestDto);
 
         //then
-        assertThat(memberId).isEqualTo(member.getId());
+        assertThat(tokenDto).isEqualTo(generatedTokenDto);
     }
 
     @Test

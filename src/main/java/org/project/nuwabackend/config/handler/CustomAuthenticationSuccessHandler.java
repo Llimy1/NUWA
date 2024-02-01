@@ -59,7 +59,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             log.info("redirect 준비");
             // accessToken을 쿼리스트링에 담는 url 생성
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/loading")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/loading/auth")
                     .queryParam("accessToken", accessToken)
                     .build()
                     .encode(StandardCharsets.UTF_8)
@@ -69,7 +69,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
             // 회원이 존재하지 않을경우, 서비스 제공자와 email을 쿼리스트링으로 전달하는 url을 만들어준다.
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/sign")
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/signup/social")
                     .queryParam("email", email)
                     .queryParam("provider", provider)
                     .build()

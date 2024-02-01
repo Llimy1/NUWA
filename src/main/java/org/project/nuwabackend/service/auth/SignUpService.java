@@ -3,10 +3,12 @@ package org.project.nuwabackend.service.auth;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.member.Member;
+import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
 import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.MemberRepository;
+import org.project.nuwabackend.repository.RefreshTokenRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ public class SignUpService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public Long signUp(SingUpRequestDto singUpRequestDto) {
@@ -47,7 +51,7 @@ public class SignUpService {
     }
 
     @Transactional
-    public Long socialSignUp(SocialSignUpRequestDto socialSignUpRequestDto) {
+    public GeneratedTokenDto socialSignUp(SocialSignUpRequestDto socialSignUpRequestDto) {
         log.info("Social SignUp Service 호출");
         String email = socialSignUpRequestDto.email();
         String nickname = socialSignUpRequestDto.nickname();
@@ -62,7 +66,9 @@ public class SignUpService {
 
         Member saveSocialMember = memberRepository.save(socialMember);
 
-        return saveSocialMember.getId();
+        String role = saveSocialMember.getRoleKey();
+
+        return jwtUtil.generatedToken(email, role);
     }
 
 

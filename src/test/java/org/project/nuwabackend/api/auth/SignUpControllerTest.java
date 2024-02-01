@@ -8,12 +8,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
 import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
+import org.project.nuwabackend.dto.auth.response.AccessTokenResponse;
 import org.project.nuwabackend.dto.auth.response.MemberIdResponseDto;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.auth.SignUpService;
+import org.project.nuwabackend.service.auth.TokenService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +42,9 @@ class SignUpControllerTest {
 
     @Mock
     private GlobalService globalService;
+
+    @Mock
+    private TokenService tokenService;
 
     @InjectMocks
     private SignUpController signUpController;
@@ -108,19 +114,29 @@ class SignUpControllerTest {
     @DisplayName("[Controller] Social SignUp Success")
     void socialSignUpSuccess() throws Exception {
         //given
+        String accessToken = "accessToken";
+        String refreshToken = "refreshToken";
+
         String body = objectMapper.writeValueAsString(socialSignUpRequestDto());
-        Long memberId = 1L;
-        MemberIdResponseDto memberIdResponseDto = new MemberIdResponseDto(memberId);
+
+        GeneratedTokenDto generatedTokenDto =
+                GeneratedTokenDto.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+
+        AccessTokenResponse accessTokenResponse =
+                new AccessTokenResponse(generatedTokenDto.accessToken());
 
         GlobalSuccessResponseDto<Object> signUpSuccessResponse =
                 GlobalSuccessResponseDto.builder()
                         .status(SUCCESS.getValue())
                         .message(SOCIAL_LOGIN_SUCCESS.getMessage())
-                        .data(memberIdResponseDto)
+                        .data(accessTokenResponse)
                         .build();
 
         given(signUpService.socialSignUp(any()))
-                .willReturn(memberId);
+                .willReturn(generatedTokenDto);
         given(globalService.successResponse(anyString(), any()))
                 .willReturn(signUpSuccessResponse);
 
@@ -134,8 +150,8 @@ class SignUpControllerTest {
                         .value(SUCCESS.getValue()))
                 .andExpect(jsonPath("$.message")
                         .value(SOCIAL_LOGIN_SUCCESS.getMessage()))
-                .andExpect(jsonPath("$.data.memberId")
-                        .value(memberId))
+                .andExpect(jsonPath("$.data.accessToken")
+                        .value(accessToken))
                 .andDo(print());
     }
 
