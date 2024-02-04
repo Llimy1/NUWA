@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: local
     include:
       - db
       - sentry
@@ -9,7 +9,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     show_sql: true
     properties:
       hibernate:
