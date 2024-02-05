@@ -76,7 +76,7 @@ public class SignUpController {
     @GetMapping("/check/email")
     public ResponseEntity<Object> duplicateEmail(@RequestParam(name = "email") String email) {
         log.info("Email Duplicate API 호출");
-        signUpService.duplicateNickname(email);
+        signUpService.duplicateEmail(email);
 
         GlobalSuccessResponseDto<Object> emailUseResponse =
                 globalService.successResponse(EMAIL_USE_OK.getMessage(), null);
