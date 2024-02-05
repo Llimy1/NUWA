@@ -8,11 +8,12 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.project.nuwabackend.domain.base.BaseTimeJpa;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Category extends BaseTimeEntity{
+public class Category extends BaseTimeJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

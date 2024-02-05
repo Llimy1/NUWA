@@ -2,7 +2,6 @@ package org.project.nuwabackend.domain.channel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.project.nuwabackend.domain.BaseTimeEntity;
+import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.type.ChannelType;
 
@@ -20,7 +19,7 @@ import static jakarta.persistence.FetchType.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ChannelMember extends BaseTimeEntity {
+public class ChannelMember extends BaseTimeJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

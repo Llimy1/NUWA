@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.project.nuwabackend.domain.BaseTimeEntity;
+import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.channel.Channel;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
@@ -20,7 +20,7 @@ import static jakarta.persistence.FetchType.LAZY;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class File extends BaseTimeEntity {
+public class File extends BaseTimeJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

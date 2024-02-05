@@ -2,6 +2,8 @@ package org.project.nuwabackend.domain.member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -9,14 +11,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.project.nuwabackend.domain.BaseTimeEntity;
+import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.type.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Member extends BaseTimeEntity {
+public class Member extends BaseTimeJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,23 +27,20 @@ public class Member extends BaseTimeEntity {
 
     private String email;
     private String password;
-    private String name;
     private String nickname;
     private String phoneNumber;
     private String provider;
+    @Enumerated(EnumType.STRING)
     private Role role;
-    private String profileImage;
 
     @Builder
-    private Member(String email, String password, String name, String nickname, String phoneNumber, String provider, Role role, String profileImage) {
+    private Member(String email, String password, String nickname, String phoneNumber, String provider, Role role) {
         this.email = email;
         this.password = password;
-        this.name = name;
         this.nickname = nickname;
         this.phoneNumber = phoneNumber;
         this.provider = provider;
         this.role = role;
-        this.profileImage = profileImage;
     }
 
     // 멤버 생성
