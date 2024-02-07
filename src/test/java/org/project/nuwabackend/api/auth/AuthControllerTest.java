@@ -132,7 +132,6 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.message")
                         .value(LOGOUT_SUCCESS.getMessage()))
                 .andDo(print());
-
     }
 
     @Test

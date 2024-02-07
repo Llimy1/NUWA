@@ -12,13 +12,10 @@ import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
 import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
 import org.project.nuwabackend.global.exception.DuplicationException;
-import org.project.nuwabackend.global.type.ErrorMessage;
-import org.project.nuwabackend.repository.MemberRepository;
+import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,7 +24,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_NICKNAME;
-import static org.project.nuwabackend.global.type.ErrorMessage.EMAIL_NOT_FOUND_MEMBER;
 
 
 @DisplayName("[Service] SignUp Service Test")

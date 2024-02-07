@@ -5,8 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.redis.RefreshToken;
 import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.global.type.ErrorMessage;
-import org.project.nuwabackend.repository.RefreshTokenRepository;
+import org.project.nuwabackend.repository.redis.RefreshTokenRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +25,8 @@ public class TokenService {
         refreshTokenRepository.save(RefreshToken.createRefreshTokenInfo(email, refreshToken));
     }
 
-    public void removeRefreshToken(String accessToken) {
+    public void removeRefreshToken(String email) {
         log.info("Remove Refresh Token Service 호출");
-
-        String email = jwtUtil.getEmail(accessToken);
 
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(REFRESH_TOKEN_NOT_FOUND));

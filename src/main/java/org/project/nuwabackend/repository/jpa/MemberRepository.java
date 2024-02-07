@@ -1,4 +1,4 @@
-package org.project.nuwabackend.repository;
+package org.project.nuwabackend.repository.jpa;
 
 import org.project.nuwabackend.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

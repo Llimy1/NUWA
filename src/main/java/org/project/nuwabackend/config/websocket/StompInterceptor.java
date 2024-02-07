@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StompInterceptor implements ChannelInterceptor {
 
-    // TODO: 채팅 헤더에 토큰 값 넣고 판별
+    // TODO: 채팅 헤더에 토큰 값 넣고 판별 && 채팅방 재입장
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         return ChannelInterceptor.super.preSend(message, channel);

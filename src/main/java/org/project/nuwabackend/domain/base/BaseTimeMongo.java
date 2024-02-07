@@ -12,7 +12,7 @@ public class BaseTimeMongo {
 
     @CreatedDate
     @Field(name = "created_at")
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Field(name = "modified_at")

@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeMongo;
-import org.project.nuwabackend.type.MediaType;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -24,34 +23,26 @@ public class DirectMessage extends BaseTimeMongo {
     @Field(name = "direct_sender")
     private String sender;
 
-    @Field(name = "direct_receiver")
-    private String receiver;
-
     @Field(name = "direct_content")
     private String content;
-
-    @Field(name = "direct_media_type")
-    private String type;
 
     @Field(name = "direct_is_read")
     private Boolean isRead;
 
     @Builder
-    private DirectMessage(String roomId, String sender, String receiver, String content, MediaType type) {
+    private DirectMessage(String roomId, String sender, String content, Boolean isRead) {
         this.roomId = roomId;
         this.sender = sender;
-        this.receiver = receiver;
         this.content = content;
-        this.type = type.name();
+        this.isRead = isRead;
     }
 
-    public static DirectMessage createDirectMessage(String roomId, String sender, String receiver, String content, MediaType type) {
+    public static DirectMessage createDirectMessage(String roomId, String sender, String content, Boolean isRead) {
         return DirectMessage.builder()
                 .roomId(roomId)
                 .sender(sender)
-                .receiver(receiver)
                 .content(content)
-                .type(type)
+                .isRead(isRead)
                 .build();
     }
 }

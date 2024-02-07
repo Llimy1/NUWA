@@ -1,4 +1,4 @@
-package org.project.nuwabackend.repository;
+package org.project.nuwabackend.repository.redis;
 
 import org.project.nuwabackend.domain.redis.RefreshToken;
 import org.springframework.data.repository.CrudRepository;

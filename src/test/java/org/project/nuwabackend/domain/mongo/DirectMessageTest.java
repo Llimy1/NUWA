@@ -3,7 +3,6 @@ package org.project.nuwabackend.domain.mongo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.project.nuwabackend.type.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,8 +11,8 @@ class DirectMessageTest {
 
     String roomId = "roomId";
     String sender = "sender";
-    String receiver = "receiver";
     String content = "content";
+    Boolean isRead = false;
 
 
     @Test
@@ -21,13 +20,12 @@ class DirectMessageTest {
     void createDirectMessageTest() {
         //given
         //when
-        DirectMessage directMessage = DirectMessage.createDirectMessage(roomId, sender, receiver, content, MediaType.TEXT);
+        DirectMessage directMessage = DirectMessage.createDirectMessage(roomId, sender, content, isRead);
 
         //then
         assertThat(directMessage.getRoomId()).isEqualTo(roomId);
         assertThat(directMessage.getSender()).isEqualTo(sender);
-        assertThat(directMessage.getReceiver()).isEqualTo(receiver);
         assertThat(directMessage.getContent()).isEqualTo(content);
-        assertThat(directMessage.getType()).isEqualTo(MediaType.TEXT.name());
+        assertThat(directMessage.getIsRead()).isEqualTo(isRead);
     }
 }
