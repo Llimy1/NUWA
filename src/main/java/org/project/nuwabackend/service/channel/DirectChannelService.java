@@ -52,7 +52,6 @@ public class DirectChannelService {
         WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
 
-        // TODO: fetch join 또는 in 절로 쿼리문 한번에 출력 가능하지 않을까 생각 -> 수정 예정
         // 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));

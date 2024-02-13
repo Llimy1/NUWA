@@ -23,24 +23,18 @@ public class Chat extends Channel{
     @JoinColumn(name = "create_chat_member_id")
     private WorkSpaceMember createMember;
 
-    @ManyToOne
-    @JoinColumn(name = "join_chat_member_id")
-    private WorkSpaceMember joinMember;
-
     @Builder
-    public Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember, WorkSpaceMember joinMember) {
+    public Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         super(name, workSpace);
         this.createMember = createMember;
-        this.joinMember = joinMember;
     }
 
     // TODO: test code
-    public static Chat createChatChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember, WorkSpaceMember joinMember) {
+    public static Chat createChatChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Chat.builder()
                 .name(name)
                 .workSpace(workSpace)
                 .createMember(createMember)
-                .joinMember(joinMember)
                 .build();
     }
 }

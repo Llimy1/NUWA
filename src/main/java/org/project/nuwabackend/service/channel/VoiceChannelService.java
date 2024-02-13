@@ -2,19 +2,18 @@ package org.project.nuwabackend.service.channel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.domain.channel.Chat;
-import org.project.nuwabackend.domain.channel.ChatJoinMember;
+import org.project.nuwabackend.domain.channel.Voice;
+import org.project.nuwabackend.domain.channel.VoiceJoinMember;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
-import org.project.nuwabackend.dto.channel.request.ChatChannelRequest;
+import org.project.nuwabackend.dto.channel.request.VoiceChannelJoinMemberRequest;
+import org.project.nuwabackend.dto.channel.request.VoiceChannelRequest;
 import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
-import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
+import org.project.nuwabackend.repository.jpa.VoiceChannelRepository;
+import org.project.nuwabackend.repository.jpa.VoiceJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,20 +25,19 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FO
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class ChatChannelService {
+public class VoiceChannelService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final WorkSpaceRepository workSpaceRepository;
 
-    private final ChatChannelRepository chatChannelRepository;
-    private final ChatJoinMemberRepository chatJoinMemberRepository;
+    private final VoiceChannelRepository voiceChannelRepository;
+    private final VoiceJoinMemberRepository voiceJoinMemberRepository;
 
-    // 채팅 채널 생성
+    // 음성 채널 생성
     // TODO: test code
-    public Long createChatChannel(String email, ChatChannelRequest chatChannelRequest) {
-        Long workSpaceId = chatChannelRequest.workSpaceId();
-        String chatChannelName = chatChannelRequest.chatChannelName();
+    public Long createVoiceChannel(String email, VoiceChannelRequest voiceChannelRequest) {
+        Long workSpaceId = voiceChannelRequest.workSpaceId();
+        String voiceChannelName = voiceChannelRequest.voiceChannelName();
 
         // 워크스페이스가 존재하는지 확인
         WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
@@ -49,32 +47,33 @@ public class ChatChannelService {
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        Chat chatChannel = Chat.createChatChannel(chatChannelName, workSpace, createWorkSpaceMember);
+        Voice voiceChannel = Voice.createVoiceChannel(voiceChannelName, workSpace, createWorkSpaceMember);
 
-        Chat saveChatChannel = chatChannelRepository.save(chatChannel);
+        Voice saveVoiceChannel = voiceChannelRepository.save(voiceChannel);
 
-        return saveChatChannel.getId();
+        return saveVoiceChannel.getId();
     }
 
     // 채팅 채널 참가
     // TODO: test code
-    public void joinChatChannel(ChatChannelJoinMemberRequest chatChannelJoinMemberRequest) {
-        List<String> joinMemberNameList = chatChannelJoinMemberRequest.joinMemberNameList();
-        Long chatChannelId = chatChannelJoinMemberRequest.chatChannelId();
+    public void joinVoiceChannel(VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
+        List<String> joinMemberNameList = voiceChannelJoinMemberRequest.joinMemberNameList();
+        Long chatChannelId = voiceChannelJoinMemberRequest.voiceChannelId();
 
-        Chat chatChannel = chatChannelRepository.findById(chatChannelId)
+        Voice voiceChannel = voiceChannelRepository.findById(chatChannelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
-        List<ChatJoinMember> chatJoinMemberList = new ArrayList<>();
+        List<VoiceJoinMember> voiceJoinMemberList = new ArrayList<>();
         for (String name : joinMemberNameList) {
             WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByName(name)
                     .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
 
-            ChatJoinMember chatJoinMember = ChatJoinMember.createChatJoinMember(workSpaceMember, chatChannel);
-            chatJoinMemberList.add(chatJoinMember);
+            VoiceJoinMember voiceJoinMember = VoiceJoinMember.createVoiceJoinMember(workSpaceMember, voiceChannel);
+
+            voiceJoinMemberList.add(voiceJoinMember);
         }
 
-        chatJoinMemberRepository.saveAll(chatJoinMemberList);
+        voiceJoinMemberRepository.saveAll(voiceJoinMemberList);
     }
 }
