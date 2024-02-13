@@ -15,6 +15,7 @@ import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,9 +74,9 @@ public class DirectChannelService {
     // TODO: 다이렉트 채널 조회 -> 마지막 메세지 시간이 제일 빠른 순으로(?)
     // TODO: test code
     // 현재는 생성 순으로 반환
-    public Slice<DirectChannelListResponse> directChannelSliceSortByCreatedDate(Long workSpaceId) {
+    public Slice<DirectChannelListResponse> directChannelSliceSortByCreatedDate(Long workSpaceId, Pageable pageable) {
         log.info("채널 리스트 반환 (생성 시간 순)");
-        return directChannelRepository.findDirectChannelByWorkSpaceId(workSpaceId)
+        return directChannelRepository.findDirectChannelByWorkSpaceId(workSpaceId, pageable)
                 .map(direct -> DirectChannelListResponse.builder()
                 .roomId(direct.getRoomId())
                 .name(direct.getName())

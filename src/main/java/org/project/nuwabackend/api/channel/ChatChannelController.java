@@ -9,15 +9,11 @@ import org.project.nuwabackend.dto.channel.response.ChatChannelIdResponse;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
-import org.project.nuwabackend.global.type.SuccessMessage;
 import org.project.nuwabackend.service.channel.ChatChannelService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_CHAT_CHANNEL_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_CHAT_CHANNEL_SUCCESS;

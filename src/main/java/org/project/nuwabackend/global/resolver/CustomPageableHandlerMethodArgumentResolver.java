@@ -17,8 +17,9 @@ public class CustomPageableHandlerMethodArgumentResolver implements HandlerMetho
 
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-        CustomPageable customPageable = parameter.getMethodAnnotation(CustomPageable.class);
+        CustomPageable customPageable = parameter.getParameterAnnotation(CustomPageable.class);
 
+        assert customPageable != null;
         int page = customPageable.page() - 1;
         int size = customPageable.size();
         String sortBy = customPageable.sortBy();
