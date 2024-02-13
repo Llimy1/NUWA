@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: local
     include:
       - db
       - sentry
@@ -9,10 +9,14 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     show_sql: true
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 100
+#    database-platform: org.hibernate.dialect.MariaDB106Dialect
 #        dialect: org.hibernate.dialect.MySQLDialect
+logging:
+  level:
+    org.hibernate.sql: debug

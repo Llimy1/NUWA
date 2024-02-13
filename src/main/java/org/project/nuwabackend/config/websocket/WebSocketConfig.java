@@ -42,8 +42,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     }
 
     // TODO: 토큰 값으로 인증 Interceptor 구현
-//    @Override
-//    public void configureClientInboundChannel(ChannelRegistration registration) {
-//        registration.interceptors(stompInterceptor);
-//    }
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(stompInterceptor);
+    }
 }

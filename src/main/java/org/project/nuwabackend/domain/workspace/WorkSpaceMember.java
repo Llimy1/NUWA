@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
@@ -42,11 +43,23 @@ public class WorkSpaceMember extends BaseTimeJpa {
     @JoinColumn(name = "workspace_id")
     private WorkSpace workSpace;
 
-    public WorkSpaceMember(String name, String job, String image, Member member, WorkSpace workSpace) {
+    @Builder
+    private WorkSpaceMember(String name, String job, String image, Member member, WorkSpace workSpace) {
         this.name = name;
         this.job = job;
         this.image = image;
         this.member = member;
         this.workSpace = workSpace;
+    }
+
+    // 워크스페이스 멤버 생성
+    public static WorkSpaceMember createWorkSpaceMember(String name, String job, String image, Member member, WorkSpace workSpace) {
+        return WorkSpaceMember.builder()
+                .name(name)
+                .job(job)
+                .image(image)
+                .member(member)
+                .workSpace(workSpace)
+                .build();
     }
 }

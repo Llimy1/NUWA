@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
+import java.util.Objects;
+
 @Getter
 @NoArgsConstructor
 @RedisHash(value = "directChannel")
@@ -26,10 +28,24 @@ public class DirectChannelRedis {
         this.email = email;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DirectChannelRedis that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
     public static DirectChannelRedis createDirectChannelRedis(String directRoomId, String email) {
         return DirectChannelRedis.builder()
                 .directRoomId(directRoomId)
                 .email(email)
                 .build();
     }
+
+
 }

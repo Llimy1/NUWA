@@ -10,9 +10,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DirectMessageTest {
 
     String roomId = "roomId";
-    String sender = "sender";
+    Long senderId = 1L;
+    String senderName = "senderName";
     String content = "content";
-    Boolean isRead = false;
+    Long readCount = 1L;
 
 
     @Test
@@ -20,12 +21,13 @@ class DirectMessageTest {
     void createDirectMessageTest() {
         //given
         //when
-        DirectMessage directMessage = DirectMessage.createDirectMessage(roomId, sender, content, isRead);
+        DirectMessage directMessage = DirectMessage.createDirectMessage(roomId, senderId, senderName, content, readCount);
 
         //then
         assertThat(directMessage.getRoomId()).isEqualTo(roomId);
-        assertThat(directMessage.getSender()).isEqualTo(sender);
+        assertThat(directMessage.getSenderId()).isEqualTo(senderId);
+        assertThat(directMessage.getSenderName()).isEqualTo(senderName);
         assertThat(directMessage.getContent()).isEqualTo(content);
-        assertThat(directMessage.getIsRead()).isEqualTo(isRead);
+        assertThat(directMessage.getReadCount()).isEqualTo(readCount);
     }
 }

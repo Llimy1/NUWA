@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@DisplayName("[Controller] SignUp Controller Test")
+@DisplayName("[API] SignUp Controller Test")
 @ExtendWith(MockitoExtension.class)
 class SignUpControllerTest {
 
@@ -76,7 +76,7 @@ class SignUpControllerTest {
 
 
     @Test
-    @DisplayName("[Controller] SignUp Success")
+    @DisplayName("[API] SignUp Success")
     void signUpSuccess() throws Exception {
         //given
         String body = objectMapper.writeValueAsString(singUpRequestDto());
@@ -111,7 +111,7 @@ class SignUpControllerTest {
     }
 
     @Test
-    @DisplayName("[Controller] Social SignUp Success")
+    @DisplayName("[API] Social SignUp Success")
     void socialSignUpSuccess() throws Exception {
         //given
         String accessToken = "accessToken";
@@ -156,7 +156,7 @@ class SignUpControllerTest {
     }
 
     @Test
-    @DisplayName("[Controller] Nickname Use Success")
+    @DisplayName("[API] Nickname Use Success")
     void nicknameUse() throws Exception {
         //given
         GlobalSuccessResponseDto<Object> nicknameUseResponse =

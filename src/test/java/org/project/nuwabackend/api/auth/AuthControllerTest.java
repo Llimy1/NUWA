@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@DisplayName("[Controller] Auth Controller Test")
+@DisplayName("[API] Auth Controller Test")
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
 
@@ -67,7 +67,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[Controller] Login Success")
+    @DisplayName("[API] Login Success")
     void loginSuccess() throws Exception {
         //given
         String body = objectMapper.writeValueAsString(loginRequestDto());
@@ -108,7 +108,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[Controller] Logout Success")
+    @DisplayName("[API] Logout Success")
     void logoutSuccess() throws Exception {
         //given
         GlobalSuccessResponseDto<Object> logoutSuccessResponse =
@@ -135,7 +135,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[Controller] Reissue Success")
+    @DisplayName("[API] Reissue Success")
     void reissueSuccess() throws Exception {
         //given
 

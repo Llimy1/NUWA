@@ -8,5 +8,4 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface DirectMessageRepository extends MongoRepository<DirectMessage, String> {
 
     Slice<DirectMessage> findDirectMessagesByRoomId(String roomId, Pageable pageable);
-
 }
