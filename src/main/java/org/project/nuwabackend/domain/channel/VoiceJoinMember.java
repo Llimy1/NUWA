@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,11 +26,11 @@ public class VoiceJoinMember {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @Column(name = "voice_join_workspace_id")
+    @JoinColumn(name = "voice_join_workspace_id")
     private WorkSpaceMember joinMember;
 
     @ManyToOne(fetch = LAZY)
-    @Column(name = "voice_channel_id")
+    @JoinColumn(name = "voice_channel_id")
     private Voice voiceChannel;
 
     @Builder
