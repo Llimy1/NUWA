@@ -11,8 +11,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.dto.auth.request.LoginRequestDto;
 import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.global.exception.LoginException;
-import org.project.nuwabackend.global.type.ErrorMessage;
-import org.project.nuwabackend.repository.MemberRepository;
+import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.type.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -123,7 +122,7 @@ class LoginServiceTest {
     void loginUsernameNotFoundFail() {
         //given
         given(memberRepository.findByEmail(anyString()))
-                .willThrow(new UsernameNotFoundException(EMAIL_NOT_FOUND_MEMBER.getMessage()));
+                .willThrow(new UsernameNotFoundException(EMAIL_NOT_FOUND_ID.getMessage()));
 
         //when
         //then

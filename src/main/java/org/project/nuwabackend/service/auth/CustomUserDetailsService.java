@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.project.nuwabackend.domain.member.CustomMemberDetails;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.repository.MemberRepository;
+import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.project.nuwabackend.global.type.ErrorMessage.EMAIL_NOT_FOUND_MEMBER;
+import static org.project.nuwabackend.global.type.ErrorMessage.EMAIL_NOT_FOUND_ID;
 
 
 @Service
@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND_MEMBER));
+                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND_ID));
 
         return CustomMemberDetails.builder()
                 .email(member.getEmail())

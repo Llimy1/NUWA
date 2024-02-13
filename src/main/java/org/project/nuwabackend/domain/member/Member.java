@@ -30,6 +30,7 @@ public class Member extends BaseTimeJpa {
     private String nickname;
     private String phoneNumber;
     private String provider;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 

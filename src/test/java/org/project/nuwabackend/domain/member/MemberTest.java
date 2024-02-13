@@ -1,4 +1,4 @@
-package org.project.nuwabackend.domain;
+package org.project.nuwabackend.domain.member;
 
 
 import org.junit.jupiter.api.DisplayName;

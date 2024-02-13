@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.domain.redis.RefreshToken;
 import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.repository.RefreshTokenRepository;
+import org.project.nuwabackend.repository.redis.RefreshTokenRepository;
 import org.project.nuwabackend.type.Role;
 
 import java.util.Optional;
@@ -62,9 +62,9 @@ class TokenServiceTest {
         //given
         RefreshToken token =
                 RefreshToken.createRefreshTokenInfo(email, refreshToken);
-
-        given(jwtUtil.getEmail(anyString()))
-                .willReturn(email);
+//
+//        given(jwtUtil.getEmail(anyString()))
+//                .willReturn(email);
         given(refreshTokenRepository.findByEmail(anyString()))
                 .willReturn(Optional.of(token));
 
@@ -80,8 +80,8 @@ class TokenServiceTest {
     void removeRefreshTokenFail() {
         //given
 
-        given(jwtUtil.getEmail(anyString()))
-                .willReturn(email);
+//        given(jwtUtil.getEmail(anyString()))
+//                .willReturn(email);
         given(refreshTokenRepository.findByEmail(anyString()))
                 .willThrow(new NotFoundException(REFRESH_TOKEN_NOT_FOUND));
 

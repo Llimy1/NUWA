@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
@@ -31,9 +32,19 @@ public class WorkSpace extends BaseTimeJpa {
     @Column(name = "workspace_introduce")
     private String introduce;
 
-    public WorkSpace(String name, String image, String introduce) {
+    @Builder
+    private WorkSpace(String name, String image, String introduce) {
         this.name = name;
         this.image = image;
         this.introduce = introduce;
+    }
+
+    // 워크스페이스 생성
+    public static WorkSpace createWorkSpace(String name, String image, String introduce) {
+        return WorkSpace.builder()
+                .name(name)
+                .image(image)
+                .introduce(introduce)
+                .build();
     }
 }

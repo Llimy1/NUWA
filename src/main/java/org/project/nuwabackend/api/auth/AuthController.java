@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.auth.request.LoginRequestDto;
 import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.dto.auth.response.AccessTokenResponse;
+import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.auth.LoginService;
@@ -51,9 +52,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Object> logout(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<Object> logout(@MemberEmail String email) {
         log.info("Logout API 호출");
-        tokenService.removeRefreshToken(accessToken);
+        tokenService.removeRefreshToken(email);
 
         GlobalSuccessResponseDto<Object> logoutSuccessResponse =
                 globalService.successResponse(LOGOUT_SUCCESS.getMessage(), null);

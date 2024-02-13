@@ -1,4 +1,4 @@
-package org.project.nuwabackend.domain.channel;
+package org.project.nuwabackend.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,34 +12,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.type.ChannelType;
+import org.project.nuwabackend.type.InquireType;
 
 import static jakarta.persistence.FetchType.*;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class ChannelMember extends BaseTimeJpa {
+public class Inquire extends BaseTimeJpa {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "channel_member_id")
+    @Column(name = "inquire_id")
     private Long id;
 
-    @Column(name = "channel_member_type")
-    private ChannelType channelType;
+    @Column(name = "inquire_type")
+    private InquireType type;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "channel_id")
-    private Channel channel;
-
-    public ChannelMember(ChannelType channelType, Member member, Channel channel) {
-        this.channelType = channelType;
+    public Inquire(InquireType type, Member member) {
+        this.type = type;
         this.member = member;
-        this.channel = channel;
     }
 }

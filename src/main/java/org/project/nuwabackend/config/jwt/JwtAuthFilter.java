@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.dto.auth.SecurityMemberDto;
 import org.project.nuwabackend.global.exception.JwtException;
-import org.project.nuwabackend.repository.MemberRepository;
+import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

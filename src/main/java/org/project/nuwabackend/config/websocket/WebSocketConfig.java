@@ -41,6 +41,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setSendBufferSizeLimit(20 * 1024 * 1024 + 1024); // 조금 더 크게 버퍼 여유분 확보
     }
 
+    // TODO: 토큰 값으로 인증 Interceptor 구현
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(stompInterceptor);

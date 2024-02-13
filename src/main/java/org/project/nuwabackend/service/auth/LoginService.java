@@ -6,8 +6,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.dto.auth.request.LoginRequestDto;
 import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
 import org.project.nuwabackend.global.exception.LoginException;
-import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.repository.MemberRepository;
+import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,7 +34,7 @@ public class LoginService {
         String password = loginRequestDto.password();
 
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(EMAIL_NOT_FOUND_MEMBER.getMessage()));
+                .orElseThrow(() -> new UsernameNotFoundException(EMAIL_NOT_FOUND_ID.getMessage()));
 
         try {
             Authentication authentication = authenticationManager.authenticate(

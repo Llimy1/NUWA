@@ -10,7 +10,11 @@ public enum SuccessMessage {
     LOGOUT_SUCCESS("로그아웃에 성공 했습니다."),
     NICKNAME_USE_OK("사용 가능한 닉네임 입니다."),
     EMAIL_USE_OK("사용 가능한 이메일 입니다."),
-    REISSUE_TOKEN_SUCCESS("토큰 재발급에 성공 했습니다.");
+    REISSUE_TOKEN_SUCCESS("토큰 재발급에 성공 했습니다."),
+    DIRECT_CHANNEL_CREATE_SUCCESS("다이렉트 채널 생성에 성공 했습니다."),
+    DIRECT_MESSAGE_LIST_RETURN_SUCCESS("다이렉트 메세지 조회에 성공 했습니다."),
+    DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS("채널 입장 정보 삭제에 성공 했습니다."),
+    DIRECT_CHANNEL_LIST_RETURN_SUCCESS("다이렉트 채널 조회에 성공 했습니다.");
 
     private final String message;
 
