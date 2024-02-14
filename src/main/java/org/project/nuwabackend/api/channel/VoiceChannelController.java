@@ -12,6 +12,7 @@ import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.channel.VoiceChannelService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,7 +32,7 @@ public class VoiceChannelController {
 
     // TODO: test code
     @PostMapping("/channel/voice")
-    public ResponseEntity<Object> createChatChannel(@MemberEmail String email, VoiceChannelRequest voiceChannelRequest) {
+    public ResponseEntity<Object> createChatChannel(@MemberEmail String email, @RequestBody VoiceChannelRequest voiceChannelRequest) {
         log.info("음성 채널 생성 API");
         Long voiceChannelId = voiceChannelService.createVoiceChannel(email, voiceChannelRequest);
 
@@ -46,7 +47,7 @@ public class VoiceChannelController {
 
     // TODO: test code
     @PostMapping("/channel/voice/join")
-    public ResponseEntity<Object> joinChatChannel(VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
+    public ResponseEntity<Object> joinChatChannel(@RequestBody VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
         log.info("채팅 채널 참여 API");
         voiceChannelService.joinVoiceChannel(voiceChannelJoinMemberRequest);
         GlobalSuccessResponseDto<Object> joinVoiceChannelSuccessResponse =
