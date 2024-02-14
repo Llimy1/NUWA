@@ -2,6 +2,8 @@ package org.project.nuwabackend.domain.workspace;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.member.Member;
+import org.project.nuwabackend.type.WorkSpaceMemberType;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -35,6 +38,10 @@ public class WorkSpaceMember extends BaseTimeJpa {
     @Column(name = "workspace_member_image")
     private String image;
 
+    @Column(name = "workspace_member_type")
+    @Enumerated(EnumType.STRING)
+    private WorkSpaceMemberType workSpaceMemberType;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -44,20 +51,22 @@ public class WorkSpaceMember extends BaseTimeJpa {
     private WorkSpace workSpace;
 
     @Builder
-    private WorkSpaceMember(String name, String job, String image, Member member, WorkSpace workSpace) {
+    public WorkSpaceMember(String name, String job, String image, WorkSpaceMemberType workSpaceMemberType, Member member, WorkSpace workSpace) {
         this.name = name;
         this.job = job;
         this.image = image;
+        this.workSpaceMemberType = workSpaceMemberType;
         this.member = member;
         this.workSpace = workSpace;
     }
 
     // 워크스페이스 멤버 생성
-    public static WorkSpaceMember createWorkSpaceMember(String name, String job, String image, Member member, WorkSpace workSpace) {
+    public static WorkSpaceMember createWorkSpaceMember(String name, String job, String image, WorkSpaceMemberType workSpaceMemberType, Member member, WorkSpace workSpace) {
         return WorkSpaceMember.builder()
                 .name(name)
                 .job(job)
                 .image(image)
+                .workSpaceMemberType(workSpaceMemberType)
                 .member(member)
                 .workSpace(workSpace)
                 .build();
