@@ -8,7 +8,6 @@ import org.project.nuwabackend.global.exception.JwtException;
 import org.project.nuwabackend.global.exception.LoginException;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.service.GlobalService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;

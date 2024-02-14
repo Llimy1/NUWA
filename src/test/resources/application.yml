@@ -5,6 +5,7 @@ spring:
       - sentry
       - jwt
       - oauth
+    active: test
 
   jpa:
     hibernate:

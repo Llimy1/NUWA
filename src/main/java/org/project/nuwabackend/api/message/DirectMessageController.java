@@ -30,7 +30,7 @@ public class DirectMessageController {
     private final DirectMessageService directMessageService;
     private final GlobalService globalService;
 
-    private static final String DIRECT_DESTINATION = "/sub/direct";
+    private static final String DIRECT_DESTINATION = "/sub/direct/";
 
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
@@ -46,7 +46,7 @@ public class DirectMessageController {
     }
 
     // 채팅 메세지 리스트 반환
-    @GetMapping("/direct/{directChannelRoomId}")
+    @GetMapping("/api/message/direct/{directChannelRoomId}")
     public ResponseEntity<Object> directMessageSliceSortByDate(
             @PathVariable("directChannelRoomId") String directChannelRoomId,
             @CustomPageable Pageable pageable) {

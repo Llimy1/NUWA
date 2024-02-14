@@ -27,6 +27,9 @@ services:
       NAVER_URI: ${NAVER_URI}
       KAKAO_ID: ${KAKAO_ID}
       KAKAO_URI: ${KAKAO_URI}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
 
   blue:
     container_name: blue
@@ -54,6 +57,9 @@ services:
       NAVER_URI: ${NAVER_URI}
       KAKAO_ID: ${KAKAO_ID}
       KAKAO_URI: ${KAKAO_URI}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
 
   redis:
     image: redis:alpine

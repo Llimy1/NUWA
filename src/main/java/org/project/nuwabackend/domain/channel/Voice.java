@@ -22,24 +22,18 @@ public class Voice extends Channel {
     @JoinColumn(name = "create_voice_member_id")
     private WorkSpaceMember createMember;
 
-    @ManyToOne
-    @JoinColumn(name = "join_voice_member_id")
-    private WorkSpaceMember joinMember;
-
     @Builder
-    public Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember, WorkSpaceMember joinMember) {
+    public Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         super(name, workSpace);
         this.createMember = createMember;
-        this.joinMember = joinMember;
     }
 
     // TODO: test code
-    public static Voice createVoiceChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember, WorkSpaceMember joinMember) {
+    public static Voice createVoiceChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Voice.builder()
                 .name(name)
                 .workSpace(workSpace)
                 .createMember(createMember)
-                .joinMember(joinMember)
                 .build();
     }
 }
