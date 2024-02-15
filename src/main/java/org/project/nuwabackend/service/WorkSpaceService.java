@@ -7,6 +7,8 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoDto;
+import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.type.ErrorMessage;
@@ -16,6 +18,9 @@ import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
@@ -106,4 +111,34 @@ public class WorkSpaceService {
     }
 
 
+
+    public List<WorkSpaceInfoResponse> getWorkspacesByMemberEmail(String email) {
+        // 멤버 조회
+//        Member findMember = memberRepository.findByEmail(email)
+//                .orElseThrow(() -> new NotFoundException(ErrorMessage.MEMBER_ID_NOT_FOUND));
+        // 해당 멤버가 속한 워크스페이스 멤버 조회
+        //List<WorkSpaceMember> workSpaceMembers = workSpaceMemberRepository.findByMember(findMember);
+        List<WorkSpaceMember> workSpaceMembers = workSpaceMemberRepository.findByWorkSpaceList(email);
+//        for (WorkSpaceMember workSpaceMember : workSpaceMembers) {
+//            System.out.println(workSpaceMember.getWorkSpace().getName());
+//        }
+//        return null;
+////
+        // 조회된 워크스페이스멤버로부터 워크스페이스 정보 추출
+        return workSpaceMembers.stream()
+                .map(WorkSpaceMember::getWorkSpace)
+                .map(workSpace -> WorkSpaceInfoResponse.builder()
+                        .workspaceId(workSpace.getId())
+                        .workSpaceName(workSpace.getName())
+                        .workSpaceImage(workSpace.getImage())
+                        .workSpaceIntroduce(workSpace.getIntroduce()).build())
+                .collect(Collectors.toList());
+
+    }
+
+    public List<WorkSpace> findWorkspacesByMemberEmail(String email) {
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Member not found with email: " + email));
+        return workSpaceMemberRepository.findWorkSpacesByMember(member);
+    }
 }
