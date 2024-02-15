@@ -10,10 +10,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
+import org.project.nuwabackend.service.WorkSpaceService;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -40,14 +42,16 @@ class WorkSpaceServiceTest {
     WorkSpaceService workSpaceService;
 
     private WorkSpaceRequestDto workSpaceRequestDto;
+    private WorkSpaceMemberRequestDto workSpaceMemberRequestDto;
     private Member member;
+    private WorkSpace workSpace;
 
-
+    String email = "email";
 
     @BeforeEach
     void setup() {
         String nickname = "nickname";
-        String email = "email";
+
         String password = "password";
         String phoneNumber = "01000000000";
 
@@ -59,22 +63,30 @@ class WorkSpaceServiceTest {
         String workSpaceMemberName = "workSpaceMemberName";
         String workSpaceMemberJob = "workSpaceMemberJob";
         String workSpaceMemberImage = "workSpaceMemberImage";
+        Long workspaceId = 1L;
+
 
         workSpaceRequestDto =
                 new WorkSpaceRequestDto(
                         workSpaceName, workSpaceImage,
                         workSpaceIntroduce, workSpaceMemberName,
                         workSpaceMemberJob, workSpaceMemberImage);
+
+        workSpaceMemberRequestDto =
+                new WorkSpaceMemberRequestDto(workspaceId, workSpaceMemberName,
+                        workSpaceMemberJob, workSpaceMemberImage);
+
+
+        workSpace = WorkSpace.createWorkSpace(workSpaceRequestDto.workSpaceName(),
+                workSpaceRequestDto.workSpaceImage(), workSpaceRequestDto.workSpaceIntroduce());
     }
 
     @Test
     @DisplayName("[Service] Create WorkSpace And WorkSpaceMember Test")
     void createWorkSpaceAndWorkSpaceMember() {
         //given
-        String email = "email";
 
-        WorkSpace workSpace = WorkSpace.createWorkSpace(workSpaceRequestDto.workSpaceName(),
-                workSpaceRequestDto.workSpaceImage(), workSpaceRequestDto.workSpaceIntroduce());
+
         WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
                 workSpaceRequestDto.workSpaceMemberName(), workSpaceRequestDto.workSpaceMemberJob(),
                 workSpaceRequestDto.workSpaceImage(), WorkSpaceMemberType.CREATED, member, workSpace);
@@ -92,6 +104,30 @@ class WorkSpaceServiceTest {
         Long workSpaceId = workSpaceService.createWorkSpace(email, workSpaceRequestDto);
 
         //then
-        assertThat(workSpaceId).isEqualTo(1L);
+        assertThat(workSpaceId).isEqualTo(workSpace.getId());
     }
+
+    @Test
+    @DisplayName("[Service] Join WorkSpace Member Test")
+    void joinWorkSpaceMemberTest() {
+        //given
+        WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(workSpaceMemberRequestDto.workSpaceMemberName(),
+                workSpaceMemberRequestDto.workSpaceMemberJob(), workSpaceMemberRequestDto.workSpaceMemberImage(),
+                WorkSpaceMemberType.JOIN, member, workSpace);
+
+        ReflectionTestUtils.setField(workSpaceMember, "id", 1L);
+        given(workSpaceRepository.findById(any()))
+                .willReturn(Optional.of(workSpace));
+        given(memberRepository.findByEmail(any()))
+                .willReturn(Optional.of(member));
+        given(workSpaceMemberRepository.save(any()))
+                .willReturn(workSpaceMember);
+
+        //when
+        Long workSpaceMemberId = workSpaceService.joinWorkSpaceMember(member.getEmail(), workSpaceMemberRequestDto);
+
+        //then
+        assertThat(workSpaceMemberId).isEqualTo(workSpaceMember.getId());
+    }
+
 }

@@ -19,7 +19,8 @@ public enum SuccessMessage {
     CREATE_VOICE_CHANNEL_SUCCESS("음성 채널 생성에 성공 했습니다."),
     JOIN_CHAT_CHANNEL_SUCCESS("채팅 채널 참가에 성공 했습니다."),
     JOIN_VOICE_CHANNEL_SUCCESS("음성 채널 참가에 성공 했습니다."),
-    CREATE_WORK_SPACE_SUCCESS("워크스페이스 생성에 성공 했습니다.");
+    CREATE_WORK_SPACE_SUCCESS("워크스페이스 생성에 성공 했습니다."),
+    JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다.");
 
     private final String message;
 

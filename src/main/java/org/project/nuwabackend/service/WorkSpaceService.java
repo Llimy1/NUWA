@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
@@ -14,6 +16,9 @@ import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -35,6 +40,9 @@ public class WorkSpaceService {
         String workSpaceMemberJob = workSpaceRequestDto.workSpaceMemberJob();
         String workSpaceMemberImage = workSpaceRequestDto.workSpaceMemberImage();
 
+        // 워크스페이스 멤버 중복 확인
+        duplicateWorkSpaceMemberName(workSpaceMemberName);
+
         // 워크스페이스 생성
         WorkSpace workSpace =
                 WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
@@ -53,6 +61,48 @@ public class WorkSpaceService {
         workSpaceMemberRepository.save(createWorkSpaceMember);
 
         return saveWorkSpace.getId();
+    }
+
+    // 워크스페이스 멤버 가입
+    @Transactional
+    public Long joinWorkSpaceMember(String email, WorkSpaceMemberRequestDto workSpaceMemberRequestDto) {
+        log.info("워크스페이스 멤버 가입");
+        Long workSpaceId = workSpaceMemberRequestDto.workSpaceId();
+        String workSpaceMemberName = workSpaceMemberRequestDto.workSpaceMemberName();
+        String workSpaceMemberJob = workSpaceMemberRequestDto.workSpaceMemberJob();
+        String workSpaceMemberImage = workSpaceMemberRequestDto.workSpaceMemberImage();
+
+        // 멤버 이름 중복 확인
+        duplicateWorkSpaceMemberName(workSpaceMemberName);
+
+        // 멤버 찾기
+        Member findMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(MEMBER_ID_NOT_FOUND));
+
+        // 워크스페이스 찾기
+        WorkSpace findWorkSpace = workSpaceRepository.findById(workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
+
+        WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
+                workSpaceMemberName,
+                workSpaceMemberJob,
+                workSpaceMemberImage,
+                WorkSpaceMemberType.JOIN,
+                findMember,
+                findWorkSpace);
+
+        WorkSpaceMember saveWorkSpaceMember = workSpaceMemberRepository.save(workSpaceMember);
+
+        return saveWorkSpaceMember.getId();
+    }
+
+    // 워크스페이스 멤버 중복
+    public void duplicateWorkSpaceMemberName(String workSpaceMemberName) {
+        log.info("워크스페이스 멤버 이름 중복 확인");
+        workSpaceMemberRepository.findByName(workSpaceMemberName)
+                .ifPresent(e -> {
+                    throw new DuplicationException(WORK_SPACE_NOT_FOUND);
+                });
     }
 
 
