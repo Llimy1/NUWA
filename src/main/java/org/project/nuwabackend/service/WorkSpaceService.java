@@ -7,8 +7,8 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
-import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoDto;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
+import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.type.ErrorMessage;
@@ -140,5 +140,25 @@ public class WorkSpaceService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("Member not found with email: " + email));
         return workSpaceMemberRepository.findWorkSpacesByMember(member);
+    }
+
+    public List<WorkSpaceMemberInfoResponse> getAllMembersByWorkspace(Long workSpaceId) {
+        // 워크스페이스 찾기
+        WorkSpace findWorkSpace = workSpaceRepository.findById(workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
+
+        // 워크스페이스로 워크스페이스 멤버 찾기
+        List<WorkSpaceMember> workSpaceMembers = workSpaceMemberRepository.findByWorkSpace(findWorkSpace);
+
+        // WorkSpaceMemberInfoResponse list dto로 변환
+        return workSpaceMembers.stream().map(member -> WorkSpaceMemberInfoResponse.builder()
+                        .name(member.getName())
+                        .job(member.getJob())
+                        .image(member.getImage())
+                        .workSpaceMemberType(member.getWorkSpaceMemberType())
+                        .email(member.getMember().getEmail())
+                        .nickname(member.getMember().getNickname())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

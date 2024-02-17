@@ -3,18 +3,18 @@ package org.project.nuwabackend.api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
-import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
-import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoDto;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
+import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.WorkSpaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,5 +86,17 @@ public class WorkSpaceController {
 //                WorkSpaceInfoResponse);
 //        return ResponseEntity.ok(getMyWorkspacesSuccessResponse);
 //    }
+
+    @GetMapping("/workspace/{workSpaceId}/members")
+    public ResponseEntity<Object> getWorkspaceMembers(@PathVariable Long workSpaceId) {
+        List<WorkSpaceMemberInfoResponse> WorkSpaceMemberInfoResponse = workSpaceService.getAllMembersByWorkspace(workSpaceId);
+
+        GlobalSuccessResponseDto<Object> getWorkspacesSuccessResponse = globalService.successResponse(
+                READ_MY_WORK_SPACE_SUCCESS.getMessage(),
+                WorkSpaceMemberInfoResponse);
+        return ResponseEntity.status(OK).body(getWorkspacesSuccessResponse);
+    }
+
+
 
 }

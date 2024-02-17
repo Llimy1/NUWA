@@ -33,4 +33,7 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "JOIN FETCH wm.workSpace w " +
             "WHERE m.email = :email ")
     List<WorkSpaceMember> findByWorkSpaceList(@Param("email") String email);
+
+    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace = :workSpace")
+    List<WorkSpaceMember> findByWorkSpace(@Param("workSpace") WorkSpace workSpace);
 }
