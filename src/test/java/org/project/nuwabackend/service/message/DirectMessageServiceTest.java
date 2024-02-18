@@ -9,7 +9,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
-import org.project.nuwabackend.dto.message.DirectMessageDto;
+import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
+import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
@@ -40,7 +41,8 @@ class DirectMessageServiceTest {
     @InjectMocks
     DirectMessageService directMessageService;
 
-    DirectMessageDto directMessageDto;
+    DirectMessageRequestDto directMessageRequestDto;
+    DirectMessageResponseDto directMessageResponseDto;
     DirectMessage directMessage;
     Member member;
 
@@ -60,7 +62,14 @@ class DirectMessageServiceTest {
         String senderName = "senderName";
 
 
-        directMessageDto = DirectMessageDto.builder()
+        directMessageRequestDto = DirectMessageRequestDto.builder()
+                .roomId(directChannelRoomId)
+                .senderId(senderId)
+                .senderName(senderName)
+                .content(directChannelContent)
+                .build();
+
+        directMessageResponseDto = DirectMessageResponseDto.builder()
                 .roomId(directChannelRoomId)
                 .senderId(senderId)
                 .senderName(senderName)
@@ -93,7 +102,7 @@ class DirectMessageServiceTest {
                 .willReturn(directMessage);
 
         //when
-        directMessageService.saveDirectMessage(directMessageDto);
+        directMessageService.saveDirectMessage(directMessageResponseDto);
 
         //then
         verify(directMessageRepository).save(directMessage);

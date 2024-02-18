@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
-import org.project.nuwabackend.dto.message.DirectMessageDto;
+import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
+import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
@@ -38,12 +39,12 @@ public class DirectMessageService {
 
     // 메세지 저장
     @Transactional
-    public void saveDirectMessage(DirectMessageDto directMessageDto) {
-        String directChannelRoomId = directMessageDto.roomId();
-        Long directSenderId = directMessageDto.senderId();
-        String senderName = directMessageDto.senderName();
-        String directContent = directMessageDto.content();
-        Long readCount = directMessageDto.readCount();
+    public void saveDirectMessage(DirectMessageResponseDto DirectMessageResponseDto) {
+        String directChannelRoomId = DirectMessageResponseDto.roomId();
+        Long directSenderId = DirectMessageResponseDto.senderId();
+        String senderName = DirectMessageResponseDto.senderName();
+        String directContent = DirectMessageResponseDto.content();
+        Long readCount = DirectMessageResponseDto.readCount();
 
         DirectMessage directMessage = DirectMessage.createDirectMessage(
                 directChannelRoomId,
@@ -57,9 +58,9 @@ public class DirectMessageService {
 
     // 저장된 메세지 가져오기 (Slice)
     // 날짜 별로 가장 최신 순으로
-    public Slice<DirectMessageDto> directMessageSliceSortByDate(String directChannelRoomId, Pageable pageable) {
+    public Slice<DirectMessageResponseDto> directMessageSliceSortByDate(String directChannelRoomId, Pageable pageable) {
         return directMessageRepository.findDirectMessagesByRoomId(directChannelRoomId, pageable)
-                .map(directMessage -> DirectMessageDto.builder()
+                .map(directMessage -> DirectMessageResponseDto.builder()
                         .roomId(directMessage.getRoomId())
                         .senderId(directMessage.getSenderId())
                         .content(directMessage.getContent())
@@ -68,11 +69,11 @@ public class DirectMessageService {
     }
 
     // 메세지 보내기
-    public DirectMessageDto sendMessage(String accessToken, DirectMessageDto directMessageDto) {
+    public DirectMessageResponseDto sendMessage(String accessToken, DirectMessageRequestDto directMessageRequestDto) {
 
         String email = jwtUtil.getEmail(accessToken);
-        String directChannelRoomId = directMessageDto.roomId();
-        String directChannelContent = directMessageDto.content();
+        String directChannelRoomId = directMessageRequestDto.roomId();
+        String directChannelContent = directMessageRequestDto.content();
 
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND_MEMBER));
@@ -83,7 +84,7 @@ public class DirectMessageService {
 
         Long readCount = isAllConnected ? 0L : 1L;
 
-        return DirectMessageDto.builder()
+        return DirectMessageResponseDto.builder()
                 .roomId(directChannelRoomId)
                 .senderId(senderId)
                 .content(directChannelContent)
