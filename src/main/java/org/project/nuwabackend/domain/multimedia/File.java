@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
@@ -42,10 +43,21 @@ public class File extends BaseTimeJpa {
     @JoinColumn(name = "channel_id")
     private Channel channel;
 
+    @Builder
     public File(String url, Member member, WorkSpace workSpace, Channel channel) {
         this.url = url;
         this.member = member;
         this.workSpace = workSpace;
         this.channel = channel;
+    }
+
+    // TODO: test code
+    public static File createFile(String url, Member member, WorkSpace workSpace, Channel channel) {
+        return File.builder()
+                .url(url)
+                .member(member)
+                .workSpace(workSpace)
+                .channel(channel)
+                .build();
     }
 }

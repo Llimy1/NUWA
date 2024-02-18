@@ -3,6 +3,7 @@ package org.project.nuwabackend.global.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.global.dto.GlobalErrorResponseDto;
+import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.global.exception.JwtException;
 import org.project.nuwabackend.global.exception.LoginException;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -86,6 +88,37 @@ public class GlobalExceptionAdviceController {
                 globalService.errorResponse(iae.getMessage());
 
         return ResponseEntity.status(FORBIDDEN).body(illegalAccessErrorResponse);
+    }
+
+    // IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> illegalArgumentException(IllegalArgumentException ige) {
+        log.error("Illegal Argument Exception = {}", ige.getMessage());
+        GlobalErrorResponseDto illegalArgumentExceptionResponse =
+                globalService.errorResponse(ige.getMessage());
+
+        return ResponseEntity.status(BAD_REQUEST).body(illegalArgumentExceptionResponse);
+    }
+
+    // IllegalStateException
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Object> illegalArgumentException(IllegalStateException ise) {
+        log.error("Illegal State Exception = {}", ise.getMessage());
+        GlobalErrorResponseDto illegalArgumentExceptionResponse =
+                globalService.errorResponse(ise.getMessage());
+
+        return ResponseEntity.status(BAD_REQUEST).body(illegalArgumentExceptionResponse);
+    }
+
+
+    // MaxUploadSizeExceededException
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<Object> maxUploadSizeExceededException(MaxUploadSizeExceededException mse) {
+        log.error("MaxUploadSizeExceededException = {}", mse.getMessage());
+        GlobalErrorResponseDto maxUploadSizeExceededExceptionResponse =
+                globalService.errorResponse(mse.getMessage());
+
+        return ResponseEntity.status(BAD_REQUEST).body(maxUploadSizeExceededExceptionResponse);
     }
 
     // Exception
