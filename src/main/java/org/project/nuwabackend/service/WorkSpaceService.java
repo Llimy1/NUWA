@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
@@ -77,6 +78,9 @@ public class WorkSpaceService {
         String workSpaceMemberJob = workSpaceMemberRequestDto.workSpaceMemberJob();
         String workSpaceMemberImage = workSpaceMemberRequestDto.workSpaceMemberImage();
 
+        // 멤버 이메일 중복 확인
+        duplicateWorkSpaceMemberEmail(email);
+
         // 멤버 이름 중복 확인
         duplicateWorkSpaceMemberName(workSpaceMemberName);
 
@@ -101,12 +105,21 @@ public class WorkSpaceService {
         return saveWorkSpaceMember.getId();
     }
 
-    // 워크스페이스 멤버 중복
+    // 워크스페이스 멤버 이름 중복
     public void duplicateWorkSpaceMemberName(String workSpaceMemberName) {
         log.info("워크스페이스 멤버 이름 중복 확인");
         workSpaceMemberRepository.findByName(workSpaceMemberName)
                 .ifPresent(e -> {
                     throw new DuplicationException(WORK_SPACE_NOT_FOUND);
+                });
+    }
+
+    // 워크스페이스 멤버 이메일 중복
+    public void duplicateWorkSpaceMemberEmail(String email) {
+        log.info("워크스페이스 멤버 이메일 중복 확인");
+        workSpaceMemberRepository.findByMemberEmail(email)
+                .ifPresent(e -> {
+                    throw new DuplicationException(DUPLICATE_EMAIL);
                 });
     }
 
