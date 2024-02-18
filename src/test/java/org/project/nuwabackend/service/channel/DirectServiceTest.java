@@ -17,6 +17,7 @@ import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
+import org.project.nuwabackend.type.WorkSpaceMemberType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +99,7 @@ class DirectServiceTest {
                 senderWorkSpaceMemberName,
                 senderWorkSpaceMemberJob,
                 senderWorkSpaceMemberImage,
+                WorkSpaceMemberType.CREATED,
                 sender,
                 workSpace);
 
@@ -105,6 +107,7 @@ class DirectServiceTest {
                 receiverWorkSpaceMemberName,
                 receiverWorkSpaceMemberJob,
                 receiverWorkSpaceMemberImage,
+                WorkSpaceMemberType.JOIN,
                 receiver,
                 workSpace);
 

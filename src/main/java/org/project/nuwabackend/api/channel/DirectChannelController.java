@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,7 +39,7 @@ public class DirectChannelController {
 
     // 채팅방 생성하기
     @PostMapping("/channel/direct")
-    public ResponseEntity<Object> createDirectChannel(@MemberEmail String email, DirectChannelRequest directChannelRequest) {
+    public ResponseEntity<Object> createDirectChannel(@MemberEmail String email, @RequestBody DirectChannelRequest directChannelRequest) {
         log.info("채팅방 생성 API 호출");
         String directChannelRoomId = directChannelService.createDirectChannel(email, directChannelRequest);
 

@@ -2,7 +2,8 @@ package org.project.nuwabackend.api.message;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.dto.message.DirectMessageDto;
+import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
+import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
@@ -34,10 +35,10 @@ public class DirectMessageController {
 
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
-    public void directSend(@Header("Authorization") String accessToken, DirectMessageDto directMessageDto) {
-        String rooId = directMessageDto.roomId();
-        DirectMessageDto directMessageResponse =
-                directMessageService.sendMessage(accessToken, directMessageDto);
+    public void directSend(@Header("Authorization") String accessToken, DirectMessageRequestDto directMessageRequestDto) {
+        String rooId = directMessageRequestDto.roomId();
+        DirectMessageResponseDto directMessageResponse =
+                directMessageService.sendMessage(accessToken, directMessageRequestDto);
         template.convertAndSend(
                 DIRECT_DESTINATION + rooId,
                 directMessageResponse);
@@ -52,7 +53,7 @@ public class DirectMessageController {
             @CustomPageable Pageable pageable) {
 
         log.info("채팅 메세지 리스트 반환 API 호출");
-        Slice<DirectMessageDto> directMessageResponseDtoList =
+        Slice<DirectMessageResponseDto> directMessageResponseDtoList =
                 directMessageService.directMessageSliceSortByDate(directChannelRoomId, pageable);
 
         GlobalSuccessResponseDto<Object> directMessageSuccessResponse =
