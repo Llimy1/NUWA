@@ -18,7 +18,9 @@ public enum SuccessMessage {
     CREATE_CHAT_CHANNEL_SUCCESS("채팅 채널 생성에 성공 했습니다."),
     CREATE_VOICE_CHANNEL_SUCCESS("음성 채널 생성에 성공 했습니다."),
     JOIN_CHAT_CHANNEL_SUCCESS("채팅 채널 참가에 성공 했습니다."),
-    JOIN_VOICE_CHANNEL_SUCCESS("음성 채널 참가에 성공 했습니다.");
+    JOIN_VOICE_CHANNEL_SUCCESS("음성 채널 참가에 성공 했습니다."),
+    FILE_UPLOAD_SUCCESS("파일 업로드에 성공 했습니다."),
+    FILE_URL_RETURN_SUCCESS("파일 URL 조회에 성공 했습니다.");
 
     private final String message;
 
