@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll())
+                        .requestMatchers("**").permitAll())
 
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e ->
