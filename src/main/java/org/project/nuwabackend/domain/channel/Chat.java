@@ -24,7 +24,7 @@ public class Chat extends Channel{
     private WorkSpaceMember createMember;
 
     @Builder
-    public Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
+    private Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         super(name, workSpace);
         this.createMember = createMember;
     }

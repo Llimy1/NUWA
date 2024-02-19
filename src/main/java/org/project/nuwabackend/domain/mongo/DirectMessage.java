@@ -35,7 +35,7 @@ public class DirectMessage extends BaseTimeMongo {
     private Long readCount;
 
     @Builder
-    public DirectMessage(String roomId, Long senderId, String senderName, String content, Long readCount) {
+    private DirectMessage(String roomId, Long senderId, String senderName, String content, Long readCount) {
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;

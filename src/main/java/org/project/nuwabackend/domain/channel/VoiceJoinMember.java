@@ -34,7 +34,7 @@ public class VoiceJoinMember {
     private Voice voiceChannel;
 
     @Builder
-    public VoiceJoinMember(WorkSpaceMember joinMember, Voice voiceChannel) {
+    private VoiceJoinMember(WorkSpaceMember joinMember, Voice voiceChannel) {
         this.joinMember = joinMember;
         this.voiceChannel = voiceChannel;
     }

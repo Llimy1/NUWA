@@ -44,7 +44,7 @@ public class File extends BaseTimeJpa {
     private Channel channel;
 
     @Builder
-    public File(String url, Member member, WorkSpace workSpace, Channel channel) {
+    private File(String url, Member member, WorkSpace workSpace, Channel channel) {
         this.url = url;
         this.member = member;
         this.workSpace = workSpace;

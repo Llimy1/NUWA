@@ -44,7 +44,7 @@ public class Image extends BaseTimeJpa {
     private Channel channel;
 
     @Builder
-    public Image(String url, Member member, WorkSpace workSpace, Channel channel) {
+    private Image(String url, Member member, WorkSpace workSpace, Channel channel) {
         this.url = url;
         this.member = member;
         this.workSpace = workSpace;

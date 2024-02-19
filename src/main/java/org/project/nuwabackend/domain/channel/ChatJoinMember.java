@@ -34,7 +34,7 @@ public class ChatJoinMember {
     private Chat chatChannel;
 
     @Builder
-    public ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
+    private ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
         this.joinMember = joinMember;
         this.chatChannel = chatChannel;
     }
