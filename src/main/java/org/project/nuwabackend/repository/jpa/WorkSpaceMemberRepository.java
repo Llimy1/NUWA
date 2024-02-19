@@ -36,4 +36,10 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
 
     @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace = :workSpace")
     List<WorkSpaceMember> findByWorkSpace(@Param("workSpace") WorkSpace workSpace);
+
+    //Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(WorkSpace workSpace, Member member);
+
+    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace.id = :workspaceId AND wsm.member.email = :email")
+    Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(@Param("workspaceId") Long workspaceId,
+                                                              @Param("email") String email);
 }
