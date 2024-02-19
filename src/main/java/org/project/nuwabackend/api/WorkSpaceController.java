@@ -25,6 +25,7 @@ import java.util.List;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_MEMBER_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -92,7 +93,7 @@ public class WorkSpaceController {
         List<WorkSpaceMemberInfoResponse> WorkSpaceMemberInfoResponse = workSpaceService.getAllMembersByWorkspace(workSpaceId);
 
         GlobalSuccessResponseDto<Object> getWorkspacesSuccessResponse = globalService.successResponse(
-                READ_MY_WORK_SPACE_SUCCESS.getMessage(),
+                READ_MY_WORK_SPACE_MEMBER_SUCCESS.getMessage(),
                 WorkSpaceMemberInfoResponse);
         return ResponseEntity.status(OK).body(getWorkspacesSuccessResponse);
     }

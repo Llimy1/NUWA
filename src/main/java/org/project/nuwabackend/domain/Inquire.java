@@ -37,4 +37,8 @@ public class Inquire extends BaseTimeJpa {
         this.type = type;
         this.member = member;
     }
+    public Inquire(InquireType type, Long num) {
+        this.type = type;
+        this.id = num;
+    }
 }

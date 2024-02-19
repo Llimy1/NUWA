@@ -23,7 +23,9 @@ public enum SuccessMessage {
     FILE_URL_RETURN_SUCCESS("파일 URL 조회에 성공 했습니다."),
     CREATE_WORK_SPACE_SUCCESS("워크스페이스 생성에 성공 했습니다."),
     READ_MY_WORK_SPACE_SUCCESS("워크스페이스 조회 성공 했습니다."),
-    JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다.");
+    READ_MY_WORK_SPACE_MEMBER_SUCCESS("워크스페이스 멤버 조회에 성공 했습니다."),
+    JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다."),
+    CREATE_INTRODUCTION_INQUIRY_SUCCESS("도입문의 성공 했습니다.");
 
     private final String message;
 
