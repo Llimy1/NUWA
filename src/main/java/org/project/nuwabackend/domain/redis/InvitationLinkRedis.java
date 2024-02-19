@@ -14,11 +14,11 @@ import org.springframework.data.redis.core.index.Indexed;
 public class InvitationLinkRedis {
 
     @Id
-    private String token;
+    private String id;
 
     @Indexed
+    private String token;
+
+
     private Long workSpaceId;
-
-
-
 }

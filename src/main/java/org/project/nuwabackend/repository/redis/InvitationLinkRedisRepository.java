@@ -8,6 +8,6 @@ import java.util.Optional;
 public interface InvitationLinkRedisRepository extends CrudRepository<InvitationLinkRedis, String> {
 
     Optional<InvitationLinkRedis> findTopByWorkSpaceIdOrderByTokenDesc(Long workSpaceId);
-
+    Optional<InvitationLinkRedis> findFirstByToken(String token);
 
 }
