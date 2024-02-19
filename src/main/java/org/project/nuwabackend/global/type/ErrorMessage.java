@@ -20,7 +20,8 @@ public enum ErrorMessage {
     DIRECT_CHANNEL_NOT_FOUND("다이렉트 채널을 해당 멤버들로 찾을 수 없습니다."),
     REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 해당 정보가 존재하지 않습니다."),
     MEMBER_ID_NOT_FOUND("멤버가 존재하지 않습니다."),
-    CHANNEL_NOT_FOUND("채널이 존재하지 않습니다.");
+    CHANNEL_NOT_FOUND("채널이 존재하지 않습니다."),
+    EMAIL_NOT_FOUND("이메일 전송에 실패했습니다.");
 
     private final String message;
 
