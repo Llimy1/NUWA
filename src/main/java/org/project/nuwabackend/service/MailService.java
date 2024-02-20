@@ -82,76 +82,73 @@ public class MailService {
         return saveInquire.getId();
 
     }
-
-
     private String buildHtmlContent(IntroductionInquiryMailRequestDto mailDto) {
-        StringBuilder sb = new StringBuilder();
-
-//        sb.append("<html><head></head><body><div id=\"conWrap\" style=\"display: flex; max-width: 450px; padding: 0 12px; margin: 0 auto; flex-flow: column; gap: 96px;\">");
-        sb.append("<div>");//html
-        sb.append("<div>");//conwrap
-        sb.append("<div>"); //class=\"conTop\" style=\"display: flex; flex-flow: column; gap: 32px;\">"
-        sb.append("<h1><a href=\"#\"><img src=\"cid:nuwalogo\" alt=\"Nuwa\"></a></h1>");
-        sb.append("<div class=\"contents\" style=\"color: #242424; letter-spacing: -0.028rem;\">");
-        sb.append("<p class=\"contentsText\" style=\"font-weight: 600; font-size: 22px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #00000010;\">도입문의</p>");
-        sb.append("<div class=\"inquiry\" style=\"font-size: 14px;\">");
-        sb.append("<p>이름: ").append(mailDto.name()).append("</p>");
-        sb.append("<p>이름: ").append(mailDto.countryRegion()).append("</p>");
-        sb.append("<p>회사명: ").append(mailDto.companyName()).append("</p>");
-        sb.append("<p>직책: ").append(mailDto.position()).append("</p>");
-        sb.append("<p>전화번호: ").append(mailDto.phoneNumber()).append("</p>");
-        sb.append("<p>이메일: ").append(mailDto.email()).append("</p>");
-        sb.append("<p>부서명: ").append(mailDto.departmentName()).append("</p>");
-        sb.append("<p>인원수: ").append(mailDto.numberOfPeople()).append("</p>");
-        sb.append("</div>");
-        sb.append("<p class=\"contentsDetail\" style=\"font-size: 14px; font-weight: 300; line-height: 1.2; padding-top: 12px; margin-top: 12px; border-top: 1px solid #00000010;\">");
-        sb.append("<span class=\"contentsBold\" style=\"display: block; padding-bottom: 8px; font-weight: 600;\">내용</span>");
-        sb.append(mailDto.content());
-        sb.append("</p>");
-        sb.append("</div><!-- contents -->");
-        sb.append("</div><!-- //conTop -->");
-        sb.append("<p>");
-        sb.append("</p>");
-
-        sb.append("<div>");
-
-        sb.append("<div>");
-        sb.append("<div class=\"btmR1\" style=\"display: flex; flex-flow: row nowrap; justify-content: space-between; align-items: center;\">");
-        sb.append("<h1><a href=\"#\"><img src=\"cid:nuwalogo\" alt=\"Nuwa\"></a></h1>");
-        sb.append("<div class=\"sns\">");
-        sb.append("<a href=\"#\"><img src=\"cid:instagram\" alt=\"Instagram\"></a>");
-        sb.append("<a href=\"#\"><img src=\"cid:facebook\" alt=\"Facebook\"></a>");
-        sb.append("<a href=\"#\"><img src=\"cid:kakaotalk\" alt=\"Kakaotalk\"></a>");
-        sb.append("</div>");
-        sb.append("</div>");
-
-        sb.append("<div class=\"btmR2\" style=\"display: flex; padding: 16px 0;\">");
-        sb.append("<a href=\"#\" style=\"display: flex; text-decoration: none; color: #afafaf; font-size: 12px;\">블로그</a>");
-        sb.append("<a href=\"#\" style=\"display: flex; text-decoration: none; color: #afafaf; font-size: 12px;\">구독취소</a>");
-        sb.append("<a href=\"#\" style=\"display: flex; text-decoration: none; color: #afafaf; font-size: 12px;\">정책</a>");
-        sb.append("<a href=\"#\" style=\"display: flex; text-decoration: none; color: #afafaf; font-size: 12px;\">고객지원센터</a>");
-        sb.append("<a href=\"#\" style=\"display: flex; text-decoration: none; color: #afafaf; font-size: 12px;\">NUWA커뮤니티</a>");
-        sb.append("</div>");
-        sb.append("<div id=\"copyright\" class=\"btmR3\" style=\"text-decoration: none; color: #afafaf; font-size: 12px; font-weight: 300;\">");
-        sb.append("@2024 NUWA Technologies LLC, a Salesforce company <br>");
-        sb.append("415 Mission Street, San Francisco CA94105 <br>");
-        sb.append("All rights reserved.");
-        sb.append("</div>");
-        sb.append("</div><!-- //conBtm -->");
-        sb.append("</div>");
-
-
-        sb.append("</div><!-- //conWrap -->");
-        sb.append("</div>");
-
-        return sb.toString();
+        String msgg = "<table id=\"conWrap\" style=\"display: block; max-width: 450px; padding: 0 12px; margin: 0 auto; width: 100%;\">\n" +
+                "  <tr>\n" +
+                "    <td>\n" +
+                "      <table class=\"conTop\" style=\"width: 100%;\">\n" +
+                "        <tr>\n" +
+                "          <td style=\"padding-bottom: 32px;\">\n" +
+                "            <h1><a href=\"#\"><img src=\"cid:nuwalogo\" alt=\"Nowa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
+                "          </td>\n" +
+                "        </tr>\n" +
+                "        <tr>\n" +
+                "          <td class=\"contents\" style=\"color: #242424; letter-spacing: -0.028rem; margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\">\n" +
+                "            <p class=\"contentsText\" style=\"font-weight: 600; font-size: 22px; padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid #00000010;\">\n" +
+                "              도입문의사항\n" +
+                "            </p>\n" +
+                "              <table class=\"inquiry\" style=\"font-size: 14px;\">\n";
+        msgg += "              <tr><td style=\"padding-bottom: 12px;\">이름:  " + mailDto.name() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">지역:  " + mailDto.countryRegion() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">회사명:  " + mailDto.companyName() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">직책:  " + mailDto.position() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">전화번호:  " + mailDto.phoneNumber() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">이메일:  " + mailDto.email() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">부서명:  " + mailDto.departmentName() + "</td></tr>\n" +
+                "              <tr><td style=\"padding-bottom: 12px;\">인원수:  " + mailDto.numberOfPeople() + "</td></tr>\n" +
+                "            </table>\n" +
+                "            <p class=\"contentsDetail\" style=\"font-size: 14px; font-weight: 300; line-height: 1.2; padding-top: 12px; margin-top: 12px; border-top: 1px solid #00000010;\">\n" +
+                "              <span class=\"contentsBold\" style=\"display: block; padding-bottom: 8px; font-weight: 600;\">내용</span> " + mailDto.content() +
+                "            </p>\n" +
+                "          </td>\n" +
+                "        </tr>\n" +
+                "      </table>\n" +
+                "    </td>\n" +
+                "  </tr>\n" +
+                "  <tr>\n" +
+                "    <td>\n" +
+                "      <table class=\"conBtm\" style=\"width: 100%;\">\n" +
+                "        <tr>\n" +
+                "          <td>\n" +
+                "            <h1><a href=\"#\"><img src=\"cid:nuwalogo\" alt=\"Nowa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
+                "          </td>\n" +
+                "          <td class=\"sns\" style=\"text-align: right;\">\n" +
+                "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"cid:instagram\" alt=\"Instagram\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"cid:facebook\" alt=\"Facebook\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                "            <a href=\"#\"><img src=\"cid:kakaotalk\" alt=\"Kakaotalk\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                "          </td>\n" +
+                "        </tr>\n" +
+                "        <tr>\n" +
+                "          <td colspan=\"2\" class=\"btmR2\" style=\"padding: 16px 0;\">\n" +
+                "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">블로그</a>\n" +
+                "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">구독취소</a>\n" +
+                "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">정책</a>\n" +
+                "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">고객지원센터</a>\n" +
+                "            <a href=\"#\" style=\"text-decoration: none; color: #afafaf; font-size: 12px;\">NUWA커뮤니티</a>\n" +
+                "          </td>\n" +
+                "        </tr>\n" +
+                "        <tr>\n" +
+                "          <td colspan=\"2\" id=\"copyright\" class=\"btmR3\">\n" +
+                "            @2024 NUWA Technologies LLC, a Salesforce company <br>\n" +
+                "            415 Mission Street, San Francisco CA94105 <br>\n" +
+                "            All rights reserved.\n" +
+                "          </td>\n" +
+                "        </tr>\n" +
+                "      </table>\n" +
+                "    </td>\n" +
+                "  </tr>\n" +
+                "</table>\n";
+        return msgg;
     }
 
-
-
-
-
-
 }
-
-
