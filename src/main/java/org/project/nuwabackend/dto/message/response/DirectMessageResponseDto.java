@@ -5,6 +5,6 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record DirectMessageResponseDto(String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
+public record DirectMessageResponseDto(Long workSpaceId, String roomId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
 
 }

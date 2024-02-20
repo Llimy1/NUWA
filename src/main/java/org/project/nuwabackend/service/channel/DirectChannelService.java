@@ -3,22 +3,31 @@ package org.project.nuwabackend.service.channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.channel.Direct;
+import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.redis.DirectChannelRedis;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
+import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
+import org.project.nuwabackend.service.message.DirectMessageService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
@@ -31,12 +40,14 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FO
 public class DirectChannelService {
 
 
+    private final DirectChannelRedisRepository directChannelRedisRepository;
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
+    private final DirectMessageRepository directMessageRepository;
+    private final DirectChannelRepository directChannelRepository;
     private final WorkSpaceRepository workSpaceRepository;
 
-    private final DirectChannelRepository directChannelRepository;
+    private final DirectMessageService directMessageService;
 
-    private final DirectChannelRedisRepository directChannelRedisRepository;
 
 
     // 다이렉트 채널 생성
@@ -83,7 +94,55 @@ public class DirectChannelService {
                 .build());
     }
 
+    // TODO: test code
+    // 채널 리스트 반환 -> 채팅방 별로 마지막 채팅, 인원, 채팅방 정보, 읽지 않은 채팅 카운트
+    public DirectChannelListResponseDto directChannelSliceSortByMessageCreateDate(String email, Long workSpaceId, Pageable pageable) {
 
+        List<DirectChannelResponseDto> directChannelResponseDtoList = new ArrayList<>();
+
+        // 워크스페이스 리스트 가져오기
+        Slice<Direct> directChannelByWorkSpaceId =
+                directChannelRepository.findDirectChannelByWorkSpaceId(workSpaceId, pageable);
+
+        directChannelByWorkSpaceId.map(direct -> DirectChannelResponseDto.builder()
+                .roomId(direct.getRoomId())
+                .name(direct.getName())
+                .workSpaceId(direct.getWorkSpace().getId())
+                .createMemberName(direct.getCreateMember().getName())
+                .joinMemberName(direct.getJoinMember().getName())
+                .build());
+
+        // 리스트를 순회하면서 해당 id에 맞는 마지막 채팅과 시간 가져오기
+        directChannelByWorkSpaceId.forEach(direct -> {
+            PageRequest pageRequest = PageRequest.of(0, 1);
+
+            Long unReadCount = directMessageService.countUnReadMessage(direct.getRoomId(), email);
+
+            // 마지막 채팅과 시간 가져오기
+            Slice<DirectMessage> directMessageByRoomIdOrderByCreatedAt =
+                    directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAt(direct.getRoomId(), pageRequest);
+
+
+            if (directMessageByRoomIdOrderByCreatedAt.hasContent()) {
+                DirectMessage directMessage =
+                        directMessageByRoomIdOrderByCreatedAt.getContent().get(0);
+
+            }
+            // DTO로 반환
+            DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
+
+                    .build();
+
+            directChannelResponseDtoList.add(directChannelResponseDto);
+        });
+
+        // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
+        List<DirectChannelResponseDto> sortByCreatedAtResponseList = directChannelResponseDtoList.stream()
+                .sorted(Comparator.comparing(DirectChannelResponseDto::createdAt).reversed())
+                .toList();
+
+        return new DirectChannelListResponseDto(sortByCreatedAtResponseList);
+    }
 
     // Redis에 채널 입장 정보 저장
     @Transactional

@@ -9,7 +9,6 @@ import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
-import org.project.nuwabackend.global.type.SuccessMessage;
 import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_CREATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LIST_RETURN_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_MESSAGE_LIST_RETURN_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
