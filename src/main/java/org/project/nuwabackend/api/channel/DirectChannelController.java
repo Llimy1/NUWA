@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponse;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_CREATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LIST_RETURN_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -67,6 +69,23 @@ public class DirectChannelController {
                         DIRECT_CHANNEL_LIST_RETURN_SUCCESS.getMessage(),
                         directChannelListResponses);
 
+        return ResponseEntity.status(OK).body(directChannelListSuccessResponse);
+    }
+
+    // TODO: test code
+    @GetMapping("/channel/direct/v2/{workSpaceId}")
+    public ResponseEntity<Object> directChannelSliceSortByMessageCreateDate(
+            @PathVariable(name = "workSpaceId") Long workSpaceId,
+            @MemberEmail String email,
+            @CustomPageable Pageable pageable) {
+        log.info("마지막 채팅 순 채널 리스트 조회");
+        DirectChannelListResponseDto directChannelListResponseDto =
+                directChannelService.directChannelSliceSortByMessageCreateDate(email, workSpaceId, pageable);
+
+        GlobalSuccessResponseDto<Object> directChannelListSuccessResponse =
+                globalService.successResponse(
+                        DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS.getMessage(),
+                        directChannelListResponseDto);
         return ResponseEntity.status(OK).body(directChannelListSuccessResponse);
     }
 

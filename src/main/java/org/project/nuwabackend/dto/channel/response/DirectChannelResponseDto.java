@@ -11,7 +11,7 @@ public record DirectChannelResponseDto(String roomId,
                                        Long workSpaceId,
                                        String createMemberName,
                                        String joinMemberName,
-                                       @Setter Long unReadCount,
-                                       @Setter String lastMessage,
-                                       @Setter LocalDateTime createdAt) {
+                                       Long unReadCount,
+                                       String lastMessage,
+                                       LocalDateTime createdAt) {
 }
