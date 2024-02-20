@@ -25,7 +25,7 @@ public enum SuccessMessage {
     READ_MY_WORK_SPACE_SUCCESS("워크스페이스 조회 성공 했습니다."),
     READ_MY_WORK_SPACE_MEMBER_SUCCESS("워크스페이스 멤버 조회에 성공 했습니다."),
     JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다."),
-    CREATE_INTRODUCTION_INQUIRY_SUCCESS("도입문의 성공 했습니다.");
+    CREATE_INQUIRY_MAIL_SUCCESS("문의 메일 발송 성공 했습니다.");
 
     private final String message;
 

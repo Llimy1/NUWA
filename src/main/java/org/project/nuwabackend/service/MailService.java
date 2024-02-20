@@ -6,19 +6,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.Inquire;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.dto.IntroductionInquiryMailRequestDto;
+import org.project.nuwabackend.dto.ServiceInquiryMailRequestDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.jpa.InquireRepository;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.type.InquireType;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -39,7 +43,7 @@ public class MailService {
 
     @Transactional
     public Long answerMail(String email, IntroductionInquiryMailRequestDto mailDto) throws Exception {
-        log.info("도입문의 메일 발송 서비스");
+        log.info("도입 문의 메일 발송 서비스");
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
@@ -56,25 +60,11 @@ public class MailService {
 
         messageHelper.setText(htmlContent, true);
 
-
         // 이미지 파일 추가
-        FileSystemResource nowaLogoResource = new FileSystemResource(new File(nuwalogo));
-        messageHelper.addInline("nuwalogo", nowaLogoResource);
-        // 이미지 파일 추가 (instagram)
-        FileSystemResource instagramResource = new FileSystemResource(new File(instagram));
-        messageHelper.addInline("instagram", instagramResource);
-
-        // 이미지 파일 추가 (facebook)
-        FileSystemResource facebookResource = new FileSystemResource(new File(facebook));
-        messageHelper.addInline("facebook", facebookResource);
-
-        // 이미지 파일 추가 (kakaotalk)
-        FileSystemResource kakaotalkResource = new FileSystemResource(new File(kakaotalk));
-        messageHelper.addInline("kakaotalk", kakaotalkResource);
-
-        System.out.println("----------------------------------");
-        System.out.println(mailDto.name().toString());
-        System.out.println(message.toString());
+        addInlineImage("nuwalogo", nuwalogo, messageHelper);
+        addInlineImage("instagram", instagram, messageHelper);
+        addInlineImage("facebook", facebook, messageHelper);
+        addInlineImage("kakaotalk", kakaotalk, messageHelper);
 
         mailSender.send(message);
         Inquire inquire = new Inquire(InquireType.INTRODUCTION, findMember);
@@ -151,4 +141,91 @@ public class MailService {
         return msgg;
     }
 
+    @Transactional
+    public Long answerMail(String email, ServiceInquiryMailRequestDto mailDto, List<MultipartFile> multipartFileList) throws Exception {
+        log.info("서비스 문의 메일 발송 서비스");
+
+        // 멤버 조회
+        Member findMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.MEMBER_ID_NOT_FOUND));
+
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
+
+        messageHelper.setFrom(from);  // 보낸 사람
+        messageHelper.setTo("vvvv4449@gmail.com");  // 받는 사람 관리자 메일주소
+        messageHelper.setSubject("서비스문의 " + mailDto.subject());  // 제목
+
+        // 파일첨부
+        for (MultipartFile multipartFile : multipartFileList) {
+            String filename = multipartFile.getOriginalFilename();
+
+            if (filename != null && !filename.trim().isEmpty()) {
+                ByteArrayResource source = new ByteArrayResource(multipartFile.getBytes());
+                messageHelper.addAttachment(filename, source);
+            }
+        }
+
+        // 내용
+        String htmlContent = buildHtmlContent(mailDto,multipartFileList);
+        messageHelper.setText(htmlContent, true);
+
+        // 이미지 파일 추가
+        addInlineImage("nuwalogo", nuwalogo, messageHelper);
+        addInlineImage("instagram", instagram, messageHelper);
+        addInlineImage("facebook", facebook, messageHelper);
+        addInlineImage("kakaotalk", kakaotalk, messageHelper);
+
+        mailSender.send(message);
+        Inquire inquire = new Inquire(InquireType.SERVICE, findMember);
+        Inquire saveInquire = inquireRepository.save(inquire);
+
+        return saveInquire.getId();
+    }
+
+    private String buildHtmlContent(ServiceInquiryMailRequestDto mailDto, List<MultipartFile> multipartFileList) {
+
+        StringBuilder msgg = new StringBuilder();
+
+            msgg.append("<body><table style=\"margin: 0 auto; padding: 0 12px; max-width: 450px; width: 100%; box-sizing: border-box; font-family: 'pretendard';\">")
+                .append("<tr><td style=\"text-align: center;\"><img src=\"cid:nuwalogo\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\"></td></tr>")
+                .append("<tr><td style=\"color: #242424; letter-spacing: -0.028rem; padding-bottom: 32px;\">")
+                .append("<p style=\"font-weight: 600; font-size: 22px; margin: 0; padding-bottom: 12px; border-bottom: 1px solid #00000010;\">관리자님!<br>서비스가 계속해서 성장할 수 있도록 회원님들의 문의사항을 적극 반영할 수 있도록 노력해야 합니다 🙌</p>")
+                .append("</td></tr>")
+                .append("<tr><td style=\"font-size: 14px; font-weight: 300; line-height: 1.2;\">")
+                .append(mailDto.email()).append("<br>")
+                .append("<br>")
+                .append("<strong>내용:</strong><br>")
+                .append(mailDto.content())
+                .append("</td></tr>");
+
+            msgg.append("<br>")
+                .append("<img src=\"cid:nuwalogo\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\">")
+                .append("</td></tr>")
+
+                .append("<tr><td style=\"padding-top: 12px; text-align: center;\">")
+                .append("<a href=\"#\" style=\"border-radius: 50px; padding: 12px 0; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158FF 0%, rgba(81, 88, 255, 0.80) 100%);\">NUWA 열기</a>")
+                .append("</td></tr>")
+                .append("<tr><td style=\"padding-top: 16px; text-align: center;\">")
+                .append("<img src=\"cid:instagram\" alt=\"Instagram\" style=\"vertical-align: middle;\">")
+                .append("<img src=\"cid:facebook\" alt=\"Facebook\" style=\"vertical-align: middle; margin-left: 10px;\">")
+                .append("<img src=\"cid:kakaotalk\" alt=\"Kakaotalk\" style=\"vertical-align: middle; margin-left: 10px;\">")
+                .append("</td></tr>")
+                .append("<tr><td style=\"font-size: 12px; color: #afafaf; padding-top: 16px; text-align: center;\">")
+                .append("블로그 | 구독취소 | 정책 | 고객지원센터 | NUWA커뮤니티")
+                .append("</td></tr>")
+                .append("<tr><td style=\"font-size: 12px; color: #afafaf; padding-top: 16px; text-align: center;\">")
+                .append("@2024 NUWA Technologies LLC, a Salesforce company<br>415 Mission Street, San Francisco CA94105<br>All rights reserved.")
+                .append("</td></tr>")
+                .append("</table></body>");
+
+        return msgg.toString();
+
+
+    }
+
+    private void addInlineImage(String imageId, String imagePath, MimeMessageHelper messageHelper) throws Exception {
+        FileSystemResource imageResource = new FileSystemResource(new File(imagePath));
+        messageHelper.addInline(imageId, imageResource);
+    }
 }
