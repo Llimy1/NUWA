@@ -59,17 +59,16 @@ public class ChatChannelService {
     // 채팅 채널 참가
     // TODO: test code
     public void joinChatChannel(ChatChannelJoinMemberRequest chatChannelJoinMemberRequest) {
-        List<String> joinMemberNameList = chatChannelJoinMemberRequest.joinMemberNameList();
+        List<Long> joinMemberIdList = chatChannelJoinMemberRequest.joinMemberIdList();
         Long chatChannelId = chatChannelJoinMemberRequest.chatChannelId();
 
         Chat chatChannel = chatChannelRepository.findById(chatChannelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
         List<ChatJoinMember> chatJoinMemberList = new ArrayList<>();
-        for (String name : joinMemberNameList) {
-            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByName(name)
+        for (Long id : joinMemberIdList) {
+            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
-
 
             ChatJoinMember chatJoinMember = ChatJoinMember.createChatJoinMember(workSpaceMember, chatChannel);
             chatJoinMemberList.add(chatJoinMember);

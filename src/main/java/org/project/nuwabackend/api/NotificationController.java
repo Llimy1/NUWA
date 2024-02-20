@@ -25,12 +25,11 @@ import static org.springframework.http.HttpStatus.OK;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final GlobalService globalService;
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> subscribe(@RequestParam String workSpaceMemberName,
+    public ResponseEntity<SseEmitter> subscribe(@RequestParam Long workSpaceMemberId,
                                            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        SseEmitter emitter = notificationService.subscribe(workSpaceMemberName, lastEventId);
+        SseEmitter emitter = notificationService.subscribe(workSpaceMemberId, lastEventId);
 
         return ResponseEntity.status(OK).body(emitter);
     }

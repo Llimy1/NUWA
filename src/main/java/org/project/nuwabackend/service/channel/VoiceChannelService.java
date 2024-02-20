@@ -57,15 +57,15 @@ public class VoiceChannelService {
     // 채팅 채널 참가
     // TODO: test code
     public void joinVoiceChannel(VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
-        List<String> joinMemberNameList = voiceChannelJoinMemberRequest.joinMemberNameList();
+        List<Long> joinMemberIdList = voiceChannelJoinMemberRequest.joinMemberIdList();
         Long chatChannelId = voiceChannelJoinMemberRequest.voiceChannelId();
 
         Voice voiceChannel = voiceChannelRepository.findById(chatChannelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
         List<VoiceJoinMember> voiceJoinMemberList = new ArrayList<>();
-        for (String name : joinMemberNameList) {
-            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByName(name)
+        for (Long id : joinMemberIdList) {
+            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
 

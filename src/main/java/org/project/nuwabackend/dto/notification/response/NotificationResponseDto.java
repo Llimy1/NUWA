@@ -11,6 +11,7 @@ public record NotificationResponseDto(Long workSpaceId,
                                       String notificationUrl,
                                       Boolean isRead,
                                       String notificationType,
+                                      Long notificationWorkSpaceId,
                                       String notificationWorkSpaceName,
                                       LocalDateTime createdAt) {
 }

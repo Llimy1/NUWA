@@ -25,8 +25,8 @@ public class DirectMessage extends BaseTimeMongo {
     @Field(name = "direct_room_id")
     private String roomId;
 
-    @Field(name = "direct_sender_name")
-    private String senderName;
+    @Field(name = "direct_sender_id")
+    private Long senderId;
 
     @Field(name = "direct_content")
     private String content;
@@ -35,10 +35,10 @@ public class DirectMessage extends BaseTimeMongo {
     private Long readCount;
 
     @Builder
-    public DirectMessage(Long workSpaceId, String roomId, String senderName, String content, Long readCount) {
+    public DirectMessage(Long workSpaceId, String roomId, Long senderId, String content, Long readCount) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
-        this.senderName = senderName;
+        this.senderId = senderId;
         this.content = content;
         this.readCount = readCount;
     }
@@ -55,11 +55,11 @@ public class DirectMessage extends BaseTimeMongo {
         return Objects.hash(id);
     }
 
-    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, String senderName, String content, Long readCount) {
+    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String content, Long readCount) {
         return DirectMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
-                .senderName(senderName)
+                .senderId(senderId)
                 .content(content)
                 .readCount(readCount)
                 .build();

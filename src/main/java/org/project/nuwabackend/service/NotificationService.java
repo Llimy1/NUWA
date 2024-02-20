@@ -37,14 +37,14 @@ public class NotificationService {
 
     // SSE 연결
     @Transactional
-    public SseEmitter subscribe(String workSpaceMemberName, String lastEventId) {
+    public SseEmitter subscribe(Long workSpaceMemberId, String lastEventId) {
 
         // 워크스페이스 멤버 찾기
-        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByName(workSpaceMemberName)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
-
-        // 해당된 워크스페이스 멤버 ID
-        Long workSpaceMemberId = workSpaceMember.getId();
+        workSpaceMemberRepository.findById(workSpaceMemberId).ifPresent(
+                e -> {
+                    throw new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND);
+                }
+        );
 
         // Emitter Id
         String emitterId = workSpaceMemberId + "_" + System.currentTimeMillis();
@@ -100,6 +100,7 @@ public class NotificationService {
                                     .notificationContent(notification.getContent())
                                     .notificationUrl(notification.getUrl())
                                     .notificationType(notification.getType().getType())
+                                    .notificationWorkSpaceId(notification.getReceiver().getId())
                                     .notificationWorkSpaceName(notification.getReceiver().getName())
                                     .createdAt(notification.getCreatedAt())
                                     .build());
