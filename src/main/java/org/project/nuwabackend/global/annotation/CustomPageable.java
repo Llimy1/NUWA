@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomPageable {
     int page() default 1;
-    int size() default 20;
+    int size() default 10;
     String sortBy() default "createdAt";
 }
