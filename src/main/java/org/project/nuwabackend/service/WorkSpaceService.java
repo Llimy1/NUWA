@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_DUPLICATE;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
@@ -48,6 +49,9 @@ public class WorkSpaceService {
 
         // 워크스페이스 멤버 중복 확인
         duplicateWorkSpaceMemberName(workSpaceMemberName);
+
+        // 워크스페이스 이름 중복
+        duplicateWorkSpaceName(workSpaceName);
 
         // 워크스페이스 생성
         WorkSpace workSpace =
@@ -74,15 +78,16 @@ public class WorkSpaceService {
     public Long joinWorkSpaceMember(String email, WorkSpaceMemberRequestDto workSpaceMemberRequestDto) {
         log.info("워크스페이스 멤버 가입");
         Long workSpaceId = workSpaceMemberRequestDto.workSpaceId();
-        String workSpaceMemberName = workSpaceMemberRequestDto.workSpaceMemberName();
-        String workSpaceMemberJob = workSpaceMemberRequestDto.workSpaceMemberJob();
+        int index = email.indexOf("@");
+        String emailSub = email.substring(0, index);
         String workSpaceMemberImage = workSpaceMemberRequestDto.workSpaceMemberImage();
 
         // 멤버 이메일 중복 확인
         duplicateWorkSpaceMemberEmail(email);
 
         // 멤버 이름 중복 확인
-        duplicateWorkSpaceMemberName(workSpaceMemberName);
+        // TODO: 확인 필요
+//        duplicateWorkSpaceMemberName(workSpaceMemberName);
 
         // 멤버 찾기
         Member findMember = memberRepository.findByEmail(email)
@@ -92,9 +97,8 @@ public class WorkSpaceService {
         WorkSpace findWorkSpace = workSpaceRepository.findById(workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
 
-        WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
-                workSpaceMemberName,
-                workSpaceMemberJob,
+        WorkSpaceMember workSpaceMember = WorkSpaceMember.joinWorkSpaceMember(
+                emailSub,
                 workSpaceMemberImage,
                 WorkSpaceMemberType.JOIN,
                 findMember,
@@ -120,6 +124,15 @@ public class WorkSpaceService {
         workSpaceMemberRepository.findByMemberEmail(email)
                 .ifPresent(e -> {
                     throw new DuplicationException(DUPLICATE_EMAIL);
+                });
+    }
+
+    // 워크스페이스 이름 중복
+    public void duplicateWorkSpaceName(String workSpaceName) {
+        log.info("워크스페이스 이름 중복 확인");
+        workSpaceRepository.findByName(workSpaceName)
+                .ifPresent(e -> {
+                    throw new DuplicationException(WORK_SPACE_DUPLICATE);
                 });
     }
 

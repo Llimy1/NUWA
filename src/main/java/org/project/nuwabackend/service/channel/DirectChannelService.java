@@ -17,6 +17,7 @@ import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
+import org.project.nuwabackend.service.message.DirectMessageQueryService;
 import org.project.nuwabackend.service.message.DirectMessageService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,7 +47,7 @@ public class DirectChannelService {
     private final DirectChannelRepository directChannelRepository;
     private final WorkSpaceRepository workSpaceRepository;
 
-    private final DirectMessageService directMessageService;
+    private final DirectMessageQueryService directMessageQueryService;
 
 
 
@@ -55,7 +56,7 @@ public class DirectChannelService {
     public String createDirectChannel(String email, DirectChannelRequest directChannelRequest) {
         log.info("다이렉트 채널 생성");
 
-        String directJoinMember = directChannelRequest.joinMemberName();
+        Long joinMemberId = directChannelRequest.joinMemberId();
         Long workSpaceId = directChannelRequest.workSpaceId();;
 
         // 워크스페이스가 존재하는지 확인
@@ -67,7 +68,7 @@ public class DirectChannelService {
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         // 워크스페이스에 멤버가 존재 하는지 확인
-        WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findByName(directJoinMember)
+        WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(joinMemberId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         // 워크스페이스 존재하고 멤버도 전부 존재하면 채널 저장
@@ -104,36 +105,32 @@ public class DirectChannelService {
         Slice<Direct> directChannelByWorkSpaceId =
                 directChannelRepository.findDirectChannelByWorkSpaceId(workSpaceId, pageable);
 
-        directChannelByWorkSpaceId.map(direct -> DirectChannelResponseDto.builder()
-                .roomId(direct.getRoomId())
-                .name(direct.getName())
-                .workSpaceId(direct.getWorkSpace().getId())
-                .createMemberName(direct.getCreateMember().getName())
-                .joinMemberName(direct.getJoinMember().getName())
-                .build());
-
         // 리스트를 순회하면서 해당 id에 맞는 마지막 채팅과 시간 가져오기
         directChannelByWorkSpaceId.forEach(direct -> {
             PageRequest pageRequest = PageRequest.of(0, 1);
 
-            Long unReadCount = directMessageService.countUnReadMessage(direct.getRoomId(), email);
+            Long unReadCount = directMessageQueryService.countUnReadMessage(direct.getRoomId(), email);
 
             // 마지막 채팅과 시간 가져오기
             Slice<DirectMessage> directMessageByRoomIdOrderByCreatedAt =
                     directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAt(direct.getRoomId(), pageRequest);
 
-
             if (directMessageByRoomIdOrderByCreatedAt.hasContent()) {
                 DirectMessage directMessage =
                         directMessageByRoomIdOrderByCreatedAt.getContent().get(0);
 
+                DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
+                        .roomId(direct.getRoomId())
+                        .name(direct.getName())
+                        .workSpaceId(direct.getId())
+                        .createMemberName(direct.getCreateMember().getName())
+                        .joinMemberName(direct.getJoinMember().getName())
+                        .unReadCount(unReadCount)
+                        .lastMessage(directMessage.getContent())
+                        .createdAt(directMessage.getCreatedAt())
+                        .build();
+                directChannelResponseDtoList.add(directChannelResponseDto);
             }
-            // DTO로 반환
-            DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
-
-                    .build();
-
-            directChannelResponseDtoList.add(directChannelResponseDto);
         });
 
         // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
@@ -141,7 +138,17 @@ public class DirectChannelService {
                 .sorted(Comparator.comparing(DirectChannelResponseDto::createdAt).reversed())
                 .toList();
 
-        return new DirectChannelListResponseDto(sortByCreatedAtResponseList);
+        // 페이징 정보 추가
+        boolean hasNext = directChannelByWorkSpaceId.hasNext();
+        int currentPage = directChannelByWorkSpaceId.getNumber();
+        int pageSize = directChannelByWorkSpaceId.getSize();
+
+        return DirectChannelListResponseDto.builder()
+                .directChannelResponseDtoList(sortByCreatedAtResponseList)
+                .hasNext(hasNext)
+                .currentPage(currentPage)
+                .pageSize(pageSize)
+                .build();
     }
 
     // Redis에 채널 입장 정보 저장
@@ -162,17 +169,4 @@ public class DirectChannelService {
 
         directChannelRedisRepository.delete(directChannelRedis);
     }
-
-    // 채팅방 인원이 2명인지 확인 => 다이렉트 메세지를 보냈을 때 바로 읽음 처리를 하기 위한 메소드
-    public boolean isAllConnected(String directChannelRoomId) {
-        List<DirectChannelRedis> connectList = directChannelRedisRepository.findByDirectRoomId(directChannelRoomId);
-        return connectList.size() == 2;
-    }
-
-    // 채팅방 인원이 1명인지 확인 => 채팅방 연결시 현재 인원이 존재 하는지 확인을 위한 메소드
-    public boolean isConnected(String directChannelRoomId) {
-        List<DirectChannelRedis> connectList = directChannelRedisRepository.findByDirectRoomId(directChannelRoomId);
-        return connectList.size() == 1;
-    }
-
 }

@@ -15,6 +15,7 @@ public enum SuccessMessage {
     DIRECT_MESSAGE_LIST_RETURN_SUCCESS("다이렉트 메세지 조회에 성공 했습니다."),
     DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS("채널 입장 정보 삭제에 성공 했습니다."),
     DIRECT_CHANNEL_LIST_RETURN_SUCCESS("다이렉트 채널 조회에 성공 했습니다."),
+    DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS("마지막 채팅 순 다이렉트 채널 조회에 성공 했습니다."),
     CREATE_CHAT_CHANNEL_SUCCESS("채팅 채널 생성에 성공 했습니다."),
     CREATE_VOICE_CHANNEL_SUCCESS("음성 채널 생성에 성공 했습니다."),
     JOIN_CHAT_CHANNEL_SUCCESS("채팅 채널 참가에 성공 했습니다."),
@@ -23,7 +24,8 @@ public enum SuccessMessage {
     FILE_URL_RETURN_SUCCESS("파일 URL 조회에 성공 했습니다."),
     CREATE_WORK_SPACE_SUCCESS("워크스페이스 생성에 성공 했습니다."),
     READ_MY_WORK_SPACE_SUCCESS("워크스페이스 조회 성공 했습니다."),
-    JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다.");
+    JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다."),
+    WORK_SPACE_USE_SUCCESS("사용 가능한 워크스페이스 이름입니다.");
 
     private final String message;
 

@@ -71,4 +71,15 @@ public class WorkSpaceMember extends BaseTimeJpa {
                 .workSpace(workSpace)
                 .build();
     }
+
+    // 워크스페이스 멤버 가입
+    public static WorkSpaceMember joinWorkSpaceMember(String name, String image, WorkSpaceMemberType workSpaceMemberType, Member member, WorkSpace workSpace) {
+        return WorkSpaceMember.builder()
+                .name(name)
+                .image(image)
+                .workSpaceMemberType(workSpaceMemberType)
+                .member(member)
+                .workSpace(workSpace)
+                .build();
+    }
 }
