@@ -141,7 +141,9 @@ public class DirectChannelService {
 
         // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
         List<DirectChannelResponseDto> sortByCreatedAtResponseList = directChannelResponseDtoList.stream()
-                .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt).reversed())
+                .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
+                                Comparator.nullsLast(Comparator.naturalOrder())).reversed()
+                        .thenComparing(DirectChannelResponseDto::getUnReadCount).reversed())
                 .toList();
 
         // 페이징 정보 추가
