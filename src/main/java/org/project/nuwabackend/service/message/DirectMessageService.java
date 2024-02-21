@@ -34,6 +34,7 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+// TODO: test code
 public class DirectMessageService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -93,7 +94,7 @@ public class DirectMessageService {
 //        Long senderId = findMember.getId();
 
         // 메세지 보낸 사람
-        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         Long senderId = sender.getId();

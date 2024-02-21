@@ -7,6 +7,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.multimedia.File;
 import org.project.nuwabackend.domain.multimedia.Image;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
+import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.file.request.FileRequestDto;
 import org.project.nuwabackend.dto.file.response.FileUploadIdResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
@@ -17,6 +18,7 @@ import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
 import org.project.nuwabackend.repository.jpa.ImageRepository;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
+import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,7 @@ import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
@@ -36,9 +39,8 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FO
 // TODO: test code
 public class FileService {
 
-    private final WorkSpaceRepository workSpaceRepository;
+    private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final ChannelRepository channelRepository;
-    private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final FileRepository fileRepository;
     private final S3Service s3Service;
@@ -49,11 +51,10 @@ public class FileService {
         Long workSpaceId = fileRequestDto.workSpaceId();
         Long channelId = fileRequestDto.channelId();
 
-        Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(MEMBER_ID_NOT_FOUND));
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        WorkSpace findWorkSpace = workSpaceRepository.findById(workSpaceId)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
+        WorkSpace findWorkSpace = findWorkSpaceMember.getWorkSpace();
 
         Channel findChannel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
@@ -72,7 +73,7 @@ public class FileService {
         if (!imageUrlList.isEmpty()) {
             List<Image> imageList = new ArrayList<>();
             for (String imageUrl : imageUrlList) {
-                Image image = Image.createImage(imageUrl, findMember, findWorkSpace, findChannel);
+                Image image = Image.createImage(imageUrl, findWorkSpaceMember, findWorkSpace, findChannel);
                 imageList.add(image);
             }
             List<Image> savedImageList = imageRepository.saveAll(imageList);
@@ -83,7 +84,7 @@ public class FileService {
         if (!fileUrlList.isEmpty()) {
             List<File> fileList = new ArrayList<>();
             for (String fileUrl : fileUrlList) {
-                File file = File.createFile(fileUrl, findMember, findWorkSpace, findChannel);
+                File file = File.createFile(fileUrl, findWorkSpaceMember, findWorkSpace, findChannel);
                 fileList.add(file);
             }
             List<File> savedFileList = fileRepository.saveAll(fileList);

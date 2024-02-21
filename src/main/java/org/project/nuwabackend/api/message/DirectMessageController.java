@@ -25,6 +25,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+// TODO: test code
 public class DirectMessageController {
 
     private final SimpMessagingTemplate template;

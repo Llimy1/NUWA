@@ -29,7 +29,6 @@ public class Chat extends Channel{
         this.createMember = createMember;
     }
 
-    // TODO: test code
     public static Chat createChatChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Chat.builder()
                 .name(name)
