@@ -19,11 +19,33 @@ public class CustomPageableHandlerMethodArgumentResolver implements HandlerMetho
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
         CustomPageable customPageable = parameter.getParameterAnnotation(CustomPageable.class);
 
-        assert customPageable != null;
-        int page = customPageable.page() - 1;
-        int size = customPageable.size();
-        String sortBy = customPageable.sortBy();
+        String pageStr = webRequest.getParameter("page");
+        String sizeStr = webRequest.getParameter("size");
+        String sortBy;
 
-        return PageRequest.of(page, size, Sort.by(sortBy).descending());
+        if (webRequest.getParameter("sortBy") != null) {
+            sortBy = webRequest.getParameter("sortBy");
+        } else {
+            assert customPageable != null;
+            sortBy = customPageable.sortBy();
+        }
+
+        int page;
+        if (pageStr != null) {
+            page = Integer.parseInt(pageStr);
+        } else {
+            assert customPageable != null;
+            page = customPageable.page();
+        }
+
+        int size;
+        if (sizeStr != null) {
+            size = Integer.parseInt(sizeStr);
+        } else {
+            assert customPageable != null;
+            size = customPageable.size();
+        }
+
+        return PageRequest.of(page, size, Sort.by(sortBy));
     }
 }
