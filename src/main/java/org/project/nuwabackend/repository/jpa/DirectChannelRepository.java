@@ -11,5 +11,10 @@ import org.springframework.security.core.parameters.P;
 
 public interface DirectChannelRepository extends JpaRepository<Direct, Long> {
 
-    Slice<Direct> findDirectChannelByCreateMemberIdOrJoinMemberId(Long workSpaceMemberId, Pageable pageable);
+    @Query("SELECT d " +
+            "FROM Direct d " +
+            "JOIN d.createMember cm " +
+            "JOIN d.joinMember jm " +
+            "WHERE cm.id = :workSpaceMemberId OR jm.id = :workSpaceMemberId")
+    Slice<Direct> findDirectChannelByCreateMemberIdOrJoinMemberId(@Param("workSpaceMemberId") Long workSpaceMemberId, Pageable pageable);
 }
