@@ -22,14 +22,16 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/notification")
 @RestController
 @RequiredArgsConstructor
+// TODO: test code
 public class NotificationController {
 
     private final NotificationService notificationService;
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> subscribe(@RequestParam Long workSpaceMemberId,
+    public ResponseEntity<SseEmitter> subscribe(@RequestParam Long workSpaceId,
+                                                @RequestParam String email,
                                            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        SseEmitter emitter = notificationService.subscribe(workSpaceMemberId, lastEventId);
+        SseEmitter emitter = notificationService.subscribe(email, workSpaceId, lastEventId);
 
         return ResponseEntity.status(OK).body(emitter);
     }

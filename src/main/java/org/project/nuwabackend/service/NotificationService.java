@@ -23,7 +23,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-
 // TODO: test code
 public class NotificationService {
 
@@ -37,14 +36,13 @@ public class NotificationService {
 
     // SSE 연결
     @Transactional
-    public SseEmitter subscribe(Long workSpaceMemberId, String lastEventId) {
+    public SseEmitter subscribe(String email, Long workSpaceId, String lastEventId) {
 
         // 워크스페이스 멤버 찾기
-        workSpaceMemberRepository.findById(workSpaceMemberId).ifPresent(
-                e -> {
-                    throw new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND);
-                }
-        );
+        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Long workSpaceMemberId = workSpaceMember.getId();
 
         // Emitter Id
         String emitterId = workSpaceMemberId + "_" + System.currentTimeMillis();
