@@ -88,12 +88,9 @@ public class JwtUtil implements InitializingBean {
     public boolean verifyToken(String token) {
         try {
             String parseToken = token.substring(PREFIX.length());
-            log.info("parseToken = {}", parseToken);
-
             Jws<Claims> claims = Jwts.parserBuilder()
                     .setSigningKey(signingKey)  // 비밀키를 설정하여 파싱한다.
                     .build().parseClaimsJws(parseToken); // 주어진 토큰을 파싱하여 Claims 객체를 얻는다.
-            log.info("parse claims = {}", claims);
             // 토큰의 만료 시간과 현재 시간 비교
             return claims.getBody()
                     .getExpiration()
@@ -107,7 +104,6 @@ public class JwtUtil implements InitializingBean {
     // 토큰에서 Email을 추출한다.
     public String getEmail(String token) {
         String parseToken = token.substring(PREFIX.length());
-        log.info("parseToken = {}", parseToken);
         return Jwts.parserBuilder()
                 .setSigningKey(signingKey)
                 .build()
@@ -119,7 +115,6 @@ public class JwtUtil implements InitializingBean {
     // 토큰에서 ROLE(권한)만 추출한다.
     public String getRole(String token) {
         String parseToken = token.substring(PREFIX.length());
-        log.info("parseToken = {}", parseToken);
         return Jwts.parserBuilder().setSigningKey(signingKey)
                 .build()
                 .parseClaimsJws(parseToken)
