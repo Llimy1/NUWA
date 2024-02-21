@@ -131,7 +131,7 @@ class WorkSpaceControllerTest {
 
         //when
         //then
-        mvc.perform(post("/api/workspace/member")
+        mvc.perform(post("/api/workspace/join")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())

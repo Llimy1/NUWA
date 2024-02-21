@@ -54,7 +54,7 @@ public class WorkSpaceController {
         return ResponseEntity.status(CREATED).body(createWorkSpaceSuccessResponse);
     }
 
-    @PostMapping("/workspace/member")
+    @PostMapping("/workspace/join")
     public ResponseEntity<Object> joinWorkSpaceMember(@MemberEmail String email,
                                                       @RequestBody WorkSpaceMemberRequestDto workSpaceMemberRequestDto) {
         log.info("워크스페이스 참가 API 호출");
