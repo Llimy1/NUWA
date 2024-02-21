@@ -56,15 +56,14 @@ public class DirectChannelController {
         return ResponseEntity.status(CREATED).body(directChannelCreateSuccessResponse);
     }
 
-
-    // TODO: test code
     @GetMapping("/channel/direct/{workSpaceId}")
-    public ResponseEntity<Object> directChannelSliceSortByCreatedDate(
+    public ResponseEntity<Object> directChannelSlice(
             @PathVariable("workSpaceId") Long workSpaceId,
+            @MemberEmail String email,
             @CustomPageable Pageable pageable) {
         log.info("채널 리스트 조회 API 호출");
         Slice<DirectChannelListResponse> directChannelListResponses =
-                directChannelService.directChannelSliceSortByCreatedDate(workSpaceId, pageable);
+                directChannelService.directChannelSlice(email, workSpaceId, pageable);
 
         GlobalSuccessResponseDto<Object> directChannelListSuccessResponse =
                 globalService.successResponse(
@@ -74,7 +73,6 @@ public class DirectChannelController {
         return ResponseEntity.status(OK).body(directChannelListSuccessResponse);
     }
 
-    // TODO: test code
     @GetMapping("/channel/direct/v2/{workSpaceId}")
     public ResponseEntity<Object> directChannelSliceSortByMessageCreateDate(
             @PathVariable(name = "workSpaceId") Long workSpaceId,
@@ -82,7 +80,7 @@ public class DirectChannelController {
             @CustomPageable Pageable pageable) {
         log.info("마지막 채팅 순 채널 리스트 조회");
         DirectChannelListResponseDto directChannelListResponseDto =
-                directChannelService.directChannelSliceSortByMessageCreateDate(email, workSpaceId, pageable);
+                directChannelService.directChannelSliceSortByMessageCreateDateDesc(email, workSpaceId, pageable);
 
         GlobalSuccessResponseDto<Object> directChannelListSuccessResponse =
                 globalService.successResponse(

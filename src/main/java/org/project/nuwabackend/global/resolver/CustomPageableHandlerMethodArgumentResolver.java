@@ -24,6 +24,6 @@ public class CustomPageableHandlerMethodArgumentResolver implements HandlerMetho
         int size = customPageable.size();
         String sortBy = customPageable.sortBy();
 
-        return PageRequest.of(page, size, Sort.by(sortBy));
+        return PageRequest.of(page, size, Sort.by(sortBy).descending());
     }
 }

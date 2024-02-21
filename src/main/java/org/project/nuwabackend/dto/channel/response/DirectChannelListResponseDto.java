@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record DirectChannelListResponseDto(List<DirectChannelResponseDto> directChannelResponseDtoList,
+public record DirectChannelListResponseDto(List<DirectChannelResponseDto> directChannelResponseListDto,
                                            boolean hasNext,
                                            int currentPage,
                                            int pageSize) {
