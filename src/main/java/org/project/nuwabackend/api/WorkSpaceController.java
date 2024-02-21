@@ -99,7 +99,6 @@ public class WorkSpaceController {
         return ResponseEntity.status(OK).body(getWorkspacesSuccessResponse);
     }
 
-    // TODO: test code
     @GetMapping("/workspace/check")
     public ResponseEntity<Object> duplicateWorkSpaceName(@RequestParam(name = "workSpaceName") String workSpaceName) {
         log.info("워크스페이스 이름 중복 확인 API 호출");

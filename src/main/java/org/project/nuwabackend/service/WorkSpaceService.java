@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_DUPLICATE;
+import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
@@ -47,8 +47,8 @@ public class WorkSpaceService {
         String workSpaceMemberJob = workSpaceRequestDto.workSpaceMemberJob();
         String workSpaceMemberImage = workSpaceRequestDto.workSpaceMemberImage();
 
-        // 워크스페이스 멤버 중복 확인
-        duplicateWorkSpaceMemberName(workSpaceMemberName);
+        // 워크스페이스 멤버 중복 확인 -> 제거
+//        duplicateWorkSpaceMemberName(workSpaceMemberName);
 
         // 워크스페이스 이름 중복
         duplicateWorkSpaceName(workSpaceName);
@@ -83,7 +83,7 @@ public class WorkSpaceService {
         String workSpaceMemberImage = workSpaceMemberRequestDto.workSpaceMemberImage();
 
         // 멤버 이메일 중복 확인
-        duplicateWorkSpaceMemberEmail(email);
+        duplicateWorkSpaceMemberEmail(email, workSpaceId);
 
         // 멤버 이름 중복 확인
         // TODO: 확인 필요
@@ -119,9 +119,9 @@ public class WorkSpaceService {
     }
 
     // 워크스페이스 멤버 이메일 중복
-    public void duplicateWorkSpaceMemberEmail(String email) {
+    public void duplicateWorkSpaceMemberEmail(String email, Long workSpaceId) {
         log.info("워크스페이스 멤버 이메일 중복 확인");
-        workSpaceMemberRepository.findByMemberEmail(email)
+        workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .ifPresent(e -> {
                     throw new DuplicationException(DUPLICATE_EMAIL);
                 });
@@ -132,7 +132,7 @@ public class WorkSpaceService {
         log.info("워크스페이스 이름 중복 확인");
         workSpaceRepository.findByName(workSpaceName)
                 .ifPresent(e -> {
-                    throw new DuplicationException(WORK_SPACE_DUPLICATE);
+                    throw new DuplicationException(DUPLICATE_WORK_SPACE_NAME);
                 });
     }
 

@@ -10,6 +10,7 @@ import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
+import org.project.nuwabackend.service.channel.DirectChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -35,6 +36,7 @@ import static org.springframework.http.HttpStatus.OK;
 public class DirectChannelController {
 
     private final DirectChannelService directChannelService;
+    private final DirectChannelRedisService directChannelRedisService;
     private final GlobalService globalService;
 
     // 채팅방 생성하기
@@ -95,7 +97,7 @@ public class DirectChannelController {
             @PathVariable("directChannelRoomId") String directChannelRoomId,
             @MemberEmail String email) {
         log.info("채팅방 나가기(Redis 정보 삭제)");
-        directChannelService.deleteDirectChannelMemberInfo(directChannelRoomId, email);
+        directChannelRedisService.deleteDirectChannelMemberInfo(directChannelRoomId, email);
 
         GlobalSuccessResponseDto<Object> deleteDirectChannelMemberInfo =
                 globalService.successResponse(

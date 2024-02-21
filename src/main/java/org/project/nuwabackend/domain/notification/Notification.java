@@ -55,7 +55,6 @@ public class Notification extends BaseTimeJpa {
         this.receiver = receiver;
     }
 
-    // TODO: test code
     public static Notification createNotification(String content, String url, NotificationType notificationType, WorkSpaceMember receiver) {
         return Notification.builder()
                 .content(content)

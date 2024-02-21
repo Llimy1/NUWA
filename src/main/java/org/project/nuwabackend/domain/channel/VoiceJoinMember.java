@@ -39,6 +39,7 @@ public class VoiceJoinMember {
         this.voiceChannel = voiceChannel;
     }
 
+    // TODO: test code
     // 참여 멤버 생성
     public static VoiceJoinMember createVoiceJoinMember(WorkSpaceMember joinMember, Voice voiceChannel) {
         return VoiceJoinMember.builder()

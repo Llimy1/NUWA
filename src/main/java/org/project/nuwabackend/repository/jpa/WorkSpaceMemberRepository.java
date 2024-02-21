@@ -6,6 +6,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +15,19 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
 
     Optional<WorkSpaceMember> findByName(String workSpaceMemberName);
 
-    // 이메일로 워크스페이스 유저 찾기
+    // 이메일과 워크스페이스 ID로 워크스페이스 멤버 찾기
     @Query("SELECT wm " +
             "FROM WorkSpaceMember wm " +
             "JOIN wm.member m " +
+            "JOIN wm.workSpace w " +
+            "WHERE m.email = :email AND w.id = :workSpaceId")
+    Optional<WorkSpaceMember> findByMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
+
+    // 이메일과 워크스페이스 ID로 워크스페이스 멤버 찾기
+    @Query("SELECT wm " +
+            "FROM WorkSpaceMember wm " +
+            "JOIN wm.member m " +
+            "JOIN wm.workSpace w " +
             "WHERE m.email = :email")
     Optional<WorkSpaceMember> findByMemberEmail(@Param("email") String email);
 

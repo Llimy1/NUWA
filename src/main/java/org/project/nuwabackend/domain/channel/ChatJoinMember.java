@@ -39,6 +39,7 @@ public class ChatJoinMember {
         this.chatChannel = chatChannel;
     }
 
+    // TODO: test code
     // 참여 멤버 생성
     public static ChatJoinMember createChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
         return ChatJoinMember.builder()

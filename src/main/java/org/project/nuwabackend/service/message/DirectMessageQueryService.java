@@ -26,13 +26,6 @@ public class DirectMessageQueryService {
     public void updateReadCountZero(String directChannelRoomId, String email) {
         log.info("채팅 전부 읽음으로 변경");
 
-
-        // 이부분도 workSpaceMember로 변경
-//        Member sender = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND_MEMBER));
-//
-//        Long senderId = sender.getId();
-
         WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 

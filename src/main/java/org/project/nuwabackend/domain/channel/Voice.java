@@ -28,7 +28,6 @@ public class Voice extends Channel {
         this.createMember = createMember;
     }
 
-    // TODO: test code
     public static Voice createVoiceChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Voice.builder()
                 .name(name)

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
-import org.project.nuwabackend.domain.redis.DirectChannelRedis;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
@@ -14,11 +13,8 @@ import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
-import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
-import org.project.nuwabackend.service.message.DirectMessageService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -28,11 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static org.project.nuwabackend.global.type.ErrorMessage.REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -41,11 +34,9 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FO
 public class DirectChannelService {
 
 
-    private final DirectChannelRedisRepository directChannelRedisRepository;
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final DirectMessageRepository directMessageRepository;
     private final DirectChannelRepository directChannelRepository;
-    private final WorkSpaceRepository workSpaceRepository;
 
     private final DirectMessageQueryService directMessageQueryService;
 
@@ -59,13 +50,11 @@ public class DirectChannelService {
         Long joinMemberId = directChannelRequest.joinMemberId();
         Long workSpaceId = directChannelRequest.workSpaceId();;
 
-        // 워크스페이스가 존재하는지 확인
-        WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
-
         // 워크스페이스에 멤버가 존재 하는지 확인
-        WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmail(email)
+        WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        WorkSpace workSpace = createWorkSpaceMember.getWorkSpace();
 
         // 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(joinMemberId)
@@ -149,24 +138,5 @@ public class DirectChannelService {
                 .currentPage(currentPage)
                 .pageSize(pageSize)
                 .build();
-    }
-
-    // Redis에 채널 입장 정보 저장
-    @Transactional
-    public void saveDirectChannelMemberInfo(String directChannelRoomId, String email) {
-        log.info("채널 입장 정보 저장");
-        DirectChannelRedis directChannelInfo =
-                DirectChannelRedis.createDirectChannelRedis(directChannelRoomId, email);
-
-        directChannelRedisRepository.save(directChannelInfo);
-    }
-
-    // Redis에 채널 입장 정보 삭제
-    @Transactional
-    public void deleteDirectChannelMemberInfo(String directChannelRoomId, String email) {
-        DirectChannelRedis directChannelRedis = directChannelRedisRepository.findByDirectRoomIdAndEmail(directChannelRoomId, email)
-                .orElseThrow(() -> new NotFoundException(REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO));
-
-        directChannelRedisRepository.delete(directChannelRedis);
     }
 }

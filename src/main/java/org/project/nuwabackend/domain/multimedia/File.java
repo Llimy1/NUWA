@@ -15,6 +15,7 @@ import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.channel.Channel;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
+import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -32,8 +33,8 @@ public class File extends BaseTimeJpa {
     private String url;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "workspace_member_id")
+    private WorkSpaceMember workSpaceMember;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "workspace_id")
@@ -44,18 +45,17 @@ public class File extends BaseTimeJpa {
     private Channel channel;
 
     @Builder
-    private File(String url, Member member, WorkSpace workSpace, Channel channel) {
+    private File(String url, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
         this.url = url;
-        this.member = member;
+        this.workSpaceMember = workSpaceMember;
         this.workSpace = workSpace;
         this.channel = channel;
     }
 
-    // TODO: test code
-    public static File createFile(String url, Member member, WorkSpace workSpace, Channel channel) {
+    public static File createFile(String url, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
         return File.builder()
                 .url(url)
-                .member(member)
+                .workSpaceMember(workSpaceMember)
                 .workSpace(workSpace)
                 .channel(channel)
                 .build();
