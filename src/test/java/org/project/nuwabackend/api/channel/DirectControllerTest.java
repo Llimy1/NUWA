@@ -12,6 +12,7 @@ import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
 import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponse;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
+import org.project.nuwabackend.service.channel.DirectChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_CREATE_SUCCESS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,6 +36,8 @@ class DirectControllerTest {
 
     @Mock
     DirectChannelService directChannelService;
+    @Mock
+    DirectChannelRedisService directChannelRedisService;
 
     @Mock
     GlobalService globalService;
@@ -46,14 +50,17 @@ class DirectControllerTest {
 
     DirectChannelRequest directChannelRequest;
 
+    String directChannelRoomId = "directChannelRoomId";
+    String email = "abcd@gmail.com";
+
     @BeforeEach
     public void setup() {
         mvc = MockMvcBuilders.standaloneSetup(directChannelController).build();
 
         Long workSpaceId = 1L;
-        String joinMemberName = "joinMemberName";
+        Long joinMemberId = 1L;
 
-        directChannelRequest = new DirectChannelRequest(workSpaceId, joinMemberName);
+        directChannelRequest = new DirectChannelRequest(workSpaceId, joinMemberId);
     }
 
     @Test
@@ -61,7 +68,7 @@ class DirectControllerTest {
     void createDirectChannelTest() throws Exception {
         //given
         String body = objectMapper.writeValueAsString(directChannelRequest);
-        String directChannelRoomId = "directChannelRoomId";
+
 
         DirectChannelRoomIdResponse directChannelRoomIdResponse =
                 new DirectChannelRoomIdResponse(directChannelRoomId);
@@ -93,4 +100,31 @@ class DirectControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("[API] Delete Direct Channel Member Info Success Test")
+    void deleteDirectChannelMemberInfo() throws Exception {
+        //given
+
+        GlobalSuccessResponseDto<Object> createDirectChannelSuccessResponse =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS.getMessage())
+                        .data(null)
+                        .build();
+
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(createDirectChannelSuccessResponse);
+
+        //when
+        //then
+        mvc.perform(post("/api/channel/direct/{directChannelRoomId}", directChannelRoomId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("MemberEmail", email))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status")
+                        .value(SUCCESS.getValue()))
+                .andExpect(jsonPath("$.message")
+                        .value(DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS.getMessage()))
+                .andDo(print());
+    }
 }
