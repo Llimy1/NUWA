@@ -9,15 +9,30 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.member.Member;
+import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
+import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
+import org.project.nuwabackend.service.message.DirectMessageQueryService;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,6 +48,10 @@ class DirectChannelServiceTest {
     DirectChannelRepository directChannelRepository;
     @Mock
     WorkSpaceMemberRepository workSpaceMemberRepository;
+    @Mock
+    DirectMessageRepository directMessageRepository;
+    @Mock
+    DirectMessageQueryService directMessageQueryService;
 
     @InjectMocks
     DirectChannelService directChannelService;
@@ -45,10 +64,15 @@ class DirectChannelServiceTest {
     private Member sender;
     private Member receiver;
 
+    private PageRequest pageRequest;
+
+    Long workSpaceId = 1L;
+    String email = "abcd@gmail.com";
+
     @BeforeEach
     void setup() {
 
-        Long workSpaceId = 1L;
+
         Long joinMemberId = 1L;
 
         String workSpaceName = "workSpaceName";
@@ -72,6 +96,8 @@ class DirectChannelServiceTest {
         String receiverPassword = "receiverPassword";
         String receiverNickname = "receiverNickname";
         String receiverPhoneNumber = "receiverPhoneNumber";
+
+        pageRequest = PageRequest.of(0, 10, Sort.by("createdAt").descending());
 
         workSpace = WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
         sender = Member.createMember(senderEmail, senderPassword, senderNickname, senderPhoneNumber);
@@ -121,5 +147,143 @@ class DirectChannelServiceTest {
         assertThat(directChannelId).isNotNull();
         verify(workSpaceMemberRepository).findByMemberEmailAndWorkSpaceId(sender.getEmail(), workSpaceId);
         verify(workSpaceMemberRepository).findById(joinMemberId);
+    }
+
+    @Test
+    @DisplayName("[Service] Direct Channel Slice Sort By CreatedDate")
+    void directChannelSliceSortByCreatedDate() {
+        //given
+        Direct direct1 = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, receiverWorkSpaceMember);
+        Direct direct2 = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, receiverWorkSpaceMember);
+        Direct direct3 = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, receiverWorkSpaceMember);
+
+        ReflectionTestUtils.setField(direct1, "createdAt", LocalDateTime.now());
+        ReflectionTestUtils.setField(direct2, "createdAt", LocalDateTime.now());
+        ReflectionTestUtils.setField(direct3, "createdAt", LocalDateTime.now());
+
+        List<Direct> directList = new ArrayList<>(List.of(direct1, direct2, direct3))
+                .stream()
+                .sorted(Comparator.comparing(Direct::getCreatedAt).reversed())
+                .toList();
+
+        Slice<Direct> directSlice = new SliceImpl<>(directList, pageRequest, false);
+
+        Slice<DirectChannelListResponse> directSliceMap = directSlice.map(
+                direct -> DirectChannelListResponse.builder()
+                        .roomId(direct.getRoomId())
+                        .name(direct.getName())
+                        .createMemberId(direct.getCreateMember().getId())
+                        .joinMemberId(direct.getJoinMember().getId())
+                        .createMemberName(direct.getCreateMember().getName())
+                        .joinMemberName(direct.getJoinMember().getName())
+                        .build());
+
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
+                .willReturn(Optional.of(senderWorkSpaceMember));
+
+        given(directChannelRepository.findDirectChannelByCreateMemberIdOrJoinMemberId(any(), any()))
+                .willReturn(directSlice);
+        //when
+        Slice<DirectChannelListResponse> directChannelListResponseList =
+                directChannelService.directChannelSlice(email, workSpaceId, pageRequest);
+        //then
+        assertThat(directChannelListResponseList).isNotNull();
+        assertThat(directChannelListResponseList).containsAll(directSliceMap);
+    }
+
+    @Test
+    @DisplayName("[Service] Direct Channel Slice Sort By Message CreateDate")
+    void directChannelSliceSortByMessageCreateDate() {
+        //given
+        String roomId1 = "roomId1";
+        String content1 = "content1";
+        Long readCount = 0L;
+
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
+                .willReturn(Optional.of(senderWorkSpaceMember));
+
+        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), content1, readCount);
+
+        ReflectionTestUtils.setField(directMessage1, "id", UUID.randomUUID().toString());
+        ReflectionTestUtils.setField(directMessage1, "createdAt", LocalDateTime.now());
+
+        List<DirectChannelResponseDto> directChannelResponseDtoList = new ArrayList<>();
+
+        Direct direct1 = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, receiverWorkSpaceMember);
+
+        ReflectionTestUtils.setField(direct1, "createdAt", LocalDateTime.now());
+
+        List<Direct> directList = new ArrayList<>(List.of(direct1));
+
+
+        List<DirectMessage> directMessageList = new ArrayList<>(List.of(directMessage1));
+
+        Slice<Direct> directSlice = new SliceImpl<>(directList, pageRequest, false);
+
+        given(directChannelRepository.findDirectChannelByCreateMemberIdOrJoinMemberId(any(), any()))
+                .willReturn(directSlice);
+
+        Long unReadCount = 10L;
+
+        directSlice.forEach(direct -> {
+
+            given(directMessageQueryService.countUnReadMessage(anyString(), anyString()))
+                    .willReturn(unReadCount);
+
+            PageRequest pageRequest1 = PageRequest.of(0, 1);
+
+            Slice<DirectMessage> directMessageSlice = new SliceImpl<>(directMessageList, pageRequest1, false);
+
+            given(directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAtDesc(anyString(), any()))
+                    .willReturn(directMessageSlice);
+
+            DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
+                    .roomId(direct.getRoomId())
+                    .name(direct.getName())
+                    .workSpaceId(direct.getId())
+                    .createMemberId(direct.getCreateMember().getId())
+                    .joinMemberId(direct.getJoinMember().getId())
+                    .createMemberName(direct.getCreateMember().getName())
+                    .joinMemberName(direct.getJoinMember().getName())
+                    .unReadCount(unReadCount)
+                    .build();
+
+            if (directMessageSlice.hasContent()) {
+                DirectMessage directMessage = directMessageSlice.getContent().get(0);
+
+                directChannelResponseDto.setLastMessage(directMessage.getContent());
+                directChannelResponseDto.setMessageCreatedAt(directMessage.getCreatedAt());
+            }
+            directChannelResponseDtoList.add(directChannelResponseDto);
+        });
+
+        List<DirectChannelResponseDto> sortByCreatedAtResponseList = directChannelResponseDtoList.stream()
+                .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt).reversed())
+                .toList();
+
+        boolean hasNext = directSlice.hasNext();
+        int currentPage = directSlice.getNumber();
+        int pageSize = directSlice.getSize();
+
+        DirectChannelListResponseDto mockDirectChannelListResponseDto = DirectChannelListResponseDto.builder()
+                .directChannelResponseListDto(sortByCreatedAtResponseList)
+                .hasNext(hasNext)
+                .currentPage(currentPage)
+                .pageSize(pageSize)
+                .build();
+
+        //when
+        DirectChannelListResponseDto directChannelListResponseDto =
+                directChannelService.directChannelSliceSortByMessageCreateDateDesc(email, workSpaceId, pageRequest);
+
+        //then
+        assertThat(directChannelListResponseDto).isNotNull();
+        assertThat(directChannelListResponseDto.directChannelResponseListDto()).
+                containsAll(mockDirectChannelListResponseDto.directChannelResponseListDto());
+        assertThat(directChannelListResponseDto.directChannelResponseListDto().get(0).getMessageCreatedAt())
+                .isEqualTo(mockDirectChannelListResponseDto.directChannelResponseListDto().get(0).getMessageCreatedAt());
+        assertThat(directChannelListResponseDto.currentPage()).isEqualTo(mockDirectChannelListResponseDto.currentPage());
+        assertThat(directChannelListResponseDto.hasNext()).isEqualTo(mockDirectChannelListResponseDto.hasNext());
+        assertThat(directChannelListResponseDto.pageSize()).isEqualTo(mockDirectChannelListResponseDto.pageSize());
     }
 }
