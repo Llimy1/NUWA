@@ -34,11 +34,12 @@ public class ChatJoinMember {
     private Chat chatChannel;
 
     @Builder
-    public ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
+    private ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
         this.joinMember = joinMember;
         this.chatChannel = chatChannel;
     }
 
+    // TODO: test code
     // 참여 멤버 생성
     public static ChatJoinMember createChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
         return ChatJoinMember.builder()

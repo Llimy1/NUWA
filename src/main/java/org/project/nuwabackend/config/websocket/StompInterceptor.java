@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.global.exception.JwtException;
 import org.project.nuwabackend.service.auth.JwtUtil;
+import org.project.nuwabackend.service.channel.DirectChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelService;
+import org.project.nuwabackend.service.message.DirectMessageQueryService;
 import org.project.nuwabackend.service.message.DirectMessageService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -27,7 +29,8 @@ import static org.project.nuwabackend.global.type.ErrorMessage.JWT_EXPIRED;
 public class StompInterceptor implements ChannelInterceptor {
 
     private final DirectChannelService directChannelService;
-    private final DirectMessageService directMessageService;
+    private final DirectChannelRedisService directChannelRedisService;
+    private final DirectMessageQueryService directMessageQueryService;
     private final JwtUtil jwtUtil;
 
 
@@ -88,10 +91,10 @@ public class StompInterceptor implements ChannelInterceptor {
         String directChannelRoomId = getRoomId(accessor);
 
         // 다이렉트 채널 입장 -> Redis 정보 저장
-        directChannelService.saveDirectChannelMemberInfo(directChannelRoomId, email);
+        directChannelRedisService.saveDirectChannelMemberInfo(directChannelRoomId, email);
 
         // 다이렉트 메세지 전부 읽음 처리
-        directMessageService.updateReadCountZero(directChannelRoomId, email);
+        directMessageQueryService.updateReadCountZero(directChannelRoomId, email);
     }
 
     // 채팅 채널 연결시

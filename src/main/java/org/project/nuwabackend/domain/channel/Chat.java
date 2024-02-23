@@ -24,12 +24,11 @@ public class Chat extends Channel{
     private WorkSpaceMember createMember;
 
     @Builder
-    public Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
+    private Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         super(name, workSpace);
         this.createMember = createMember;
     }
 
-    // TODO: test code
     public static Chat createChatChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Chat.builder()
                 .name(name)

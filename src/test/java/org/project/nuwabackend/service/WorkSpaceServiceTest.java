@@ -12,19 +12,22 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
-import org.project.nuwabackend.service.WorkSpaceService;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
+import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
 
 
 @DisplayName("[Service] WorkSpace Service Test")
@@ -46,7 +49,7 @@ class WorkSpaceServiceTest {
     private Member member;
     private WorkSpace workSpace;
 
-    String email = "email";
+    String email = "abcd@gmail.com";
 
     @BeforeEach
     void setup() {
@@ -73,8 +76,7 @@ class WorkSpaceServiceTest {
                         workSpaceMemberJob, workSpaceMemberImage);
 
         workSpaceMemberRequestDto =
-                new WorkSpaceMemberRequestDto(workspaceId, workSpaceMemberName,
-                        workSpaceMemberJob, workSpaceMemberImage);
+                new WorkSpaceMemberRequestDto(workspaceId, workSpaceMemberImage);
 
 
         workSpace = WorkSpace.createWorkSpace(workSpaceRequestDto.workSpaceName(),
@@ -83,10 +85,8 @@ class WorkSpaceServiceTest {
 
     @Test
     @DisplayName("[Service] Create WorkSpace And WorkSpaceMember Test")
-    void createWorkSpaceAndWorkSpaceMember() {
+    void createWorkSpaceAndSaveWorkSpaceMemberSuccess() {
         //given
-
-
         WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
                 workSpaceRequestDto.workSpaceMemberName(), workSpaceRequestDto.workSpaceMemberJob(),
                 workSpaceRequestDto.workSpaceImage(), WorkSpaceMemberType.CREATED, member, workSpace);
@@ -108,12 +108,31 @@ class WorkSpaceServiceTest {
     }
 
     @Test
+    @DisplayName("[Service] Duplicate WorkSpace Name")
+    void createWorkSpaceAndSaveWorkSpaceMemberFailByDuplicateWorkSpaceName() {
+        //given
+        given(workSpaceRepository.findByName(anyString()))
+                .willThrow(new DuplicationException(DUPLICATE_WORK_SPACE_NAME));
+
+        //when
+        //then
+        assertThatThrownBy(() -> workSpaceService.duplicateWorkSpaceName(workSpaceRequestDto.workSpaceName()))
+                .isInstanceOf(DuplicationException.class);
+    }
+
+    @Test
     @DisplayName("[Service] Join WorkSpace Member Test")
     void joinWorkSpaceMemberTest() {
         //given
-        WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(workSpaceMemberRequestDto.workSpaceMemberName(),
-                workSpaceMemberRequestDto.workSpaceMemberJob(), workSpaceMemberRequestDto.workSpaceMemberImage(),
-                WorkSpaceMemberType.JOIN, member, workSpace);
+        int index = email.indexOf("@");
+        String emailSub = email.substring(0, index);
+
+        WorkSpaceMember workSpaceMember = WorkSpaceMember.joinWorkSpaceMember(
+                emailSub,
+                workSpaceMemberRequestDto.workSpaceMemberImage(),
+                WorkSpaceMemberType.JOIN,
+                member,
+                workSpace);
 
         ReflectionTestUtils.setField(workSpaceMember, "id", 1L);
         given(workSpaceRepository.findById(any()))
@@ -130,4 +149,16 @@ class WorkSpaceServiceTest {
         assertThat(workSpaceMemberId).isEqualTo(workSpaceMember.getId());
     }
 
+    @Test
+    @DisplayName("[Service] Duplicate WorkSpace Name")
+    void joinWorkSpaceAndSaveWorkSpaceMemberFailByDuplicateWorkSpaceMemberEmail() {
+        //given
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
+                .willThrow(new DuplicationException(DUPLICATE_EMAIL));
+
+        //when
+        //then
+        assertThatThrownBy(() -> workSpaceService.duplicateWorkSpaceMemberEmail(email, workSpace.getId()))
+                .isInstanceOf(DuplicationException.class);
+    }
 }

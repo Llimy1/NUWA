@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.api.WorkSpaceController;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
@@ -27,6 +26,8 @@ import static org.mockito.BDDMockito.given;
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -65,9 +66,7 @@ class WorkSpaceControllerTest {
     }
 
     private WorkSpaceMemberRequestDto workSpaceMemberRequestDto() {
-        return new WorkSpaceMemberRequestDto(
-                workSpaceId, workSpaceMemberName,
-                workSpaceMemberJob, workSpaceMemberImage);
+        return new WorkSpaceMemberRequestDto(workSpaceId, workSpaceMemberImage);
     }
 
     @BeforeEach
@@ -132,7 +131,7 @@ class WorkSpaceControllerTest {
 
         //when
         //then
-        mvc.perform(post("/api/workspace/member")
+        mvc.perform(post("/api/workspace/join")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
@@ -143,6 +142,34 @@ class WorkSpaceControllerTest {
                 .andExpect(jsonPath("$.data.workSpaceMemberId")
                         .value(workSpaceMemberId))
                 .andDo(print());
-
     }
+
+    @Test
+    @DisplayName("[API] WorkSpace Name Use Test")
+    void duplicateWorkSpaceName() throws Exception {
+        //given
+        GlobalSuccessResponseDto<Object> workSpaceUseSuccessResponse =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(WORK_SPACE_USE_SUCCESS.getMessage())
+                        .data(null)
+                        .build();
+
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(workSpaceUseSuccessResponse);
+
+        //when
+        //then
+        mvc.perform(get("/api/workspace/check")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .param("workSpaceName", workSpaceName))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status")
+                        .value(SUCCESS.getValue()))
+                .andExpect(jsonPath("$.message")
+                        .value(WORK_SPACE_USE_SUCCESS.getMessage()))
+                .andDo(print());
+    }
+
+
 }

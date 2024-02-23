@@ -55,8 +55,10 @@ class DirectMessageServiceTest {
         String phoneNumber = "01000000000";
 
 
+        Long workSpaceId = 1L;
         String directChannelRoomId = "directChannelRoomId";
         Long senderId = 1L;
+        Long receiverId = 2L;
         String directChannelContent = "directChannelContent";
         Long readCount = 1L;
         String senderName = "senderName";
@@ -65,11 +67,12 @@ class DirectMessageServiceTest {
         directMessageRequestDto = DirectMessageRequestDto.builder()
                 .roomId(directChannelRoomId)
                 .senderId(senderId)
-                .senderName(senderName)
+                .receiverId(receiverId)
                 .content(directChannelContent)
                 .build();
 
         directMessageResponseDto = DirectMessageResponseDto.builder()
+                .workSpaceId(workSpaceId)
                 .roomId(directChannelRoomId)
                 .senderId(senderId)
                 .senderName(senderName)
@@ -79,9 +82,9 @@ class DirectMessageServiceTest {
                 .build();
 
         directMessage = DirectMessage.createDirectMessage(
+                workSpaceId,
                 directChannelRoomId,
                 senderId,
-                senderName,
                 directChannelContent,
                 readCount);
 

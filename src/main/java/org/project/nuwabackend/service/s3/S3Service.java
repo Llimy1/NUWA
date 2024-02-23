@@ -35,6 +35,7 @@ import static org.project.nuwabackend.type.S3PathType.IMAGE_PATH;
 
 @RequiredArgsConstructor
 @Service
+// TODO: test code
 public class S3Service {
 
     private final AmazonS3 amazonS3;

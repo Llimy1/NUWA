@@ -15,6 +15,7 @@ import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.channel.Channel;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
+import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 
 import static jakarta.persistence.FetchType.*;
 
@@ -32,8 +33,8 @@ public class Image extends BaseTimeJpa {
     private String url;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    @JoinColumn(name = "workspace_member_id")
+    private WorkSpaceMember workSpaceMember;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "workspace_id")
@@ -44,18 +45,17 @@ public class Image extends BaseTimeJpa {
     private Channel channel;
 
     @Builder
-    public Image(String url, Member member, WorkSpace workSpace, Channel channel) {
+    private Image(String url, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
         this.url = url;
-        this.member = member;
+        this.workSpaceMember = workSpaceMember;
         this.workSpace = workSpace;
         this.channel = channel;
     }
 
-    // TODO: test code
-    public static Image createImage(String url, Member member, WorkSpace workSpace, Channel channel) {
+    public static Image createImage(String url, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
         return Image.builder()
                 .url(url)
-                .member(member)
+                .workSpaceMember(workSpaceMember)
                 .workSpace(workSpace)
                 .channel(channel)
                 .build();

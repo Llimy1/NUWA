@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.List;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -52,7 +54,7 @@ public class WorkSpaceController {
         return ResponseEntity.status(CREATED).body(createWorkSpaceSuccessResponse);
     }
 
-    @PostMapping("/workspace/member")
+    @PostMapping("/workspace/join")
     public ResponseEntity<Object> joinWorkSpaceMember(@MemberEmail String email,
                                                       @RequestBody WorkSpaceMemberRequestDto workSpaceMemberRequestDto) {
         log.info("워크스페이스 참가 API 호출");
@@ -95,6 +97,17 @@ public class WorkSpaceController {
                 READ_MY_WORK_SPACE_SUCCESS.getMessage(),
                 WorkSpaceMemberInfoResponse);
         return ResponseEntity.status(OK).body(getWorkspacesSuccessResponse);
+    }
+
+    @GetMapping("/workspace/check")
+    public ResponseEntity<Object> duplicateWorkSpaceName(@RequestParam(name = "workSpaceName") String workSpaceName) {
+        log.info("워크스페이스 이름 중복 확인 API 호출");
+        workSpaceService.duplicateWorkSpaceName(workSpaceName);
+
+        GlobalSuccessResponseDto<Object> workSpaceUseSuccessResponse =
+                globalService.successResponse(WORK_SPACE_USE_SUCCESS.getMessage(), null);
+
+        return ResponseEntity.status(OK).body(workSpaceUseSuccessResponse);
     }
 
 

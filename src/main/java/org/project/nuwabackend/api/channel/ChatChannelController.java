@@ -24,12 +24,12 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+// TODO: test code 추후 로직 작성 후
 public class ChatChannelController {
 
     private final ChatChannelService chatChannelService;
     private final GlobalService globalService;
 
-    // TODO: test code
     @PostMapping("/channel/chat")
     public ResponseEntity<Object> createChatChannel(@MemberEmail String email,
                                                     @RequestBody ChatChannelRequest chatChannelRequest) {
@@ -45,7 +45,6 @@ public class ChatChannelController {
         return ResponseEntity.status(CREATED).body(createChatChannelSuccessResponse);
     }
 
-    // TODO: test code
     @PostMapping("/channel/chat/join")
     public ResponseEntity<Object> joinChatChannel(@RequestBody ChatChannelJoinMemberRequest chatChannelJoinMemberRequest) {
         log.info("채팅 채널 참여 API");
