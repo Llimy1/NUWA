@@ -189,8 +189,9 @@ class DirectChannelControllerTest {
         String lastMessage = "lastMessage";
         LocalDateTime createdAt = LocalDateTime.now();
         boolean hasNext = false;
-        int currentPage = 1;
+        int currentPage = 0;
         int pageSize = 10;
+        int pageElementCount = 5;
 
         DirectChannelResponseDto directChannelResponseDto =
                 DirectChannelResponseDto.builder()
@@ -215,6 +216,7 @@ class DirectChannelControllerTest {
                 .hasNext(hasNext)
                 .currentPage(currentPage)
                 .pageSize(pageSize)
+                .pageElementCount(pageElementCount)
                 .build();
 
         given(directChannelService.directChannelSliceSortByMessageCreateDateDesc(any(), any(), any()))

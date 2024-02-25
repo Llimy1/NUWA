@@ -8,5 +8,7 @@ import java.util.List;
 public record DirectChannelListResponseDto(List<DirectChannelResponseDto> directChannelResponseListDto,
                                            boolean hasNext,
                                            int currentPage,
-                                           int pageSize) {
+                                           int pageSize,
+
+                                           int pageElementCount) {
 }

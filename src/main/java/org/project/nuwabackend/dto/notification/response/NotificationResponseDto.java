@@ -1,6 +1,7 @@
 package org.project.nuwabackend.dto.notification.response;
 
 import lombok.Builder;
+import org.project.nuwabackend.type.NotificationType;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +11,7 @@ public record NotificationResponseDto(Long workSpaceId,
                                       String notificationContent,
                                       String notificationUrl,
                                       Boolean isRead,
-                                      String notificationType,
+                                      NotificationType notificationType,
                                       Long notificationWorkSpaceId,
                                       String notificationWorkSpaceName,
                                       LocalDateTime createdAt) {
