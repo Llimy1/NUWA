@@ -8,6 +8,7 @@ import org.project.nuwabackend.domain.channel.Chat;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.type.FileType;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +32,10 @@ class FileTest {
 
     String channelName = "channelName";
     String fileUrl = "url";
+    String fileName = "fileName";
+    Long fileSize = 1234L;
+    String fileExtension = "zip";
+
 
     Member member;
     WorkSpaceMember workSpaceMember;
@@ -53,9 +58,10 @@ class FileTest {
 
     @Test
     @DisplayName("[Domain] Create File Test")
+    // TODO: 테스트 코드 살리기
     void createFileTest() {
         //given
-        File file = File.createFile(fileUrl, workSpaceMember, workSpace, channel);
+        File file = File.createFile(fileUrl, fileName, fileSize, fileExtension, FileType.FILE, workSpaceMember, workSpace, channel);
 
         //when
         //then
