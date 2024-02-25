@@ -11,6 +11,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
+import org.project.nuwabackend.dto.file.response.TopSevenFileInfoResponseDto;
 import org.project.nuwabackend.type.FileType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -85,6 +86,17 @@ public class FileQueryService {
 
     }
 
+    // 최근 생성 시간 순 7개 파일 조회
+    public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
+        return jpaQueryFactory.select(topSevenFileInfoResponseDto())
+                .from(file)
+                .where(workSpaceIdEq(workSpaceId))
+                .orderBy(file.createdAt.desc())
+                .offset(0)
+                .limit(7)
+                .fetch();
+    }
+
     // FileInfoResponseDto Constructor
     private ConstructorExpression<FileInfoResponseDto> fileConstructorDto() {
         return Projections.constructor(FileInfoResponseDto.class,
@@ -96,6 +108,16 @@ public class FileQueryService {
                 file.fileType.as("fileType"),
                 workSpaceMember.id.as("fileMemberUploadId"),
                 workSpaceMember.name.as("fileMemberUploadName"),
+                file.createdAt);
+    }
+
+    // TopSevenFileInfoResponseDto Constructor
+    private ConstructorExpression<TopSevenFileInfoResponseDto> topSevenFileInfoResponseDto() {
+        return Projections.constructor(TopSevenFileInfoResponseDto.class,
+                file.id.as("fileId"),
+                file.fileName.as("fileName"),
+                file.fileSize.as("fileSize"),
+                file.fileExtension.as("fileExtension"),
                 file.createdAt);
     }
 

@@ -11,6 +11,7 @@ import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
 import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
+import org.project.nuwabackend.dto.file.response.TopSevenFileInfoResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
@@ -42,7 +43,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 public class FileService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
-    private final WorkSpaceRepository workSpaceRepository;
     private final ChannelRepository channelRepository;
     private final FileRepository fileRepository;
 
@@ -133,6 +133,12 @@ public class FileService {
     public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileType fileType, Pageable pageable) {
         log.info("파일 검색");
         return fileQueryService.searchFileName(workSpaceId, fileName, fileExtension, fileType, pageable);
+    }
+
+    // 최근 파일 조회 (7개)
+    public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
+        log.info("최근 생성 시간 순 7개 파일 조회");
+        return fileQueryService.topSevenFileOrderByCreatedAt(workSpaceId);
     }
 
     // 파일 원본 이름

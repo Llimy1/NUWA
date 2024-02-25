@@ -6,6 +6,7 @@ import org.project.nuwabackend.dto.file.request.FileRequestDto;
 import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
+import org.project.nuwabackend.dto.file.response.TopSevenFileInfoResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
@@ -30,6 +31,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.FILE_INFO_RETUR
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_UPLOAD_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_URL_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.SEARCH_FILE_INFO_RETURN_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.TOP_SEVEN_FILE_INFO_RETURN_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -95,5 +97,16 @@ public class FileController {
                         searchFileInfoResponseDtoList);
 
         return ResponseEntity.status(OK).body(searchFileInfoSuccessResponse);
+    }
+
+    @GetMapping("/file/{workSpaceId}/topseven")
+    public ResponseEntity<Object> topSevenFileList(@PathVariable(value = "workSpaceId") Long workSpaceId) {
+        List<TopSevenFileInfoResponseDto> topSevenFileInfoResponseDtoList =
+                fileService.topSevenFileOrderByCreatedAt(workSpaceId);
+
+        GlobalSuccessResponseDto<Object> topSevenFileInfoSuccessResponse =
+                globalService.successResponse(TOP_SEVEN_FILE_INFO_RETURN_SUCCESS.getMessage(),
+                        topSevenFileInfoResponseDtoList);
+        return ResponseEntity.status(OK).body(topSevenFileInfoSuccessResponse);
     }
 }
