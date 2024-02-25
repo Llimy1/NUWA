@@ -1,17 +1,22 @@
 package org.project.nuwabackend.api;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.file.request.FileRequestDto;
-import org.project.nuwabackend.dto.file.response.FileUploadIdResponseDto;
-import org.project.nuwabackend.dto.file.response.FileUrlListResponse;
+import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
+import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
+import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
+import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.s3.FileService;
+import org.project.nuwabackend.type.FileType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,8 +26,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.project.nuwabackend.global.type.SuccessMessage.FILE_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_UPLOAD_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_URL_RETURN_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.SEARCH_FILE_INFO_RETURN_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -36,12 +43,12 @@ public class FileController {
     private final FileService fileService;
     private final GlobalService globalService;
 
-    @PostMapping("/upload")
+    @PostMapping("/file/upload")
     public ResponseEntity<Object> uploadFile(@MemberEmail String email,
                                               @RequestPart(name = "fileList") List<MultipartFile> multipartFileList,
                                               @RequestPart(name = "fileRequestDto") FileRequestDto fileRequestDto) {
         log.info("파일 업로드 API 호출");
-        FileUploadIdResponseDto uploadIdResponse = fileService.upload(email, multipartFileList, fileRequestDto);
+        List<FileUploadResponseDto> uploadIdResponse = fileService.upload(email, multipartFileList, fileRequestDto);
 
         GlobalSuccessResponseDto<Object> uploadImageSuccessResponse =
                 globalService.successResponse(FILE_UPLOAD_SUCCESS.getMessage(), uploadIdResponse);
@@ -49,14 +56,44 @@ public class FileController {
         return ResponseEntity.status(CREATED).body(uploadImageSuccessResponse);
     }
 
-    @GetMapping("/upload")
-    public ResponseEntity<Object> uploadFileUrlList(@RequestParam(required = false) List<Long> fileIdList,
-                                                    @RequestParam(required = false) List<Long> imageIdList) {
+    @GetMapping("/file/upload")
+    public ResponseEntity<Object> uploadFileUrlList(@RequestParam(required = false) List<Long> fileIdList) {
         log.info("직전에 업로드한 파일 URL 조회 API 호출");
-        FileUrlListResponse fileUrlListResponse = fileService.fileUrlList(fileIdList, imageIdList);
+        List<FileUrlResponseDto> fileUrlListResponse = fileService.fileUrlList(fileIdList);
         GlobalSuccessResponseDto<Object> uploadFileUrlListSuccessResponse =
                 globalService.successResponse(FILE_URL_RETURN_SUCCESS.getMessage(), fileUrlListResponse);
 
         return ResponseEntity.status(OK).body(uploadFileUrlListSuccessResponse);
+    }
+
+    @GetMapping("/file/{workSpaceId}")
+    public ResponseEntity<Object> fileOrImageList(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                  @RequestParam(value = "fileExtension", required = false) String fileExtension,
+                                                  @RequestParam(value = "fileType", required = false) FileType fileType,
+                                                  @CustomPageable Pageable pageable) {
+        Slice<FileInfoResponseDto> fileInfoResponseDtoList =
+                fileService.fileList(workSpaceId, fileExtension, fileType, pageable);
+
+        GlobalSuccessResponseDto<Object> fileInfoSuccessResponse =
+                globalService.successResponse(FILE_INFO_RETURN_SUCCESS.getMessage(),
+                fileInfoResponseDtoList);
+
+        return ResponseEntity.status(OK).body(fileInfoSuccessResponse);
+    }
+
+    @GetMapping("/file/search/{workSpaceId}")
+    public ResponseEntity<Object> searchFileList(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                  @RequestParam(value = "fileName", required = false) String fileName,
+                                                  @RequestParam(value = "fileExtension", required = false) String fileExtension,
+                                                  @RequestParam(value = "fileType", required = false) FileType fileType,
+                                                  @CustomPageable Pageable pageable) {
+        Slice<FileInfoResponseDto> searchFileInfoResponseDtoList =
+                fileService.searchFileName(workSpaceId, fileName, fileExtension, fileType, pageable);
+
+        GlobalSuccessResponseDto<Object> searchFileInfoSuccessResponse =
+                globalService.successResponse(SEARCH_FILE_INFO_RETURN_SUCCESS.getMessage(),
+                        searchFileInfoResponseDtoList);
+
+        return ResponseEntity.status(OK).body(searchFileInfoSuccessResponse);
     }
 }

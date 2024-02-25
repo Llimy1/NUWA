@@ -1,8 +1,7 @@
 package org.project.nuwabackend.dto.file.response;
 
-import org.project.nuwabackend.type.S3PathType;
-
 import java.util.List;
+import java.util.Map;
 
-public record FileUploadResultDto(List<String> uploadImageUrlList, List<String> uploadFileUrlList) {
+public record FileUploadResultDto(Map<String, Long> uploadImageUrlList, Map<String, Long> uploadFileUrlList) {
 }
