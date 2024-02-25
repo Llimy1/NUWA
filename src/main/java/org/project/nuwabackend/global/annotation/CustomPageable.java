@@ -11,4 +11,5 @@ public @interface CustomPageable {
     int page() default 0;
     int size() default 10;
     String sortBy() default "createdAt";
+    String sortOrder() default "asc";
 }

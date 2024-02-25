@@ -33,7 +33,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Transactional(readOnly = true)
 public class DirectChannelService {
 
-
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final DirectMessageRepository directMessageRepository;
     private final DirectChannelRepository directChannelRepository;
@@ -48,7 +47,6 @@ public class DirectChannelService {
 
         Long joinMemberId = directChannelRequest.joinMemberId();
         Long workSpaceId = directChannelRequest.workSpaceId();
-        ;
 
         // 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -150,12 +148,14 @@ public class DirectChannelService {
         boolean hasNext = directChannelList.hasNext();
         int currentPage = directChannelList.getNumber();
         int pageSize = directChannelList.getSize();
+        int pageElementCount = directChannelList.getNumberOfElements();
 
         return DirectChannelListResponseDto.builder()
                 .directChannelResponseListDto(sortByCreatedAtResponseList)
                 .hasNext(hasNext)
                 .currentPage(currentPage)
                 .pageSize(pageSize)
+                .pageElementCount(pageElementCount)
                 .build();
     }
 }

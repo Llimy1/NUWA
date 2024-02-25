@@ -264,12 +264,14 @@ class DirectChannelServiceTest {
         boolean hasNext = directSlice.hasNext();
         int currentPage = directSlice.getNumber();
         int pageSize = directSlice.getSize();
+        int pageElementCount = directSlice.getNumberOfElements();
 
         DirectChannelListResponseDto mockDirectChannelListResponseDto = DirectChannelListResponseDto.builder()
                 .directChannelResponseListDto(sortByCreatedAtResponseList)
                 .hasNext(hasNext)
                 .currentPage(currentPage)
                 .pageSize(pageSize)
+                .pageElementCount(pageElementCount)
                 .build();
 
         //when

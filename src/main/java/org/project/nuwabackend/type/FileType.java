@@ -3,7 +3,8 @@ package org.project.nuwabackend.type;
 import lombok.Getter;
 
 @Getter
-public enum NotificationType {
+public enum FileType {
 
-    DIRECT, CHAT, VOICE
+    FILE, IMAGE
+
 }

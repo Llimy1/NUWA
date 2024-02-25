@@ -97,7 +97,7 @@ public class NotificationService {
                                     .notificationId(notification.getId())
                                     .notificationContent(notification.getContent())
                                     .notificationUrl(notification.getUrl())
-                                    .notificationType(notification.getType().getType())
+                                    .notificationType(notification.getType())
                                     .notificationWorkSpaceId(notification.getReceiver().getId())
                                     .notificationWorkSpaceName(notification.getReceiver().getName())
                                     .createdAt(notification.getCreatedAt())

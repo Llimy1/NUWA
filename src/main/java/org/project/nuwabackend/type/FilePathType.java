@@ -3,13 +3,13 @@ package org.project.nuwabackend.type;
 import lombok.Getter;
 
 @Getter
-public enum S3PathType {
+public enum FilePathType {
     IMAGE_PATH("/image"),
     FILE_PATH("/file");
 
     private final String type;
 
-    S3PathType(String type) {
+    FilePathType(String type) {
         this.type = type;
     }
 }
