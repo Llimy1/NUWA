@@ -15,10 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.channel.Channel;
-import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.type.FilePathType;
 import org.project.nuwabackend.type.FileType;
 
 import static jakarta.persistence.FetchType.LAZY;

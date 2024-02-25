@@ -5,6 +5,6 @@ import lombok.Getter;
 @Getter
 public enum FileType {
 
-    FILE, IMAGE;
+    FILE, IMAGE
 
 }

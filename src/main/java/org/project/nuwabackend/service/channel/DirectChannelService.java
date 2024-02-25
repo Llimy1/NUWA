@@ -47,7 +47,6 @@ public class DirectChannelService {
 
         Long joinMemberId = directChannelRequest.joinMemberId();
         Long workSpaceId = directChannelRequest.workSpaceId();
-        ;
 
         // 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
