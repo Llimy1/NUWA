@@ -26,7 +26,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
 public class DirectMessageService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -40,6 +39,7 @@ public class DirectMessageService {
     // 메세지 저장
     @Transactional
     public void saveDirectMessage(DirectMessageResponseDto directMessageResponseDto) {
+        log.info("메세지 저장");
         Long workSpaceId = directMessageResponseDto.workSpaceId();
         String directChannelRoomId = directMessageResponseDto.roomId();
         Long senderId = directMessageResponseDto.senderId();
@@ -61,9 +61,9 @@ public class DirectMessageService {
     }
 
     // 저장된 메세지 가져오기 (Slice)
-    // 날짜 별로 가장 최신 순으로
-    public Slice<DirectMessageResponseDto> directMessageSliceSortByDate(String directChannelRoomId, Pageable pageable) {
-        return directMessageRepository.findDirectMessagesByRoomId(directChannelRoomId, pageable)
+    public Slice<DirectMessageResponseDto> directMessageSliceOrderByCreatedDate(String directChannelRoomId, Pageable pageable) {
+        log.info("저장된 메세지 가져오기");
+        return directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAtDesc(directChannelRoomId, pageable)
                 .map(directMessage -> DirectMessageResponseDto.builder()
                         .workSpaceId(directMessage.getWorkSpaceId())
                         .roomId(directMessage.getRoomId())

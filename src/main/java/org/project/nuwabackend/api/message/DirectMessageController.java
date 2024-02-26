@@ -49,13 +49,13 @@ public class DirectMessageController {
 
     // 채팅 메세지 리스트 반환
     @GetMapping("/api/message/direct/{directChannelRoomId}")
-    public ResponseEntity<Object> directMessageSliceSortByDate(
+    public ResponseEntity<Object> directMessageSliceOrderByCreatedDate(
             @PathVariable("directChannelRoomId") String directChannelRoomId,
             @CustomPageable Pageable pageable) {
 
         log.info("채팅 메세지 리스트 반환 API 호출");
         Slice<DirectMessageResponseDto> directMessageResponseDtoList =
-                directMessageService.directMessageSliceSortByDate(directChannelRoomId, pageable);
+                directMessageService.directMessageSliceOrderByCreatedDate(directChannelRoomId, pageable);
 
         GlobalSuccessResponseDto<Object> directMessageSuccessResponse =
                 globalService.successResponse(
