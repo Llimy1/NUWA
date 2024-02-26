@@ -16,7 +16,6 @@ import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.type.FileType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -38,8 +37,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
-// TODO: API 명세서 수정
 public class FileService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -67,8 +64,8 @@ public class FileService {
 
         FileUploadResultDto fileUploadResultDto = s3Service.upload(dtype, multipartFileList);
 
-        Map<String, Long> fileUrlMap = fileUploadResultDto.uploadFileUrlList();
-        Map<String, Long> imageUrlMap = fileUploadResultDto.uploadImageUrlList();
+        Map<String, Long> fileUrlMap = fileUploadResultDto.uploadFileUrlMap();
+        Map<String, Long> imageUrlMap = fileUploadResultDto.uploadImageUrlMap();
 
         List<File> fileList = new ArrayList<>();
 
@@ -124,18 +121,21 @@ public class FileService {
     }
 
     // 파일 조회
+    // TODO: test code
     public Slice<FileInfoResponseDto> fileList(Long workSpaceId, String fileExtension, FileType fileType, Pageable pageable) {
         log.info("파일 조회");
         return fileQueryService.fileList(workSpaceId, fileExtension, fileType, pageable);
     }
 
     // 파일 검색
+    // TODO: test code
     public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileType fileType, Pageable pageable) {
         log.info("파일 검색");
         return fileQueryService.searchFileName(workSpaceId, fileName, fileExtension, fileType, pageable);
     }
 
     // 최근 파일 조회 (7개)
+    // TODO: test code
     public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
         log.info("최근 생성 시간 순 7개 파일 조회");
         return fileQueryService.topSevenFileOrderByCreatedAt(workSpaceId);

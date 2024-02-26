@@ -33,6 +33,7 @@ import static org.springframework.util.StringUtils.hasText;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+// TODO: test code
 public class FileQueryService {
 
     private final JPAQueryFactory jpaQueryFactory;
@@ -54,10 +55,7 @@ public class FileQueryService {
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
-        boolean hasNext = fileInfoResponseDtoList.size() > pageable.getPageSize();
-        List<FileInfoResponseDto> fileContent = hasNext ? fileInfoResponseDtoList.subList(0, pageable.getPageSize()) : fileInfoResponseDtoList;
-
-        return new SliceImpl<>(fileContent, pageable, hasNext);
+        return convertSlice(fileInfoResponseDtoList, pageable);
     }
 
     // 파일 검색
@@ -79,11 +77,7 @@ public class FileQueryService {
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
-        boolean hasNext = searchFileInfoResponseDtoList.size() > pageable.getPageSize();
-        List<FileInfoResponseDto> fileContent = hasNext ? searchFileInfoResponseDtoList.subList(0, pageable.getPageSize()) : searchFileInfoResponseDtoList;
-
-        return new SliceImpl<>(fileContent, pageable, hasNext);
-
+        return convertSlice(searchFileInfoResponseDtoList, pageable);
     }
 
     // 최근 생성 시간 순 7개 파일 조회
@@ -140,6 +134,15 @@ public class FileQueryService {
         } else {
             throw new IllegalArgumentException(SEARCH_FILE_NAME_NOT_FOUND.getMessage());
         }
+    }
+
+    // Slice로 변환
+    private Slice<FileInfoResponseDto> convertSlice(List<FileInfoResponseDto> fileInfoResponseDtoList, Pageable pageable) {
+        // hasNext 판단
+        boolean hasNext = fileInfoResponseDtoList.size() > pageable.getPageSize();
+        List<FileInfoResponseDto> fileContent = hasNext ? fileInfoResponseDtoList.subList(0, pageable.getPageSize()) : fileInfoResponseDtoList;
+
+        return new SliceImpl<>(fileContent, pageable, hasNext);
     }
 
     // 정렬

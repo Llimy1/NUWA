@@ -4,8 +4,8 @@ package org.project.nuwabackend.api.channel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
-import org.project.nuwabackend.dto.channel.request.ChatChannelRequest;
-import org.project.nuwabackend.dto.channel.response.ChatChannelIdResponse;
+import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.ChatChannelRoomIdResponse;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
@@ -32,15 +32,15 @@ public class ChatChannelController {
 
     @PostMapping("/channel/chat")
     public ResponseEntity<Object> createChatChannel(@MemberEmail String email,
-                                                    @RequestBody ChatChannelRequest chatChannelRequest) {
+                                                    @RequestBody ChatChannelRequestDto chatChannelRequestDto) {
         log.info("채팅 채널 생성 API");
-        Long chatChannelId = chatChannelService.createChatChannel(email, chatChannelRequest);
+        String chatChannelRoomId = chatChannelService.createChatChannel(email, chatChannelRequestDto);
 
-        ChatChannelIdResponse chatChannelIdResponse = new ChatChannelIdResponse(chatChannelId);
+        ChatChannelRoomIdResponse chatChannelRoomIdResponse = new ChatChannelRoomIdResponse(chatChannelRoomId);
         GlobalSuccessResponseDto<Object> createChatChannelSuccessResponse =
                 globalService.successResponse(
                         CREATE_CHAT_CHANNEL_SUCCESS.getMessage(),
-                        chatChannelIdResponse);
+                        chatChannelRoomIdResponse);
 
         return ResponseEntity.status(CREATED).body(createChatChannelSuccessResponse);
     }

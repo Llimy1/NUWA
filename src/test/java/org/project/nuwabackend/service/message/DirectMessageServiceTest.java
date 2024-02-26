@@ -9,17 +9,28 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
+import org.project.nuwabackend.domain.workspace.WorkSpace;
+import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
 import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
-import org.project.nuwabackend.repository.jpa.MemberRepository;
+import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
-import org.project.nuwabackend.service.channel.DirectChannelService;
-import org.springframework.data.mongodb.core.MongoTemplate;
+import org.project.nuwabackend.service.channel.DirectChannelRedisService;
+import org.project.nuwabackend.service.notification.NotificationService;
+import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -30,11 +41,11 @@ class DirectMessageServiceTest {
     @Mock
     DirectMessageRepository directMessageRepository;
     @Mock
-    DirectChannelService directChannelService;
+    DirectChannelRedisService directChannelRedisService;
     @Mock
-    MemberRepository memberRepository;
+    WorkSpaceMemberRepository workSpaceMemberRepository;
     @Mock
-    MongoTemplate mongoTemplate;
+    NotificationService notificationService;
     @Mock
     JwtUtil jwtUtil;
 
@@ -43,8 +54,9 @@ class DirectMessageServiceTest {
 
     DirectMessageRequestDto directMessageRequestDto;
     DirectMessageResponseDto directMessageResponseDto;
-    DirectMessage directMessage;
     Member member;
+    WorkSpace workSpace;
+    WorkSpaceMember workSpaceMember;
 
     @BeforeEach
     void setup() {
@@ -66,7 +78,6 @@ class DirectMessageServiceTest {
 
         directMessageRequestDto = DirectMessageRequestDto.builder()
                 .roomId(directChannelRoomId)
-                .senderId(senderId)
                 .receiverId(receiverId)
                 .content(directChannelContent)
                 .build();
@@ -81,19 +92,27 @@ class DirectMessageServiceTest {
                 .createdAt(LocalDateTime.now())
                 .build();
 
-        directMessage = DirectMessage.createDirectMessage(
-                workSpaceId,
-                directChannelRoomId,
-                senderId,
-                directChannelContent,
-                readCount);
-
         member = Member.createMember(
                 email,
                 password,
                 nickname,
                 phoneNumber);
 
+        String workSpaceName = "nuwa";
+        String workSpaceImage = "N";
+        String workSpaceIntroduce = "개발";
+        workSpace = WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
+
+        String workSpaceMemberName = "abcd";
+        String workSpaceMemberJob = "backend";
+        String workSpaceMemberImage = "B";
+
+        workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
+                workSpaceMemberName,
+                workSpaceMemberJob,
+                workSpaceMemberImage,
+                WorkSpaceMemberType.CREATED,
+                member, workSpace);
     }
 
 
@@ -101,6 +120,15 @@ class DirectMessageServiceTest {
     @DisplayName("[Service] Save Direct Message Test")
     void saveDirectMessageTest() {
         //given
+        DirectMessage directMessage = DirectMessage.createDirectMessage(
+                directMessageResponseDto.workSpaceId(),
+                directMessageResponseDto.roomId(),
+                directMessageResponseDto.senderId(),
+                directMessageResponseDto.senderName(),
+                directMessageResponseDto.content(),
+                directMessageResponseDto.readCount(),
+                LocalDateTime.now());
+
         given(directMessageRepository.save(any()))
                 .willReturn(directMessage);
 
@@ -111,44 +139,55 @@ class DirectMessageServiceTest {
         verify(directMessageRepository).save(directMessage);
     }
 
-    // TODO: 메세지 보내기 테스트 다시 작성
-//    @Test
-//    @DisplayName("[Service] Send Message Test")
-//    void sendMessageTest() {
-//        //given
-//        String accessToken = "accessToken";
-//        String email = "email";
-//        boolean isAllConnected = true;
-//
-//        given(jwtUtil.getEmail(anyString()))
-//                .willReturn(email);
-//
-//        given(memberRepository.findByEmail(anyString()))
-//                .willReturn(Optional.of(member));
-//
-//        given(directChannelService.isAllConnected(anyString()))
-//                .willReturn(isAllConnected);
-//        given(directMessageService.sendMessage(anyString(), any()))
-//                .willReturn(directMessageDto);
-//
-//        //when
-//        DirectMessageDto directMessageDto1 = directMessageService.sendMessage(accessToken, directMessageDto);
-//
-//        //then
-//        assertThat(directMessageDto1.content()).isEqualTo(directMessageDto.content());
-//        assertThat(directMessageDto1.senderId()).isEqualTo(directMessageDto.senderId());
-//        assertThat(directMessageDto1.senderName()).isEqualTo(directMessageDto.senderName());
-//        assertThat(directMessageDto1.roomId()).isEqualTo(directMessageDto.roomId());
-//        assertThat(directMessageDto1.readCount()).isEqualTo(directMessageDto.readCount());
-//
-//    }
+    @Test
+    @DisplayName("[Service] Direct Message Slice Sort By Date")
+    void directMessageSlice() {
+        //given
+        String directChannelRoomId = "directChannelRoomId";
 
-    // TODO: 메세지 조회
-//    @Test
-//    @DisplayName("[Service] Direct Message Slice Sort By Date Test")
-//    void directMessageSliceSortByDateTest() {
-//        //given
-//        //when
-//        //then
-//    }
+        DirectMessage directMessage = DirectMessage.createDirectMessage(
+                directMessageResponseDto.workSpaceId(),
+                directMessageResponseDto.roomId(),
+                directMessageResponseDto.senderId(),
+                directMessageResponseDto.senderName(),
+                directMessageResponseDto.content(),
+                directMessageResponseDto.readCount(),
+                LocalDateTime.now());
+
+        List<DirectMessage> directMessageList =
+                new ArrayList<>(List.of(directMessage));
+
+        PageRequest pageRequest =
+                PageRequest.of(0, 10, Sort.by("createdAt").descending());
+
+        SliceImpl<DirectMessage> directMessageSlice =
+                new SliceImpl<>(directMessageList, pageRequest, false);
+
+        Slice<DirectMessageResponseDto> directMessageResponseDtoSlice = directMessageSlice.map(direct ->
+                DirectMessageResponseDto.builder()
+                        .workSpaceId(direct.getWorkSpaceId())
+                        .roomId(direct.getRoomId())
+                        .senderId(direct.getSenderId())
+                        .senderName(direct.getSenderName())
+                        .content(direct.getContent())
+                        .readCount(direct.getReadCount())
+                        .createdAt(direct.getCreatedAt())
+                        .build());
+
+        given(directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAtDesc(anyString(), any()))
+                .willReturn(directMessageSlice);
+
+        //when
+        Slice<DirectMessageResponseDto> directMessageResponseDtoList =
+                directMessageService.directMessageSliceOrderByCreatedDate(directChannelRoomId, pageRequest);
+
+        //then
+        assertThat(directMessageResponseDtoList.getContent())
+                .containsAll(directMessageResponseDtoSlice.getContent());
+        assertThat(directMessageResponseDtoList.getNumber())
+                .isEqualTo(directMessageResponseDtoSlice.getNumber());
+        assertThat(directMessageResponseDtoList.getSize())
+                .isEqualTo(directMessageResponseDtoSlice.getSize());
+
+    }
 }

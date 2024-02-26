@@ -27,7 +27,6 @@ import static org.project.nuwabackend.type.FilePathType.IMAGE_PATH;
 
 @RequiredArgsConstructor
 @Service
-// TODO: test code
 public class S3Service {
 
     private final AmazonS3 amazonS3;
@@ -35,7 +34,6 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    // TODO: test code & 추후 리팩토링
     // 파일 업로드 (이미지 & 파일)
     public FileUploadResultDto upload(String channelType, List<MultipartFile> multipartFileList) {
 
@@ -95,7 +93,6 @@ public class S3Service {
                     }
                 }
             } catch (IOException e) {
-                // TODO: 예외 처리
                 throw new IllegalStateException(e.getMessage());
             }
         }

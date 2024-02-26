@@ -9,6 +9,5 @@ public record DirectChannelListResponseDto(List<DirectChannelResponseDto> direct
                                            boolean hasNext,
                                            int currentPage,
                                            int pageSize,
-
                                            int pageElementCount) {
 }

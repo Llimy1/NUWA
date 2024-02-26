@@ -1,15 +1,18 @@
-package org.project.nuwabackend.service;
+package org.project.nuwabackend.service.notification;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.notification.Notification;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.dto.notification.response.NotificationListResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.notification.EmitterRepository;
 import org.project.nuwabackend.repository.jpa.notification.NotificationRepository;
 import org.project.nuwabackend.type.NotificationType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -23,15 +26,16 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
 public class NotificationService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final NotificationRepository notificationRepository;
     private final EmitterRepository emitterRepository;
 
+    private final NotificationQueryService notificationQueryService;
+
     // 29분
-    // 확인 필요
+    // TODO: 확인 필요
     private static final Long DEFAULT_TIME_OUT = 1000L * 60 * 29;
 
     // SSE 연결
@@ -75,6 +79,7 @@ public class NotificationService {
     }
 
     // 알림 전송
+    // TODO: test code
     @Transactional
     public void send(String content, String url, NotificationType notificationType, WorkSpaceMember receiver) {
         log.info("sse 알림 전송");
@@ -98,8 +103,8 @@ public class NotificationService {
                                     .notificationContent(notification.getContent())
                                     .notificationUrl(notification.getUrl())
                                     .notificationType(notification.getType())
-                                    .notificationWorkSpaceId(notification.getReceiver().getId())
-                                    .notificationWorkSpaceName(notification.getReceiver().getName())
+                                    .notificationWorkSpaceMemberId(notification.getReceiver().getId())
+                                    .notificationWorkSpaceMemberName(notification.getReceiver().getName())
                                     .createdAt(notification.getCreatedAt())
                                     .build());
                 }
@@ -120,4 +125,8 @@ public class NotificationService {
         }
     }
 
+    // 알림을 최근 시간 순으로 전송
+    public Slice<NotificationListResponseDto> notificationList(String email, Long workSpaceId, Pageable pageable) {
+        return notificationQueryService.notificationListResponseDtoSlice(email, workSpaceId, false, pageable);
+    }
 }

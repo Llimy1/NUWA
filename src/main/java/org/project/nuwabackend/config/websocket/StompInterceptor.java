@@ -28,7 +28,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.JWT_EXPIRED;
 @Component
 public class StompInterceptor implements ChannelInterceptor {
 
-    private final DirectChannelService directChannelService;
     private final DirectChannelRedisService directChannelRedisService;
     private final DirectMessageQueryService directMessageQueryService;
     private final JwtUtil jwtUtil;
@@ -97,12 +96,12 @@ public class StompInterceptor implements ChannelInterceptor {
         directMessageQueryService.updateReadCountZero(directChannelRoomId, email);
     }
 
-    // 채팅 채널 연결시
+    // TODO: 채팅 채널 연결시
     private void connectToChatChannel(StompHeaderAccessor accessor, String email) {
 
     }
 
-    // 음성 채널 연결시
+    // TODO: 음성 채널 연결시
     private void connectToVoiceChannel(StompHeaderAccessor accessor, String email) {
 
     }
@@ -114,6 +113,4 @@ public class StompInterceptor implements ChannelInterceptor {
     private String getRoomId(StompHeaderAccessor accessor) {
         return accessor.getFirstNativeHeader("channelRoomId");
     }
-
-
 }

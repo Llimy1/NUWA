@@ -7,12 +7,11 @@ import org.project.nuwabackend.domain.channel.ChatJoinMember;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
-import org.project.nuwabackend.dto.channel.request.ChatChannelRequest;
+import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
 import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +20,11 @@ import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code 추후 로직 작성 후
 public class ChatChannelService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -36,9 +33,9 @@ public class ChatChannelService {
     private final ChatJoinMemberRepository chatJoinMemberRepository;
 
     // 채팅 채널 생성
-    public Long createChatChannel(String email, ChatChannelRequest chatChannelRequest) {
-        Long workSpaceId = chatChannelRequest.workSpaceId();
-        String chatChannelName = chatChannelRequest.chatChannelName();
+    public String createChatChannel(String email, ChatChannelRequestDto chatChannelRequestDto) {
+        Long workSpaceId = chatChannelRequestDto.workSpaceId();
+        String chatChannelName = chatChannelRequestDto.chatChannelName();
 
         // 해당 워크스페이스에 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -50,7 +47,7 @@ public class ChatChannelService {
 
         Chat saveChatChannel = chatChannelRepository.save(chatChannel);
 
-        return saveChatChannel.getId();
+        return saveChatChannel.getRoomId();
     }
 
     // 채팅 채널 참가

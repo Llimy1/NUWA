@@ -11,10 +11,10 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@Document("direct")
+@Document("chat")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DirectMessage {
+public class ChatMessage {
 
     @Id
     private String id;
@@ -22,39 +22,35 @@ public class DirectMessage {
     @Field(name = "workspace_id")
     private Long workSpaceId;
 
-    @Field(name = "direct_room_id")
+    @Field(name = "chat_room_id")
     private String roomId;
 
-    @Field(name = "direct_sender_id")
+    @Field(name = "chat_sender_id")
     private Long senderId;
 
-    @Field(name = "direct_sender_name")
+    @Field(name = "chat_sender_name")
     private String senderName;
 
-    @Field(name = "direct_content")
+    @Field(name = "chat_content")
     private String content;
-
-    @Field(name = "direct_read_count")
-    private Long readCount;
 
     @Field(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
+    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
-        this.readCount = readCount;
         this.createdAt = createdAt;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DirectMessage that)) return false;
+        if (!(o instanceof ChatMessage that)) return false;
         return Objects.equals(id, that.id);
     }
 
@@ -63,14 +59,13 @@ public class DirectMessage {
         return Objects.hash(id);
     }
 
-    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
-        return DirectMessage.builder()
+    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, LocalDateTime createdAt) {
+        return ChatMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
-                .readCount(readCount)
                 .createdAt(createdAt)
                 .build();
     }
