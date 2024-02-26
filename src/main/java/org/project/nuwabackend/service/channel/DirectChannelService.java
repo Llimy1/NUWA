@@ -81,7 +81,8 @@ public class DirectChannelService {
                 .map(direct -> DirectChannelListResponse.builder()
                         .roomId(direct.getRoomId())
                         .name(direct.getName())
-                        .createMemberId(direct.getCreateMember().getId()).joinMemberId(direct.getJoinMember().getId())
+                        .createMemberId(direct.getCreateMember().getId())
+                        .joinMemberId(direct.getJoinMember().getId())
                         .createMemberName(direct.getCreateMember().getName())
                         .joinMemberName(direct.getJoinMember().getName())
                         .build());
@@ -93,8 +94,6 @@ public class DirectChannelService {
     // 채널 리스트 반환 -> 채팅방 별로 마지막 채팅, 인원, 채팅방 정보, 읽지 않은 채팅 카운트
     public DirectChannelListResponseDto directChannelSliceSortByMessageCreateDateDesc(String email, Long workSpaceId, Pageable pageable) {
         log.info("채팅방 마지막 메세지 순으로 정렬");
-        List<DirectChannelResponseDto> directChannelResponseDtoList = new ArrayList<>();
-
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
@@ -105,8 +104,52 @@ public class DirectChannelService {
                 directChannelRepository.findDirectChannelByCreateMemberIdOrJoinMemberId(findWorkSpaceMemberId, pageable);
 
         // 리스트를 순회하면서 해당 roomId에 맞는 마지막 채팅과 시간 가져오기
-        directChannelList.forEach(direct -> {
+        // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
+        List<DirectChannelResponseDto> directChannelResponseDtoList =
+                directChannelResponseDtoList(directChannelList, email)
+                        .stream()
+                        .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
+                                        Comparator.nullsLast(Comparator.naturalOrder())).reversed()
+                                .thenComparing(DirectChannelResponseDto::getUnReadCount).reversed())
+                        .toList();
 
+        // 페이징 정보 추가
+        return directChannelListResponseDto(directChannelList, directChannelResponseDtoList);
+    }
+
+    // 검색
+    // TODO: test code
+    public DirectChannelListResponseDto searchDirectChannelSliceSortByMessageCreateDateDesc(String email, Long workSpaceId, String workSpaceMemberName, Pageable pageable) {
+        log.info("검색한 채팅방 마지막 메세지 순으로 정렬");
+
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        // 워크스페이스 리스트 가져오기 -> 내가 생성을 한 또는 내가 참여를 한 채팅방 리스트 가져오기 (생성 시간 별로 나눌 필요가 없음 -> 마지막 채팅의 시간 순으로 정렬을 해야함)
+        Slice<Direct> searchDirectChannelList =
+                directChannelRepository.findSearchDirectChannelByCreateMemberIdOrJoinMemberId(findWorkSpaceMemberId, workSpaceMemberName, pageable);
+
+        // 리스트를 순회하면서 해당 roomId에 맞는 마지막 채팅과 시간 가져오기
+        // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
+        List<DirectChannelResponseDto> searchDirectChannelResponseDtoList =
+                directChannelResponseDtoList(searchDirectChannelList, email)
+                        .stream()
+                        .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
+                                        Comparator.nullsLast(Comparator.naturalOrder())).reversed()
+                                .thenComparing(DirectChannelResponseDto::getUnReadCount).reversed())
+                        .toList();
+
+        // 페이징 정보 추가
+        return directChannelListResponseDto(searchDirectChannelList, searchDirectChannelResponseDtoList);
+    }
+
+    // 채팅 정보 넣기
+    private List<DirectChannelResponseDto> directChannelResponseDtoList(Slice<Direct> directSlice, String email) {
+        List<DirectChannelResponseDto> directChannelResponseDtoList = new ArrayList<>();
+
+        directSlice.forEach(direct -> {
             PageRequest pageRequest = PageRequest.of(0, 1);
 
             Long unReadCount = directMessageQueryService.countUnReadMessage(direct.getRoomId(), email);
@@ -137,25 +180,17 @@ public class DirectChannelService {
             directChannelResponseDtoList.add(directChannelResponseDto);
         });
 
-        // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
-        List<DirectChannelResponseDto> sortByCreatedAtResponseList = directChannelResponseDtoList.stream()
-                .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
-                                Comparator.nullsLast(Comparator.naturalOrder())).reversed()
-                        .thenComparing(DirectChannelResponseDto::getUnReadCount).reversed())
-                .toList();
+        return directChannelResponseDtoList;
+    }
 
-        // 페이징 정보 추가
-        boolean hasNext = directChannelList.hasNext();
-        int currentPage = directChannelList.getNumber();
-        int pageSize = directChannelList.getSize();
-        int pageElementCount = directChannelList.getNumberOfElements();
-
+    // 반환 값에 페이징 정보 추가
+    private DirectChannelListResponseDto directChannelListResponseDto(Slice<Direct> directSlice, List<DirectChannelResponseDto> directChannelResponseDtoList) {
         return DirectChannelListResponseDto.builder()
-                .directChannelResponseListDto(sortByCreatedAtResponseList)
-                .hasNext(hasNext)
-                .currentPage(currentPage)
-                .pageSize(pageSize)
-                .pageElementCount(pageElementCount)
+                .directChannelResponseListDto(directChannelResponseDtoList)
+                .hasNext(directSlice.hasNext())
+                .currentPage(directSlice.getNumber())
+                .pageSize(directSlice.getSize())
+                .pageElementCount(directSlice.getNumberOfElements())
                 .build();
     }
 }

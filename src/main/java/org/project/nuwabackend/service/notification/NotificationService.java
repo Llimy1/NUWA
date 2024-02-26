@@ -129,5 +129,4 @@ public class NotificationService {
     public Slice<NotificationListResponseDto> notificationList(String email, Long workSpaceId, Pageable pageable) {
         return notificationQueryService.notificationListResponseDtoSlice(email, workSpaceId, false, pageable);
     }
-
 }

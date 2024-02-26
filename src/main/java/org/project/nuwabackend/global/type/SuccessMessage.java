@@ -17,6 +17,7 @@ public enum SuccessMessage {
     DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS("채널 입장 정보 삭제에 성공 했습니다."),
     DIRECT_CHANNEL_LIST_RETURN_SUCCESS("다이렉트 채널 조회에 성공 했습니다."),
     DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS("마지막 채팅 순 다이렉트 채널 조회에 성공 했습니다."),
+    SEARCH_DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS("검색한 마지막 채팅 순 다이렉트 채널 조회에 성공 했습니다."),
     CREATE_CHAT_CHANNEL_SUCCESS("채팅 채널 생성에 성공 했습니다."),
     CREATE_VOICE_CHANNEL_SUCCESS("음성 채널 생성에 성공 했습니다."),
     JOIN_CHAT_CHANNEL_SUCCESS("채팅 채널 참가에 성공 했습니다."),
