@@ -87,6 +87,7 @@ class S3ServiceTest {
     }
 
     @Test
+    @DisplayName("[Service] Origin Name Test")
     void originFileNameTest() {
         //given
         given(multipartFile.getOriginalFilename())
