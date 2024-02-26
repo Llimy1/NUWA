@@ -118,7 +118,6 @@ public class DirectChannelService {
     }
 
     // 검색
-    // TODO: test code
     public DirectChannelListResponseDto searchDirectChannelSliceSortByMessageCreateDateDesc(String email, Long workSpaceId, String workSpaceMemberName, Pageable pageable) {
         log.info("검색한 채팅방 마지막 메세지 순으로 정렬");
 

@@ -58,7 +58,6 @@ class FileTest {
 
     @Test
     @DisplayName("[Domain] Create File Test")
-    // TODO: 테스트 코드 살리기
     void createFileTest() {
         //given
         File file = File.createFile(fileUrl, fileName, fileSize, fileExtension, FileType.FILE, workSpaceMember, workSpace, channel);
