@@ -29,6 +29,7 @@ public class Chat extends Channel{
         this.createMember = createMember;
     }
 
+    // 채팅 채널 생성
     public static Chat createChatChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Chat.builder()
                 .name(name)
