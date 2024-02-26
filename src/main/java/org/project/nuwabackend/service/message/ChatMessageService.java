@@ -33,7 +33,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
 public class ChatMessageService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -94,6 +93,7 @@ public class ChatMessageService {
 
     // 채팅 저장
     public void saveChatMessage(ChatMessageResponseDto chatMessageResponseDto) {
+        log.info("채팅 메세지 저장");
         Long workSpaceId = chatMessageResponseDto.workSpaceId();
         String roomId = chatMessageResponseDto.roomId();
         Long senderId = chatMessageResponseDto.senderId();
@@ -107,14 +107,10 @@ public class ChatMessageService {
         chatMessageRepository.save(chatMessage);
     }
 
-    private String createChatUrl(String chatChannelRoomId) {
-        return PREFIX_URL + chatChannelRoomId;
-    }
-
     // 저장된 메세지 가져오기 (Slice)
     // 날짜 별로 가장 최신 순으로
     public Slice<ChatMessageListResponseDto> chatMessageSliceSortByDate(String chatChannelRoomId, Pageable pageable) {
-
+        log.info("채팅 메세지 조회");
         return chatMessageRepository.findChatMessageByRoomIdOrderByCreatedAtDesc(chatChannelRoomId, pageable)
                 .map(chatMessage -> ChatMessageListResponseDto.builder()
                         .workSpaceId(chatMessage.getWorkSpaceId())
@@ -124,5 +120,9 @@ public class ChatMessageService {
                         .content(chatMessage.getContent())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());
+    }
+
+    private String createChatUrl(String chatChannelRoomId) {
+        return PREFIX_URL + chatChannelRoomId;
     }
 }

@@ -16,7 +16,6 @@ import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.type.FileType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -67,8 +66,8 @@ public class FileService {
 
         FileUploadResultDto fileUploadResultDto = s3Service.upload(dtype, multipartFileList);
 
-        Map<String, Long> fileUrlMap = fileUploadResultDto.uploadFileUrlList();
-        Map<String, Long> imageUrlMap = fileUploadResultDto.uploadImageUrlList();
+        Map<String, Long> fileUrlMap = fileUploadResultDto.uploadFileUrlMap();
+        Map<String, Long> imageUrlMap = fileUploadResultDto.uploadImageUrlMap();
 
         List<File> fileList = new ArrayList<>();
 

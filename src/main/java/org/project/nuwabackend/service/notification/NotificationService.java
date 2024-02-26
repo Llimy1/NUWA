@@ -26,7 +26,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
 public class NotificationService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -80,6 +79,7 @@ public class NotificationService {
     }
 
     // 알림 전송
+    // TODO: test code
     @Transactional
     public void send(String content, String url, NotificationType notificationType, WorkSpaceMember receiver) {
         log.info("sse 알림 전송");
