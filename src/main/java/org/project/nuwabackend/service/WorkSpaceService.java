@@ -87,10 +87,6 @@ public class WorkSpaceService {
         // 멤버 이메일 중복 확인
         duplicateWorkSpaceMemberEmail(email, workSpaceId);
 
-        // 멤버 이름 중복 확인
-        // TODO: 확인 필요
-//        duplicateWorkSpaceMemberName(workSpaceMemberName);
-
         // 멤버 찾기
         Member findMember = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(MEMBER_ID_NOT_FOUND));
