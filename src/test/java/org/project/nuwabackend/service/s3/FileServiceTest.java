@@ -16,6 +16,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.file.request.FileRequestDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
+import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
 import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
@@ -165,6 +166,39 @@ class FileServiceTest {
         assertThat(uploadList.get(0).fileId()).isEqualTo(fileUploadResponseDtoList.get(0).fileId());
         assertThat(uploadList.get(0).fileType()).isEqualTo(fileUploadResponseDtoList.get(0).fileType());
         assertThat(uploadList).containsAll(fileUploadResponseDtoList);
+    }
 
+    @Test
+    @DisplayName("[Service] File Url List Test")
+    void fileUrlListTest() {
+        //given
+        List<Long> fileIdList = new ArrayList<>(List.of(1L));
+        String url = "url";
+        String fileName = "fileName";
+        Long byteSize = 1024L;
+        String extension = "jpg";
+        File file = File.createFile(url, fileName, byteSize, extension,
+                        FileType.IMAGE, workSpaceMember, workSpace, channel);
+
+        List<File> fileList = new ArrayList<>(List.of(file));
+
+        given(fileRepository.findByIdIn(fileIdList))
+                .willReturn(fileList);
+
+        List<FileUrlResponseDto> fileUrlResponseDtoList = fileList.stream().map(file1 -> FileUrlResponseDto.builder()
+                        .fileId(file.getId())
+                        .fileUrl(file.getUrl())
+                        .fileType(file.getFileType())
+                        .fileCreatedAt(file.getCreatedAt())
+                        .build()).toList();
+        //when
+        List<FileUrlResponseDto> fileUrlResponseDtos =
+                fileService.fileUrlList(fileIdList);
+        //then
+        assertThat(fileUrlResponseDtos).containsAll(fileUrlResponseDtoList);
+        assertThat(fileUrlResponseDtos.get(0).fileId()).isEqualTo(fileUrlResponseDtoList.get(0).fileId());
+        assertThat(fileUrlResponseDtos.get(0).fileUrl()).isEqualTo(fileUrlResponseDtoList.get(0).fileUrl());
+        assertThat(fileUrlResponseDtos.get(0).fileType()).isEqualTo(fileUrlResponseDtoList.get(0).fileType());
+        assertThat(fileUrlResponseDtos.get(0).fileCreatedAt()).isEqualTo(fileUrlResponseDtoList.get(0).fileCreatedAt());
     }
 }

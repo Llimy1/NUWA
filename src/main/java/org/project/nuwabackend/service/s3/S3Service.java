@@ -93,7 +93,6 @@ public class S3Service {
                     }
                 }
             } catch (IOException e) {
-                // TODO: 예외 처리
                 throw new IllegalStateException(e.getMessage());
             }
         }

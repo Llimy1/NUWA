@@ -12,6 +12,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
@@ -48,8 +49,11 @@ class WorkSpaceServiceTest {
     private WorkSpaceMemberRequestDto workSpaceMemberRequestDto;
     private Member member;
     private WorkSpace workSpace;
+    private WorkSpaceMember workSpaceMember;
 
     String email = "abcd@gmail.com";
+    Long workspaceId = 1L;
+
 
     @BeforeEach
     void setup() {
@@ -66,7 +70,6 @@ class WorkSpaceServiceTest {
         String workSpaceMemberName = "workSpaceMemberName";
         String workSpaceMemberJob = "workSpaceMemberJob";
         String workSpaceMemberImage = "workSpaceMemberImage";
-        Long workspaceId = 1L;
 
 
         workSpaceRequestDto =
@@ -81,6 +84,12 @@ class WorkSpaceServiceTest {
 
         workSpace = WorkSpace.createWorkSpace(workSpaceRequestDto.workSpaceName(),
                 workSpaceRequestDto.workSpaceImage(), workSpaceRequestDto.workSpaceIntroduce());
+
+        workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
+                workSpaceMemberName,
+                workSpaceMemberJob,
+                workSpaceMemberImage,
+                WorkSpaceMemberType.CREATED, member, workSpace);
     }
 
     @Test
@@ -160,5 +169,36 @@ class WorkSpaceServiceTest {
         //then
         assertThatThrownBy(() -> workSpaceService.duplicateWorkSpaceMemberEmail(email, workSpace.getId()))
                 .isInstanceOf(DuplicationException.class);
+    }
+
+    @Test
+    @DisplayName("[Service] Individual WorkSpace Member Info Test")
+    void individualWorkSpaceMemberInfoTest() {
+        //given
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
+                .willReturn(Optional.of(workSpaceMember));
+
+        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfo = IndividualWorkSpaceMemberInfoResponse.builder()
+                .id(workSpaceMember.getId())
+                .name(workSpaceMember.getName())
+                .image(workSpaceMember.getImage())
+                .job(workSpaceMember.getJob())
+                .phoneNumber(member.getPhoneNumber())
+                .email(member.getEmail())
+                .build();
+        //when
+        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfoResponse =
+                workSpaceService.individualWorkSpaceMemberInfo(email, workspaceId);
+
+        //then
+        assertThat(individualWorkSpaceMemberInfoResponse.id()).isEqualTo(individualWorkSpaceMemberInfo.id());
+        assertThat(individualWorkSpaceMemberInfoResponse.name()).isEqualTo(individualWorkSpaceMemberInfo.name());
+        assertThat(individualWorkSpaceMemberInfoResponse.job()).isEqualTo(individualWorkSpaceMemberInfo.job());
+        assertThat(individualWorkSpaceMemberInfoResponse.image()).isEqualTo(individualWorkSpaceMemberInfo.image());
+        assertThat(individualWorkSpaceMemberInfoResponse.email()).isEqualTo(individualWorkSpaceMemberInfo.email());
+        assertThat(individualWorkSpaceMemberInfoResponse.phoneNumber()).isEqualTo(individualWorkSpaceMemberInfo.phoneNumber());
+
+
+
     }
 }

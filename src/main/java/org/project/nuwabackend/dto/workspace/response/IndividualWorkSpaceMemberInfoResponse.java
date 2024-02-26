@@ -4,7 +4,8 @@ import lombok.Builder;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 
 @Builder
-public record IndividualWorkSpaceMemberInfoResponse(String name,
+public record IndividualWorkSpaceMemberInfoResponse(Long id,
+                                                    String name,
                                                     String job,
                                                     String image,
                                                     String email,

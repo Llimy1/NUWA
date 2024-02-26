@@ -107,7 +107,6 @@ public class FileService {
     }
 
     // 이미지와 파일 url 조회
-    // TODO: test code
     public List<FileUrlResponseDto> fileUrlList(List<Long> fileIdList) {
 
         List<File> fileList = fileRepository.findByIdIn(fileIdList);

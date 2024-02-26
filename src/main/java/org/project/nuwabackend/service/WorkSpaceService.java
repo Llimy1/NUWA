@@ -176,6 +176,7 @@ public class WorkSpaceService {
 
         // WorkSpaceMemberInfoResponse list dto로 변환
         return workSpaceMembers.stream().map(member -> WorkSpaceMemberInfoResponse.builder()
+                        .id(member.getId())
                         .name(member.getName())
                         .job(member.getJob())
                         .image(member.getImage())
@@ -187,7 +188,6 @@ public class WorkSpaceService {
     }
 
     // 개인 별 프로필 조회
-    // TODO: test code
     public IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfo(String email, Long workSpaceId) {
 
         // 워크스페이스 멤버 찾기
@@ -199,6 +199,7 @@ public class WorkSpaceService {
         String phoneNumber = findMember.getPhoneNumber();
 
         return IndividualWorkSpaceMemberInfoResponse.builder()
+                .id(findWorkSpaceMember.getId())
                 .name(findWorkSpaceMember.getName())
                 .job(findWorkSpaceMember.getJob())
                 .image(findWorkSpaceMember.getImage())
