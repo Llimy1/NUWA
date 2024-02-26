@@ -7,6 +7,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.global.exception.DuplicationException;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
@@ -186,5 +188,28 @@ public class WorkSpaceService {
                         .nickname(member.getMember().getNickname())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    // 개인 별 프로필 조회
+    // TODO: test code
+    public IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfo(String email, Long workSpaceId) {
+
+        // 워크스페이스 멤버 찾기
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Member findMember = findWorkSpaceMember.getMember();
+
+        String phoneNumber = findMember.getPhoneNumber();
+
+        return IndividualWorkSpaceMemberInfoResponse.builder()
+                .name(findWorkSpaceMember.getName())
+                .job(findWorkSpaceMember.getJob())
+                .image(findWorkSpaceMember.getImage())
+                .phoneNumber(phoneNumber)
+                .email(email)
+                .build();
+
+
     }
 }

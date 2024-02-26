@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
@@ -65,7 +67,8 @@ public class WorkSpaceController {
 
         return ResponseEntity.status(OK).body(joinWorkSpaceMemberSuccessResponse);
     }
-     // 본인이 속한 워크스페이스 조회
+
+    // 본인이 속한 워크스페이스 조회
     @GetMapping("/workspaces")
     public ResponseEntity<Object> getWorkspaces(@MemberEmail String email) {
         log.info("워크스페이스 조회 API 호출");
@@ -110,6 +113,20 @@ public class WorkSpaceController {
         return ResponseEntity.status(OK).body(workSpaceUseSuccessResponse);
     }
 
+    // TODO: test code
+    @GetMapping("/workspace/{workSpaceId}/member")
+    public ResponseEntity<Object> individualWorkSpaceMemberInfo(
+            @MemberEmail String email,
+            @PathVariable(value = "workSpaceId") Long workSpaceId) {
 
+        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfoResponse =
+                workSpaceService.individualWorkSpaceMemberInfo(email, workSpaceId);
 
+        GlobalSuccessResponseDto<Object> individualWorkSpaceMemberInfoSuccessResponse =
+                globalService.successResponse(
+                INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS.getMessage(),
+                individualWorkSpaceMemberInfoResponse);
+
+        return ResponseEntity.status(OK).body(individualWorkSpaceMemberInfoSuccessResponse);
+    }
 }

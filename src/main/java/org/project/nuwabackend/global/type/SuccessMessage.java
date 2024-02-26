@@ -31,6 +31,7 @@ public enum SuccessMessage {
     READ_MY_WORK_SPACE_SUCCESS("워크스페이스 조회 성공 했습니다."),
     JOIN_WORK_SPACE_SUCCESS("워크스페이스 참가에 성공 했습니다."),
     WORK_SPACE_USE_SUCCESS("사용 가능한 워크스페이스 이름입니다."),
+    INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS("개인 별 프로필 조회에 성공 했습니다."),
     NOTIFICATION_LIST_RETURN_SUCCESS("알림 정보 조회에 성공 했습니다.");
 
     private final String message;
