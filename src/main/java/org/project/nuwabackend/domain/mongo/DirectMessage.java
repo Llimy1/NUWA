@@ -5,16 +5,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.project.nuwabackend.domain.base.BaseTimeMongo;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Document("direct")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DirectMessage extends BaseTimeMongo {
+public class DirectMessage {
 
     @Id
     private String id;
@@ -28,19 +28,27 @@ public class DirectMessage extends BaseTimeMongo {
     @Field(name = "direct_sender_id")
     private Long senderId;
 
+    @Field(name = "direct_sender_name")
+    private String senderName;
+
     @Field(name = "direct_content")
     private String content;
 
     @Field(name = "direct_read_count")
     private Long readCount;
 
+    @Field(name = "created_at")
+    private LocalDateTime createdAt;
+
     @Builder
-    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String content, Long readCount) {
+    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
+        this.senderName = senderName;
         this.content = content;
         this.readCount = readCount;
+        this.createdAt = createdAt;
     }
 
     @Override
@@ -55,13 +63,15 @@ public class DirectMessage extends BaseTimeMongo {
         return Objects.hash(id);
     }
 
-    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String content, Long readCount) {
+    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
         return DirectMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
+                .senderName(senderName)
                 .content(content)
                 .readCount(readCount)
+                .createdAt(createdAt)
                 .build();
     }
 }

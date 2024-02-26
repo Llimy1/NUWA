@@ -66,7 +66,6 @@ class DirectMessageServiceTest {
 
         directMessageRequestDto = DirectMessageRequestDto.builder()
                 .roomId(directChannelRoomId)
-                .senderId(senderId)
                 .receiverId(receiverId)
                 .content(directChannelContent)
                 .build();
@@ -85,8 +84,10 @@ class DirectMessageServiceTest {
                 workSpaceId,
                 directChannelRoomId,
                 senderId,
+                senderName,
                 directChannelContent,
-                readCount);
+                readCount,
+                LocalDateTime.now());
 
         member = Member.createMember(
                 email,

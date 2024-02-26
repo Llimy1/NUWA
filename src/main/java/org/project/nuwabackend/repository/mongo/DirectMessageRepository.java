@@ -12,7 +12,4 @@ public interface DirectMessageRepository extends MongoRepository<DirectMessage, 
     Slice<DirectMessage> findDirectMessagesByRoomId(String roomId, Pageable pageable);
 
     Slice<DirectMessage> findDirectMessageByRoomIdOrderByCreatedAtDesc(String roomId, Pageable pageable);
-
-    Optional<DirectMessage> findFirstByRoomIdOrderByCreatedAtDesc(String roomId);
-
 }

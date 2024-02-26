@@ -3,30 +3,22 @@ package org.project.nuwabackend.service.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
-import org.project.nuwabackend.domain.redis.DirectChannelRedis;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
 import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
-import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
-import org.project.nuwabackend.service.NotificationService;
+import org.project.nuwabackend.service.notification.NotificationService;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.channel.DirectChannelRedisService;
-import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.project.nuwabackend.type.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
@@ -47,19 +39,23 @@ public class DirectMessageService {
 
     // 메세지 저장
     @Transactional
-    public void saveDirectMessage(DirectMessageResponseDto DirectMessageResponseDto) {
-        Long workSpaceId = DirectMessageResponseDto.workSpaceId();
-        String directChannelRoomId = DirectMessageResponseDto.roomId();
-        Long senderId = DirectMessageResponseDto.senderId();
-        String directContent = DirectMessageResponseDto.content();
-        Long readCount = DirectMessageResponseDto.readCount();
+    public void saveDirectMessage(DirectMessageResponseDto directMessageResponseDto) {
+        Long workSpaceId = directMessageResponseDto.workSpaceId();
+        String directChannelRoomId = directMessageResponseDto.roomId();
+        Long senderId = directMessageResponseDto.senderId();
+        String senderName = directMessageResponseDto.senderName();
+        String directContent = directMessageResponseDto.content();
+        Long readCount = directMessageResponseDto.readCount();
+        LocalDateTime createdAt = directMessageResponseDto.createdAt();
 
         DirectMessage directMessage = DirectMessage.createDirectMessage(
                 workSpaceId,
                 directChannelRoomId,
                 senderId,
+                senderName,
                 directContent,
-                readCount);
+                readCount,
+                createdAt);
 
         directMessageRepository.save(directMessage);
     }
@@ -71,6 +67,8 @@ public class DirectMessageService {
                 .map(directMessage -> DirectMessageResponseDto.builder()
                         .workSpaceId(directMessage.getWorkSpaceId())
                         .roomId(directMessage.getRoomId())
+                        .senderId(directMessage.getSenderId())
+                        .senderName(directMessage.getSenderName())
                         .content(directMessage.getContent())
                         .readCount(directMessage.getReadCount())
                         .createdAt(directMessage.getCreatedAt())
@@ -78,6 +76,7 @@ public class DirectMessageService {
     }
 
     // 메세지 보내기
+    @Transactional
     public DirectMessageResponseDto sendMessage(String accessToken, DirectMessageRequestDto directMessageRequestDto) {
 
         log.info("메세지 보내기");

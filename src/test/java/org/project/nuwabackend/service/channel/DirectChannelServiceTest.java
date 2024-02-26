@@ -202,7 +202,7 @@ class DirectChannelServiceTest {
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
 
-        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), content1, readCount);
+        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, LocalDateTime.now());
 
         ReflectionTestUtils.setField(directMessage1, "id", UUID.randomUUID().toString());
         ReflectionTestUtils.setField(directMessage1, "createdAt", LocalDateTime.now());
