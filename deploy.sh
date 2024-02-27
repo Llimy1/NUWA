@@ -65,7 +65,7 @@ if [ -z $IS_GREEN ]; then # 현재 blue가 실행중이면 green으로 전환
         sudo nginx -s reload
 
         echo "5. Blue container down"
-        docker-compose stop blue
+        sudo docker-compose stop blue
     else
         rollback "green"
     fi
@@ -84,7 +84,7 @@ else
         sudo nginx -s reload
 
         echo "5. Green container down"
-        docker-compose stop green
+        sudo docker-compose stop green
     else
         rollback "blue"
     fi
