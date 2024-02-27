@@ -33,7 +33,7 @@ import static org.springframework.util.StringUtils.hasText;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
+// TODO: integrated test code
 public class FileQueryService {
 
     private final JPAQueryFactory jpaQueryFactory;

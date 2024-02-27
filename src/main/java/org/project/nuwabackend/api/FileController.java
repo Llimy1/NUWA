@@ -39,7 +39,6 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-// TODO: test code
 public class FileController {
 
     private final FileService fileService;
@@ -52,10 +51,10 @@ public class FileController {
         log.info("파일 업로드 API 호출");
         List<FileUploadResponseDto> uploadIdResponse = fileService.upload(email, multipartFileList, fileRequestDto);
 
-        GlobalSuccessResponseDto<Object> uploadImageSuccessResponse =
+        GlobalSuccessResponseDto<Object> uploadFileSuccessResponse =
                 globalService.successResponse(FILE_UPLOAD_SUCCESS.getMessage(), uploadIdResponse);
 
-        return ResponseEntity.status(CREATED).body(uploadImageSuccessResponse);
+        return ResponseEntity.status(CREATED).body(uploadFileSuccessResponse);
     }
 
     @GetMapping("/file/upload")
@@ -73,6 +72,7 @@ public class FileController {
                                                   @RequestParam(value = "fileExtension", required = false) String fileExtension,
                                                   @RequestParam(value = "fileType", required = false) FileType fileType,
                                                   @CustomPageable Pageable pageable) {
+        log.info("파일 조회 API 호출");
         Slice<FileInfoResponseDto> fileInfoResponseDtoList =
                 fileService.fileList(workSpaceId, fileExtension, fileType, pageable);
 
@@ -89,6 +89,7 @@ public class FileController {
                                                   @RequestParam(value = "fileExtension", required = false) String fileExtension,
                                                   @RequestParam(value = "fileType", required = false) FileType fileType,
                                                   @CustomPageable Pageable pageable) {
+        log.info("파일 검색 API 호출");
         Slice<FileInfoResponseDto> searchFileInfoResponseDtoList =
                 fileService.searchFileName(workSpaceId, fileName, fileExtension, fileType, pageable);
 
@@ -101,6 +102,7 @@ public class FileController {
 
     @GetMapping("/file/{workSpaceId}/topseven")
     public ResponseEntity<Object> topSevenFileList(@PathVariable(value = "workSpaceId") Long workSpaceId) {
+        log.info("파일 생성 시간 순 최상단 7개 조회");
         List<TopSevenFileInfoResponseDto> topSevenFileInfoResponseDtoList =
                 fileService.topSevenFileOrderByCreatedAt(workSpaceId);
 

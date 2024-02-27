@@ -5,7 +5,8 @@ spring:
       - sentry
       - jwt
       - oauth
-    active: test
+      - aws
+    active: local
 
   jpa:
     hibernate:

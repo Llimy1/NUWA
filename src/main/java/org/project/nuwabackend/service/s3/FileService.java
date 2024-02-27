@@ -121,21 +121,18 @@ public class FileService {
     }
 
     // 파일 조회
-    // TODO: test code
     public Slice<FileInfoResponseDto> fileList(Long workSpaceId, String fileExtension, FileType fileType, Pageable pageable) {
         log.info("파일 조회");
         return fileQueryService.fileList(workSpaceId, fileExtension, fileType, pageable);
     }
 
     // 파일 검색
-    // TODO: test code
     public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileType fileType, Pageable pageable) {
         log.info("파일 검색");
         return fileQueryService.searchFileName(workSpaceId, fileName, fileExtension, fileType, pageable);
     }
 
     // 최근 파일 조회 (7개)
-    // TODO: test code
     public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
         log.info("최근 생성 시간 순 7개 파일 조회");
         return fileQueryService.topSevenFileOrderByCreatedAt(workSpaceId);

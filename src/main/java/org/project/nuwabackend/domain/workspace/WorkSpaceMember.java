@@ -82,4 +82,11 @@ public class WorkSpaceMember extends BaseTimeJpa {
                 .workSpace(workSpace)
                 .build();
     }
+
+    // 워크스페이스 멤버 정보 편집
+    public void updateWorkSpaceMember(String name, String job, String image) {
+        this.name = name;
+        this.job = job;
+        this.image = image;
+    }
 }
