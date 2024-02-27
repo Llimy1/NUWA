@@ -18,6 +18,7 @@ public enum ErrorMessage {
     WORK_SPACE_NOT_FOUND("워크스페이스가 존재하지 않습니다."),
     DUPLICATE_WORK_SPACE_NAME("워크스페이스 이름이 중복입니다."),
     WORK_SPACE_MEMBER_NOT_FOUND("해당 워크스페이스에 멤버가 존재하지 않습니다."),
+    WORK_SPACE_NOT_CREATED_MEMBER("해당 워크스페이스를 생성한 멤버가 아닙니다."),
     DIRECT_CHANNEL_NOT_FOUND("다이렉트 채널을 해당 멤버들로 찾을 수 없습니다."),
     REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 해당 정보가 존재하지 않습니다."),
     MEMBER_ID_NOT_FOUND("멤버가 존재하지 않습니다."),

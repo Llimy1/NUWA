@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
@@ -31,6 +32,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -211,6 +213,30 @@ class WorkSpaceControllerTest {
         //then
         mvc.perform(get("/api/workspace/{workSpaceId}/member", 1L)
                 .param("email", "abcd@gmail.com"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("[API] Update WorkSpace Test")
+    void updateWorkSpaceTest() throws Exception {
+        //given
+        String updateName = "updateName";
+        String updateImage = "updateImage";
+        String email = "abcd@gmail.com";
+        Long workSpaceId = 1L;
+
+        WorkSpaceUpdateRequestDto workSpaceUpdateRequestDto =
+                new WorkSpaceUpdateRequestDto(updateName, updateImage);
+
+        String body = objectMapper.writeValueAsString(workSpaceUpdateRequestDto);
+
+        //when
+        //then
+        mvc.perform(patch("/api/workspace/{workSpaceId}", workSpaceId)
+                .param("email", email)
+                .content(body)
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print());
     }

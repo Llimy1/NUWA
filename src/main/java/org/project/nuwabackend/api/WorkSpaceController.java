@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
@@ -15,6 +16,7 @@ import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.WorkSpaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +30,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPA
 import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -127,5 +130,19 @@ public class WorkSpaceController {
                 individualWorkSpaceMemberInfoResponse);
 
         return ResponseEntity.status(OK).body(individualWorkSpaceMemberInfoSuccessResponse);
+    }
+
+    // 워크스페이스 정보 편집
+    @PatchMapping("/workspace/{workSpaceId}")
+    public ResponseEntity<Object> updateWorkSpace(@MemberEmail String email,
+                                                  @PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                  @RequestBody WorkSpaceUpdateRequestDto workSpaceUpdateRequestDto) {
+        log.info("워크스페이스 정보 편집 API 호출");
+        workSpaceService.updateWorkSpace(email, workSpaceId, workSpaceUpdateRequestDto);
+
+        GlobalSuccessResponseDto<Object> workSpaceUpdateSuccessResponse =
+                globalService.successResponse(WORK_SPACE_INFO_UPDATE_SUCCESS.getMessage(), null);
+
+        return ResponseEntity.status(OK).body(workSpaceUpdateSuccessResponse);
     }
 }

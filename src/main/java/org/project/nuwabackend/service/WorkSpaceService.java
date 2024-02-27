@@ -7,6 +7,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberInfoResponse;
@@ -27,7 +28,9 @@ import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
+import static org.project.nuwabackend.type.WorkSpaceMemberType.CREATED;
 
 @Slf4j
 @Service
@@ -67,7 +70,7 @@ public class WorkSpaceService {
 
         // 워크스페이스 멤버 생성 (Create)
         WorkSpaceMember createWorkSpaceMember = WorkSpaceMember.createWorkSpaceMember(workSpaceMemberName, workSpaceMemberJob,
-                workSpaceMemberImage, WorkSpaceMemberType.CREATED,
+                workSpaceMemberImage, CREATED,
                 findMember, saveWorkSpace);
 
         workSpaceMemberRepository.save(createWorkSpaceMember);
@@ -189,7 +192,7 @@ public class WorkSpaceService {
 
     // 개인 별 프로필 조회
     public IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfo(String email, Long workSpaceId) {
-
+        log.info("개인 별 프로필 조회");
         // 워크스페이스 멤버 찾기
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
@@ -206,7 +209,22 @@ public class WorkSpaceService {
                 .phoneNumber(phoneNumber)
                 .email(email)
                 .build();
+    }
 
+    // 워크스페이스 정보 편집
+    @Transactional
+    public void updateWorkSpace(String email, Long workSpaceId, WorkSpaceUpdateRequestDto workSpaceUpdateRequestDto) {
+        log.info("워크스페이스 편집");
+        String updateName = workSpaceUpdateRequestDto.workSpaceName();
+        String updateImage = workSpaceUpdateRequestDto.workSpaceImage();
 
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        if (!findWorkSpaceMember.getWorkSpaceMemberType().equals(CREATED)) throw new IllegalArgumentException(WORK_SPACE_NOT_CREATED_MEMBER.getMessage());
+
+        WorkSpace findWorkSpace = findWorkSpaceMember.getWorkSpace();
+
+        findWorkSpace.updateWorkSpace(updateName, updateImage);
     }
 }

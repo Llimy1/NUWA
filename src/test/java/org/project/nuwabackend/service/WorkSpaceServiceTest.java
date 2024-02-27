@@ -12,6 +12,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
@@ -27,8 +28,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
 
 
 @DisplayName("[Service] WorkSpace Service Test")
@@ -197,5 +200,50 @@ class WorkSpaceServiceTest {
         assertThat(individualWorkSpaceMemberInfoResponse.image()).isEqualTo(individualWorkSpaceMemberInfo.image());
         assertThat(individualWorkSpaceMemberInfoResponse.email()).isEqualTo(individualWorkSpaceMemberInfo.email());
         assertThat(individualWorkSpaceMemberInfoResponse.phoneNumber()).isEqualTo(individualWorkSpaceMemberInfo.phoneNumber());
+    }
+
+    @Test
+    @DisplayName("[Service] Update WorkSpace Test")
+    void updateWorkSpaceTest() {
+        //given
+
+        String updateWorkSpaceName = "updateWorkSpaceName";
+        String updateWorkSpaceImage = "updateWorkSpaceImage";
+
+        WorkSpaceUpdateRequestDto workSpaceUpdateRequestDto = new WorkSpaceUpdateRequestDto(updateWorkSpaceName, updateWorkSpaceImage);
+
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workspaceId))
+                .willReturn(Optional.of(workSpaceMember));
+        //when
+        workSpaceService.updateWorkSpace(email, workspaceId, workSpaceUpdateRequestDto);
+
+        //then
+        System.out.println(workSpace.getName());
+        System.out.println(workSpace.getImage());
+        assertThat(workSpace.getName()).isEqualTo(updateWorkSpaceName);
+        assertThat(workSpace.getImage()).isEqualTo(updateWorkSpaceImage);
+    }
+
+    @Test
+    @DisplayName("[Service] Update WorkSpace Fail Test")
+    void updateWorkSpaceFailTest() {
+        //given
+        String updateWorkSpaceName = "updateWorkSpaceName";
+        String updateWorkSpaceImage = "updateWorkSpaceImage";
+
+        WorkSpaceUpdateRequestDto workSpaceUpdateRequestDto = new WorkSpaceUpdateRequestDto(updateWorkSpaceName, updateWorkSpaceImage);
+
+
+        WorkSpaceMember joinWorkSpaceMember =
+                WorkSpaceMember.joinWorkSpaceMember("name", "N", WorkSpaceMemberType.JOIN, member, workSpace);
+
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
+                .willReturn(Optional.of(joinWorkSpaceMember));
+
+        //when
+        //then
+        assertThatThrownBy(() -> workSpaceService.updateWorkSpace(email, workspaceId, workSpaceUpdateRequestDto))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(WORK_SPACE_NOT_CREATED_MEMBER.getMessage());
     }
 }
