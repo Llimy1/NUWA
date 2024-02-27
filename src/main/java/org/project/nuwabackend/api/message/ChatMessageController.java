@@ -26,7 +26,6 @@ import static org.springframework.http.HttpStatus.OK;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-// TODO: test code
 public class ChatMessageController {
 
     private final SimpMessagingTemplate template;
@@ -58,11 +57,11 @@ public class ChatMessageController {
         Slice<ChatMessageListResponseDto> chatMessageListResponseDtoSlice =
                 chatMessageService.chatMessageSliceSortByDate(chatChannelRoomId, pageable);
 
-        GlobalSuccessResponseDto<Object> directMessageSuccessResponse =
+        GlobalSuccessResponseDto<Object> chatMessageSuccessResponse =
                 globalService.successResponse(
                         CHAT_MESSAGE_LIST_RETURN_SUCCESS.getMessage(),
                         chatMessageListResponseDtoSlice);
 
-        return ResponseEntity.status(OK).body(directMessageSuccessResponse);
+        return ResponseEntity.status(OK).body(chatMessageSuccessResponse);
     }
 }

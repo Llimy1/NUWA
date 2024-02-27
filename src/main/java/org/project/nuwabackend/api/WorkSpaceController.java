@@ -113,7 +113,6 @@ public class WorkSpaceController {
         return ResponseEntity.status(OK).body(workSpaceUseSuccessResponse);
     }
 
-    // TODO: test code
     @GetMapping("/workspace/{workSpaceId}/member")
     public ResponseEntity<Object> individualWorkSpaceMemberInfo(
             @MemberEmail String email,

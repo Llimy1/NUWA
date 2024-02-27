@@ -30,5 +30,20 @@ class WorkSpaceTest {
         assertThat(workSpace.getIntroduce()).isEqualTo(workSpaceIntroduce);
     }
 
+    @Test
+    @DisplayName("[Domain] Update WorkSpace")
+    void updateWorkSpace() {
+        //given
+        String updateWorkSpaceName = "newWorkSpaceName";
+        String updateWorkSpaceImage = "newWorkSpaceImage";
 
+        WorkSpace workSpace = WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
+
+        //when
+        workSpace.updateWorkSpace(updateWorkSpaceName, updateWorkSpaceImage);
+
+        //then
+        assertThat(workSpace.getName()).isEqualTo(updateWorkSpaceName);
+        assertThat(workSpace.getImage()).isEqualTo(updateWorkSpaceImage);
+    }
 }

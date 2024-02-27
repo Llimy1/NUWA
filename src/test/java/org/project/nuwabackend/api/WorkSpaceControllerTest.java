@@ -11,11 +11,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.WorkSpaceService;
+import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -171,5 +174,45 @@ class WorkSpaceControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("[API] Individual WorkSpace Member Info Test")
+    void individualWorkSpaceMemberInfoTest() throws Exception {
+        //given
+        Long id = 1L;
+        String name = "홍길동";
+        String job = "백엔드";
+        String image = "N";
+        String email = "abcd@gmail.com";
+        String phoneNumber = "01000000000";
+
+        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfoResponse =
+                IndividualWorkSpaceMemberInfoResponse.builder()
+                .id(id)
+                .name(name)
+                .job(job)
+                .image(image)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .workSpaceMemberType(WorkSpaceMemberType.CREATED)
+                .build();
+        given(workSpaceService.individualWorkSpaceMemberInfo(any(), any()))
+                .willReturn(individualWorkSpaceMemberInfoResponse);
+
+        GlobalSuccessResponseDto<Object> individualWorkSpaceMemberInfoSuccessResponse =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS.getMessage())
+                        .data(individualWorkSpaceMemberInfoResponse)
+                        .build();
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(individualWorkSpaceMemberInfoSuccessResponse);
+
+        //when
+        //then
+        mvc.perform(get("/api/workspace/{workSpaceId}/member", 1L)
+                .param("email", "abcd@gmail.com"))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 
 }

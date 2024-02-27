@@ -197,8 +197,5 @@ class WorkSpaceServiceTest {
         assertThat(individualWorkSpaceMemberInfoResponse.image()).isEqualTo(individualWorkSpaceMemberInfo.image());
         assertThat(individualWorkSpaceMemberInfoResponse.email()).isEqualTo(individualWorkSpaceMemberInfo.email());
         assertThat(individualWorkSpaceMemberInfoResponse.phoneNumber()).isEqualTo(individualWorkSpaceMemberInfo.phoneNumber());
-
-
-
     }
 }
