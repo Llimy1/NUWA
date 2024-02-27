@@ -11,6 +11,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
@@ -218,8 +219,6 @@ class WorkSpaceServiceTest {
         workSpaceService.updateWorkSpace(email, workspaceId, workSpaceUpdateRequestDto);
 
         //then
-        System.out.println(workSpace.getName());
-        System.out.println(workSpace.getImage());
         assertThat(workSpace.getName()).isEqualTo(updateWorkSpaceName);
         assertThat(workSpace.getImage()).isEqualTo(updateWorkSpaceImage);
     }
@@ -245,5 +244,28 @@ class WorkSpaceServiceTest {
         assertThatThrownBy(() -> workSpaceService.updateWorkSpace(email, workspaceId, workSpaceUpdateRequestDto))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(WORK_SPACE_NOT_CREATED_MEMBER.getMessage());
+    }
+
+    @Test
+    @DisplayName("[Service] Update WorkSpace Member Test")
+    void updateWorkSpaceMemberTest() {
+        //given
+        String updateWorkSpaceMemberName = "updateName";
+        String updateWorkSpaceMemberJob = "updateJob";
+        String updateWorkSpaceMemberImage = "updateImage";
+
+        WorkSpaceMemberUpdateRequestDto workSpaceMemberUpdateRequestDto =
+                new WorkSpaceMemberUpdateRequestDto(updateWorkSpaceMemberName, updateWorkSpaceMemberJob, updateWorkSpaceMemberImage);
+
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workspaceId))
+                .willReturn(Optional.of(workSpaceMember));
+
+        //when
+        workSpaceService.updateWorkSpaceMember(email, workspaceId, workSpaceMemberUpdateRequestDto);
+
+        //then
+        assertThat(workSpaceMember.getName()).isEqualTo(updateWorkSpaceMemberName);
+        assertThat(workSpaceMember.getJob()).isEqualTo(updateWorkSpaceMemberJob);
+        assertThat(workSpaceMember.getImage()).isEqualTo(updateWorkSpaceMemberImage);
     }
 }

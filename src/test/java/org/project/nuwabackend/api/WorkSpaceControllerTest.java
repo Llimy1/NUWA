@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
@@ -30,6 +31,8 @@ import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -231,6 +234,15 @@ class WorkSpaceControllerTest {
 
         String body = objectMapper.writeValueAsString(workSpaceUpdateRequestDto);
 
+        GlobalSuccessResponseDto<Object> updateWorkSpaceSuccessResponse =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(WORK_SPACE_INFO_UPDATE_SUCCESS.getMessage())
+                        .data(null)
+                        .build();
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(updateWorkSpaceSuccessResponse);
+
         //when
         //then
         mvc.perform(patch("/api/workspace/{workSpaceId}", workSpaceId)
@@ -240,5 +252,40 @@ class WorkSpaceControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("[API] Update WorkSpace Member Test")
+    void updateWorkSpaceMemberTest() throws Exception {
+        //given
+        String updateName = "updateName";
+        String updateJob = "updateJob";
+        String updateImage = "updateImage";
+        String email = "abcd@gmail.com";
+        Long workSpaceId = 1L;
+
+        WorkSpaceMemberUpdateRequestDto workSpaceMemberUpdateRequestDto =
+                new WorkSpaceMemberUpdateRequestDto(updateName, updateJob, updateImage);
+
+        String body = objectMapper.writeValueAsString(workSpaceMemberUpdateRequestDto);
+
+        GlobalSuccessResponseDto<Object> updateWorkSpaceMemberSuccessResponse =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS.getMessage())
+                        .data(null)
+                        .build();
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(updateWorkSpaceMemberSuccessResponse);
+
+        //when
+        //then
+        mvc.perform(patch("/api/workspace/{workSpaceId}/member", workSpaceId)
+                        .param("email", email)
+                        .content(body)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
+
 
 }

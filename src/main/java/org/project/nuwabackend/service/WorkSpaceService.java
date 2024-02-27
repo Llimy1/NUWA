@@ -6,6 +6,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
+import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
@@ -226,5 +227,19 @@ public class WorkSpaceService {
         WorkSpace findWorkSpace = findWorkSpaceMember.getWorkSpace();
 
         findWorkSpace.updateWorkSpace(updateName, updateImage);
+    }
+
+    // 워크스페이스 멤버 정보 편집
+    @Transactional
+    public void updateWorkSpaceMember(String email, Long workSpaceId, WorkSpaceMemberUpdateRequestDto workSpaceMemberUpdateRequestDto) {
+        log.info("워크스페이스 멤버 편집");
+        String updateName = workSpaceMemberUpdateRequestDto.workSpaceMemberName();
+        String updateJob = workSpaceMemberUpdateRequestDto.workSpaceMemberJob();
+        String updateImage = workSpaceMemberUpdateRequestDto.workSpaceMemberImage();
+
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        findWorkSpaceMember.updateWorkSpaceMember(updateName, updateJob, updateImage);
     }
 }

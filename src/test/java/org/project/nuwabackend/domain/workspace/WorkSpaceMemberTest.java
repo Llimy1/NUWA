@@ -35,7 +35,7 @@ class WorkSpaceMemberTest {
 
     @Test
     @DisplayName("[Domain] Create WorkSpace Member Test")
-    void createWorkSpaceMember() {
+    void createWorkSpaceMemberTest() {
         //given
         WorkSpaceMember workSpaceMember = WorkSpaceMember.createWorkSpaceMember(
                 workSpaceMemberName,
@@ -57,7 +57,7 @@ class WorkSpaceMemberTest {
 
     @Test
     @DisplayName("[Domain] Join WorkSpace Member Test")
-    void joinWorkSpaceMember() {
+    void joinWorkSpaceMemberTest() {
         //given
         WorkSpaceMember workSpaceMember = WorkSpaceMember.joinWorkSpaceMember(
                 workSpaceMemberName,
@@ -73,5 +73,30 @@ class WorkSpaceMemberTest {
         assertThat(workSpaceMember.getMember()).isEqualTo(member);
         assertThat(workSpaceMember.getWorkSpace()).isEqualTo(workSpace);
         assertThat(workSpaceMember.getWorkSpaceMemberType()).isEqualTo(WorkSpaceMemberType.JOIN);
+    }
+
+    @Test
+    @DisplayName("[Domain] Update WorkSpace Member Test")
+    void updateWorkSpaceMemberTest() {
+        //given
+        String newName = "newName";
+        String newJob = "newJob";
+        String newImage = "newImage";
+
+        WorkSpaceMember workSpaceMember = WorkSpaceMember.joinWorkSpaceMember(
+                workSpaceMemberName,
+                workSpaceMemberImage,
+                WorkSpaceMemberType.JOIN,
+                member,
+                workSpace);
+
+
+        //when
+        workSpaceMember.updateWorkSpaceMember(newName, newJob, newImage);
+
+        //then
+        assertThat(workSpaceMember.getName()).isEqualTo(newName);
+        assertThat(workSpaceMember.getImage()).isEqualTo(newImage);
+        assertThat(workSpaceMember.getJob()).isEqualTo(newJob);
     }
 }
