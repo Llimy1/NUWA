@@ -23,7 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/socket")
                 // TODO: 배포를 진행할 때 프론트 주소로
-                .setAllowedOrigins("*")
+                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
 
     }
