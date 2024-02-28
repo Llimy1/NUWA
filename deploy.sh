@@ -15,15 +15,15 @@ DEFAULT_CONF="/etc/nginx/nginx.conf"
 rollback() {
     echo "Rollback to previous state..."
     if [ $1 == "green" ]; then
-        docker-compose stop green
+        sudo docker stop green
         sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
         sudo nginx -s reload
-        docker-compose up -d blue
+        sudo docker-compose up -d blue
     else
-        docker-compose stop blue
+        sudo docker stop blue
         sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
         sudo nginx -s reload
-        docker-compose up -d green
+        sudo docker-compose up -d green
     fi
     echo "Rollback completed."
     exit 1
@@ -65,7 +65,7 @@ if [ -z $IS_GREEN ]; then # 현재 blue가 실행중이면 green으로 전환
         sudo nginx -s reload
 
         echo "5. Blue container down"
-        sudo docker-compose stop blue
+        sudo docker stop blue
     else
         rollback "green"
     fi
@@ -84,7 +84,7 @@ else
         sudo nginx -s reload
 
         echo "5. Green container down"
-        sudo docker-compose stop green
+        sudo docker stop green
     else
         rollback "blue"
     fi
