@@ -21,6 +21,7 @@ import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -111,20 +112,21 @@ class FileServiceTest {
         fileUploadResultDto = new FileUploadResultDto(imageUrlMap, fileUrlMap);
 
         Long workSpaceId = 1L;
-        Long channelId = 1L;
-        fileRequestDto = new FileRequestDto(workSpaceId, channelId);
+        fileRequestDto = new FileRequestDto(workSpaceId);
     }
 
     @Test
     @DisplayName("[Service] File Upload Test")
     void uploadTest() {
         //given
+        Long channelId = 1L;
+
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(workSpaceMember));
         given(channelRepository.findById(any()))
                 .willReturn(Optional.of(channel));
 
-        given(s3Service.upload(anyString(), any()))
+        given(s3Service.upload(any(), any()))
                 .willReturn(fileUploadResultDto);
 
         List<MultipartFile> multipartFileList = new ArrayList<>(List.of(multipartFile));
@@ -144,8 +146,8 @@ class FileServiceTest {
             String fileExtension = key.substring(dotIndex);
 
             File file =
-                    File.createFile(key, originFileName, value, fileExtension,
-                            FileType.IMAGE, workSpaceMember, workSpace, channel);
+                    File.createChannelFile(key, originFileName, value, fileExtension,
+                            FileUploadType.IMAGE, FileType.CHAT, workSpaceMember, workSpace, channel);
             ReflectionTestUtils.setField(file, "id", 1L);
 
             fileList.add(file);
@@ -156,15 +158,16 @@ class FileServiceTest {
 
         List<FileUploadResponseDto> fileUploadResponseDtoList = fileList.stream().map(file -> FileUploadResponseDto.builder()
                         .fileId(file.getId())
+                        .fileUploadType(file.getFileUploadType())
                         .fileType(file.getFileType())
                         .build())
                 .toList();
         //when
-        List<FileUploadResponseDto> uploadList = fileService.upload(email, multipartFileList, fileRequestDto);
+        List<FileUploadResponseDto> uploadList = fileService.upload(email, FileType.CHAT, channelId, multipartFileList, fileRequestDto);
 
         //then
         assertThat(uploadList.get(0).fileId()).isEqualTo(fileUploadResponseDtoList.get(0).fileId());
-        assertThat(uploadList.get(0).fileType()).isEqualTo(fileUploadResponseDtoList.get(0).fileType());
+        assertThat(uploadList.get(0).fileUploadType()).isEqualTo(fileUploadResponseDtoList.get(0).fileUploadType());
         assertThat(uploadList).containsAll(fileUploadResponseDtoList);
     }
 
@@ -177,8 +180,8 @@ class FileServiceTest {
         String fileName = "fileName";
         Long byteSize = 1024L;
         String extension = "jpg";
-        File file = File.createFile(url, fileName, byteSize, extension,
-                        FileType.IMAGE, workSpaceMember, workSpace, channel);
+        File file = File.createChannelFile(url, fileName, byteSize, extension,
+                        FileUploadType.IMAGE, FileType.CHAT, workSpaceMember, workSpace, channel);
 
         List<File> fileList = new ArrayList<>(List.of(file));
 
@@ -188,6 +191,7 @@ class FileServiceTest {
         List<FileUrlResponseDto> fileUrlResponseDtoList = fileList.stream().map(file1 -> FileUrlResponseDto.builder()
                         .fileId(file.getId())
                         .fileUrl(file.getUrl())
+                        .fileUploadType(file.getFileUploadType())
                         .fileType(file.getFileType())
                         .fileCreatedAt(file.getCreatedAt())
                         .build()).toList();
@@ -198,7 +202,7 @@ class FileServiceTest {
         assertThat(fileUrlResponseDtos).containsAll(fileUrlResponseDtoList);
         assertThat(fileUrlResponseDtos.get(0).fileId()).isEqualTo(fileUrlResponseDtoList.get(0).fileId());
         assertThat(fileUrlResponseDtos.get(0).fileUrl()).isEqualTo(fileUrlResponseDtoList.get(0).fileUrl());
-        assertThat(fileUrlResponseDtos.get(0).fileType()).isEqualTo(fileUrlResponseDtoList.get(0).fileType());
+        assertThat(fileUrlResponseDtos.get(0).fileUploadType()).isEqualTo(fileUrlResponseDtoList.get(0).fileUploadType());
         assertThat(fileUrlResponseDtos.get(0).fileCreatedAt()).isEqualTo(fileUrlResponseDtoList.get(0).fileCreatedAt());
     }
 }

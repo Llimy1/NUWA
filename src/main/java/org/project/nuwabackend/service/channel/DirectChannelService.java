@@ -52,11 +52,19 @@ public class DirectChannelService {
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
+        Long createMemberId = createWorkSpaceMember.getId();
+
         WorkSpace workSpace = createWorkSpaceMember.getWorkSpace();
 
         // 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(joinMemberId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        // 이미 채팅방이 존재를 하면 roomId를 예외로 반환
+        directChannelRepository.findByCreateMemberIdOrJoinMemberId(createMemberId, joinMemberId)
+                .ifPresent(direct -> {
+                    throw new IllegalArgumentException(direct.getRoomId());
+                });
 
         // 워크스페이스 존재하고 멤버도 전부 존재하면 채널 저장
         Direct direct = Direct.createDirectChannel(workSpace, createWorkSpaceMember, joinWorkSpaceMember);

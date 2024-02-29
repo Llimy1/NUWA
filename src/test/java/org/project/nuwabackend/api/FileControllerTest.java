@@ -16,6 +16,7 @@ import org.project.nuwabackend.global.resolver.CustomPageableHandlerMethodArgume
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.s3.FileService;
 import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
@@ -76,10 +77,11 @@ class FileControllerTest {
 
         List<FileUploadResponseDto> fileUploadResponseDtoList = List.of(FileUploadResponseDto.builder()
                 .fileId(fileId)
-                .fileType(FileType.IMAGE)
+                .fileUploadType(FileUploadType.IMAGE)
+                        .fileType(FileType.CHAT)
                 .build());
 
-        given(fileService.upload(any(), any(), any()))
+        given(fileService.upload(any(), any(), any(), any(), any()))
                 .willReturn(fileUploadResponseDtoList);
 
         GlobalSuccessResponseDto<Object> uploadFileSuccessResponse =
@@ -97,7 +99,8 @@ class FileControllerTest {
         mvc.perform(multipart("/api/file/upload")
                         .file(multipartFile)
                         .file(multipartJson)
-                .header("email", "abcd@gmail.com"))
+                .header("email", "abcd@gmail.com")
+                        .param("fileType", "CHAT"))
                 .andExpect(status().isCreated())
                 .andDo(print());
     }
@@ -112,7 +115,8 @@ class FileControllerTest {
         List<FileUrlResponseDto> fileUrlResponseDtoList = List.of(FileUrlResponseDto.builder()
                 .fileId(fileId)
                 .fileUrl(url)
-                .fileType(FileType.IMAGE)
+                .fileUploadType(FileUploadType.IMAGE)
+                        .fileType(FileType.CHAT)
                 .fileCreatedAt(LocalDateTime.now())
                 .build());
 
@@ -154,7 +158,8 @@ class FileControllerTest {
                 .fileName(fileName)
                 .fileSize(fileSize)
                 .fileExtension(fileExtension)
-                .fileType(FileType.IMAGE)
+                .fileUploadType(FileUploadType.IMAGE)
+                        .fileType(FileType.CHAT)
                 .fileMemberUploadId(fileMemberUploadId)
                 .fileMemberUploadName(fileMemberUploadName)
                 .createdAt(LocalDateTime.now())
@@ -201,7 +206,8 @@ class FileControllerTest {
                 .fileName(fileName)
                 .fileSize(fileSize)
                 .fileExtension(fileExtension)
-                .fileType(FileType.IMAGE)
+                .fileUploadType(FileUploadType.IMAGE)
+                        .fileType(FileType.CHAT)
                 .fileMemberUploadId(fileMemberUploadId)
                 .fileMemberUploadName(fileMemberUploadName)
                 .createdAt(LocalDateTime.now())

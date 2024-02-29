@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
 import org.project.nuwabackend.type.FilePathType;
+import org.project.nuwabackend.type.FileType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ import java.util.Set;
 import static org.project.nuwabackend.global.type.ErrorMessage.FILE_EXTENSION_NOT_FOUND;
 import static org.project.nuwabackend.type.FilePathType.FILE_PATH;
 import static org.project.nuwabackend.type.FilePathType.IMAGE_PATH;
+import static org.project.nuwabackend.type.FileType.DIRECT;
 
 @RequiredArgsConstructor
 @Service
@@ -35,7 +37,7 @@ public class S3Service {
     private String bucket;
 
     // 파일 업로드 (이미지 & 파일)
-    public FileUploadResultDto upload(String channelType, List<MultipartFile> multipartFileList) {
+    public FileUploadResultDto upload(FileType fileType, List<MultipartFile> multipartFileList) {
 
         Map<String, Long> imageUrlMap = new HashMap<>();
         Map<String, Long> fileUrlMap = new HashMap<>();
@@ -55,36 +57,46 @@ public class S3Service {
             try (InputStream inputStream = multipartFile.getInputStream()) {
                 switch (filePath) {
                     case IMAGE_PATH -> {
-                        switch (channelType.toLowerCase()) {
-                            case "direct" -> {
+                        switch (fileType) {
+                            case CANVAS -> {
+                                amazonS3.putObject(new PutObjectRequest(bucket + "/image/canvas", uploadFileName, inputStream, objectMetadata)
+                                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                                imageUrlMap.put(amazonS3.getUrl(bucket + "/image/canvas", uploadFileName).toString(), byteSize);
+                            }
+                            case DIRECT -> {
                                 amazonS3.putObject(new PutObjectRequest(bucket + "/image/direct", uploadFileName, inputStream, objectMetadata)
                                         .withCannedAcl(CannedAccessControlList.PublicRead));
                                 imageUrlMap.put(amazonS3.getUrl(bucket + "/image/direct", uploadFileName).toString(), byteSize);
                             }
-                            case "chat" -> {
+                            case CHAT -> {
                                 amazonS3.putObject(new PutObjectRequest(bucket + "/image/chat", uploadFileName, inputStream, objectMetadata)
                                         .withCannedAcl(CannedAccessControlList.PublicRead));
                                 imageUrlMap.put(amazonS3.getUrl(bucket + "/image/chat", uploadFileName).toString(), byteSize);
                             }
-                            case "voice" -> {
+                            case VOICE -> {
                                 amazonS3.putObject(new PutObjectRequest(bucket + "/image/voice", uploadFileName, inputStream, objectMetadata)
                                         .withCannedAcl(CannedAccessControlList.PublicRead));
                                 imageUrlMap.put(amazonS3.getUrl(bucket + "/image/voice", uploadFileName).toString(), byteSize);
                             }
                         }
                     } case FILE_PATH -> {
-                        switch (channelType.toLowerCase()) {
-                            case "direct" -> {
+                        switch (fileType) {
+                            case CANVAS -> {
+                                amazonS3.putObject(new PutObjectRequest(bucket + "/file/canvas", uploadFileName, inputStream, objectMetadata)
+                                        .withCannedAcl(CannedAccessControlList.PublicRead));
+                                fileUrlMap.put(amazonS3.getUrl(bucket + "/file/canvas", uploadFileName).toString(), byteSize);
+                            }
+                            case DIRECT -> {
                                 amazonS3.putObject(new PutObjectRequest(bucket + "/file/direct", uploadFileName, inputStream, objectMetadata)
                                         .withCannedAcl(CannedAccessControlList.PublicRead));
                                 fileUrlMap.put(amazonS3.getUrl(bucket + "/file/direct", uploadFileName).toString(), byteSize);
                             }
-                            case "chat" -> {
+                            case CHAT -> {
                                 amazonS3.putObject(new PutObjectRequest(bucket + "/file/chat", uploadFileName, inputStream, objectMetadata)
                                         .withCannedAcl(CannedAccessControlList.PublicRead));
                                 fileUrlMap.put(amazonS3.getUrl(bucket + "/file/chat", uploadFileName).toString(), byteSize);
                             }
-                            case "voice" -> {
+                            case VOICE -> {
                                 amazonS3.putObject(new PutObjectRequest(bucket + "/file/voice", uploadFileName, inputStream, objectMetadata)
                                         .withCannedAcl(CannedAccessControlList.PublicRead));
                                 fileUrlMap.put(amazonS3.getUrl(bucket + "/file/voice", uploadFileName).toString(), byteSize);

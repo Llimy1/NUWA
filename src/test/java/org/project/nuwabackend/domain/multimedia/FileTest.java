@@ -9,6 +9,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,7 +61,21 @@ class FileTest {
     @DisplayName("[Domain] Create File Test")
     void createFileTest() {
         //given
-        File file = File.createFile(fileUrl, fileName, fileSize, fileExtension, FileType.FILE, workSpaceMember, workSpace, channel);
+        File file = File.createFile(fileUrl, fileName, fileSize, fileExtension, FileUploadType.FILE, FileType.CHAT, workSpaceMember, workSpace);
+
+        //when
+        //then
+        assertThat(file.getUrl()).isEqualTo(fileUrl);
+        assertThat(file.getWorkSpace()).isEqualTo(workSpace);
+        assertThat(file.getWorkSpaceMember()).isEqualTo(workSpaceMember);
+        assertThat(file.getChannel()).isNull();
+    }
+
+    @Test
+    @DisplayName("[Domain] Create Channel File Test")
+    void createChannelFileTest() {
+        //given
+        File file = File.createChannelFile(fileUrl, fileName, fileSize, fileExtension, FileUploadType.FILE, FileType.CHAT, workSpaceMember, workSpace, channel);
 
         //when
         //then

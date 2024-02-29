@@ -2,7 +2,6 @@ package org.project.nuwabackend.dto.file.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
-import org.project.nuwabackend.type.FileType;
 
 import java.time.LocalDateTime;
 

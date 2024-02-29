@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
 import org.project.nuwabackend.dto.file.response.TopSevenFileInfoResponseDto;
 import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -39,7 +40,7 @@ public class FileQueryService {
     private final JPAQueryFactory jpaQueryFactory;
 
     // 파일 조건 별 조회
-    public Slice<FileInfoResponseDto> fileList(Long workSpaceId, String fileExtension, FileType fileType, Pageable pageable) {
+    public Slice<FileInfoResponseDto> fileList(Long workSpaceId, String fileExtension, FileUploadType fileUploadType, Pageable pageable) {
         log.info("파일 조회 Query");
 
         List<FileInfoResponseDto> fileInfoResponseDtoList = jpaQueryFactory.select(fileConstructorDto())
@@ -47,8 +48,10 @@ public class FileQueryService {
                 .join(file.workSpaceMember, workSpaceMember)
                 .where(
                         workSpaceIdEq(workSpaceId),
-                        fileTypeEq(fileType),
-                        fileExtensionEq(fileExtension)
+                        fileUploadTypeEq(fileUploadType),
+                        fileExtensionEq(fileExtension),
+                        directTypeNe()
+
                 )
                 .orderBy(getAllOrderSpecifiers(pageable).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
@@ -59,7 +62,7 @@ public class FileQueryService {
     }
 
     // 파일 검색
-    public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileType fileType, Pageable pageable) {
+    public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileUploadType fileUploadType, Pageable pageable) {
         log.info("파일 검색 Query");
         System.out.println(fileName);
         List<FileInfoResponseDto> searchFileInfoResponseDtoList = jpaQueryFactory.select(fileConstructorDto())
@@ -68,8 +71,9 @@ public class FileQueryService {
                 .where(
                         searchFileName(fileName),
                         workSpaceIdEq(workSpaceId),
-                        fileTypeEq(fileType),
-                        fileExtensionEq(fileExtension)
+                        fileUploadTypeEq(fileUploadType),
+                        fileExtensionEq(fileExtension),
+                        directTypeNe()
 
                 )
                 .orderBy(getAllOrderSpecifiers(pageable).toArray(OrderSpecifier[]::new))
@@ -84,7 +88,9 @@ public class FileQueryService {
     public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
         return jpaQueryFactory.select(topSevenFileInfoResponseDto())
                 .from(file)
-                .where(workSpaceIdEq(workSpaceId))
+                .where(
+                        workSpaceIdEq(workSpaceId),
+                        directTypeNe())
                 .orderBy(file.createdAt.desc())
                 .offset(0)
                 .limit(7)
@@ -99,6 +105,7 @@ public class FileQueryService {
                 file.fileName.as("fileName"),
                 file.fileSize.as("fileSize"),
                 file.fileExtension.as("fileExtension"),
+                file.fileUploadType.as("fileUploadType"),
                 file.fileType.as("fileType"),
                 workSpaceMember.id.as("fileMemberUploadId"),
                 workSpaceMember.name.as("fileMemberUploadName"),
@@ -119,8 +126,8 @@ public class FileQueryService {
         return file.workSpace.id.eq(workSpaceId);
     }
 
-    private BooleanExpression fileTypeEq(FileType fileType) {
-        return fileType != null ? file.fileType.eq(fileType) : null;
+    private BooleanExpression fileUploadTypeEq(FileUploadType fileUploadType) {
+        return fileUploadType != null ? file.fileUploadType.eq(fileUploadType) : null;
     }
 
     private BooleanExpression fileExtensionEq(String extension) {
@@ -134,6 +141,10 @@ public class FileQueryService {
         } else {
             throw new IllegalArgumentException(SEARCH_FILE_NAME_NOT_FOUND.getMessage());
         }
+    }
+
+    private BooleanExpression directTypeNe() {
+        return file.fileType.ne(FileType.DIRECT);
     }
 
     // Slice로 변환

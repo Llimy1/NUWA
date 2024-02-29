@@ -18,6 +18,7 @@ import org.project.nuwabackend.domain.channel.Channel;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -44,6 +45,10 @@ public class File extends BaseTimeJpa {
     private String fileExtension;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "file_upload_type")
+    private FileUploadType fileUploadType;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "file_type")
     private FileType fileType;
 
@@ -60,23 +65,39 @@ public class File extends BaseTimeJpa {
     private Channel channel;
 
     @Builder
-    private File(String url, String fileName, Long fileSize, String fileExtension, FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
+    private File(String url, String fileName, Long fileSize, String fileExtension, FileUploadType fileUploadType, FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
         this.url = url;
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.fileExtension = fileExtension;
+        this.fileUploadType = fileUploadType;
         this.fileType = fileType;
         this.workSpaceMember = workSpaceMember;
         this.workSpace = workSpace;
         this.channel = channel;
     }
 
-    public static File createFile(String url, String fileName, Long fileSize, String fileExtension, FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
+    // 일반 파일 업로드
+    public static File createFile(String url, String fileName, Long fileSize, String fileExtension, FileUploadType fileUploadType, FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace) {
         return File.builder()
                 .url(url)
                 .fileName(fileName)
                 .fileSize(fileSize)
                 .fileExtension(fileExtension)
+                .fileUploadType(fileUploadType)
+                .fileType(fileType)
+                .workSpaceMember(workSpaceMember)
+                .workSpace(workSpace)
+                .build();
+    }
+    // 채널 파일 업로드
+    public static File createChannelFile(String url, String fileName, Long fileSize, String fileExtension, FileUploadType fileUploadType, FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
+        return File.builder()
+                .url(url)
+                .fileName(fileName)
+                .fileSize(fileSize)
+                .fileExtension(fileExtension)
+                .fileUploadType(fileUploadType)
                 .fileType(fileType)
                 .workSpaceMember(workSpaceMember)
                 .workSpace(workSpace)
