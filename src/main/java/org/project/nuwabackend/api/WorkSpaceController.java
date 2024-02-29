@@ -6,6 +6,7 @@ import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
+import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
@@ -160,6 +162,18 @@ public class WorkSpaceController {
                 globalService.successResponse(WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS.getMessage(), null);
 
         return ResponseEntity.status(OK).body(workSpaceMemberUpdateSuccessResponse);
+    }
 
+    // 워크스페이스 즐겨 찾는 팀원 조회 (내가 보낸 채팅 수가 많은 순으로)
+    // TODO: test code
+    @GetMapping("/workspace/{workSpaceId}/favorite")
+    public ResponseEntity<Object> favoriteWorkSpaceMemberList(@MemberEmail String email,
+                                                              @PathVariable(value = "workSpaceId") Long workSpaceId) {
+        log.info("워크스페이스 즐겨 찾는 팀원 조회 (내가 보낸 채팅 수가 많은 순으로) API 호출");
+        List<FavoriteWorkSpaceMemberInfoResponse> favoriteWorkSpaceMemberInfoResponseList =
+                workSpaceService.favoriteWorkSpaceMemberList(email, workSpaceId);
+        GlobalSuccessResponseDto<Object> favoriteWorkSpaceMemberReturnSuccessResponse =
+                globalService.successResponse(FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS.getMessage(), favoriteWorkSpaceMemberInfoResponseList);
+        return ResponseEntity.status(OK).body(favoriteWorkSpaceMemberReturnSuccessResponse);
     }
 }

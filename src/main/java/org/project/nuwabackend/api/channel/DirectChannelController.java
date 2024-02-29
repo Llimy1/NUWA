@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponse;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
@@ -27,6 +27,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_DIRECT_C
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_CREATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LIST_RETURN_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.SEARCH_DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -80,7 +81,7 @@ public class DirectChannelController {
             @MemberEmail String email,
             @CustomPageable Pageable pageable) {
         log.info("마지막 채팅 순 채널 리스트 조회");
-        DirectChannelListResponseDto directChannelListResponseDto =
+        Slice<DirectChannelResponseDto> directChannelListResponseDto =
                 directChannelService.directChannelSliceSortByMessageCreateDateDesc(email, workSpaceId, pageable);
 
         GlobalSuccessResponseDto<Object> directChannelListSuccessResponse =
@@ -91,18 +92,19 @@ public class DirectChannelController {
     }
 
     @GetMapping("/channel/direct/search/{workSpaceId}")
+    // TODO: test code
     public ResponseEntity<Object> searchDirectChannelSliceSortByMessageCreateDate(
             @PathVariable(value = "workSpaceId") Long workSpaceId,
             @RequestParam(value = "workSpaceMemberName") String workSpaceMemberName,
             @MemberEmail String email,
             @CustomPageable Pageable pageable) {
         log.info("검색한 마지막 채팅 순 채널 리스트 조회 API");
-        DirectChannelListResponseDto searchDirectChannelListResponseDto =
+        Slice<DirectChannelResponseDto> searchDirectChannelListResponseDto =
                 directChannelService.searchDirectChannelSliceSortByMessageCreateDateDesc(email, workSpaceId, workSpaceMemberName, pageable);
 
         GlobalSuccessResponseDto<Object> directChannelListSuccessResponse =
                 globalService.successResponse(
-                        DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS.getMessage(),
+                        SEARCH_DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS.getMessage(),
                         searchDirectChannelListResponseDto);
         return ResponseEntity.status(OK).body(directChannelListSuccessResponse);
     }
