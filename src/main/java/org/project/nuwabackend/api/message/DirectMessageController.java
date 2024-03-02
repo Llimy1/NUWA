@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
 import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
-import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.message.DirectMessageService;
@@ -40,14 +39,21 @@ public class DirectMessageController {
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
     public void directSend(@Header("Authorization") String accessToken, DirectMessageRequestDto directMessageRequestDto) {
-        String roomId = directMessageRequestDto.roomId();
+        String rooId = directMessageRequestDto.roomId();
         DirectMessageResponseDto directMessageResponse =
                 directMessageService.sendMessage(accessToken, directMessageRequestDto);
         template.convertAndSend(
-                DIRECT_DESTINATION + roomId,
+                DIRECT_DESTINATION + rooId,
                 directMessageResponse);
 
         directMessageService.saveDirectMessage(directMessageResponse);
+    }
+
+    @PostMapping("/test/direct/message")
+    public void testDirectSend(@RequestHeader("Authorization") String accessToken, @RequestBody DirectMessageRequestDto directMessageRequestDto) {
+        DirectMessageResponseDto directMessageResponseDto =
+                directMessageService.sendMessage(accessToken, directMessageRequestDto);
+        directMessageService.saveDirectMessage(directMessageResponseDto);
     }
 
     // 채팅 메세지 리스트 반환
