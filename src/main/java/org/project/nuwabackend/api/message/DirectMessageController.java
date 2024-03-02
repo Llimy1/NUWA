@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
 import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
+import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.message.DirectMessageService;
@@ -16,6 +17,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_MESSAGE_LIST_RETURN_SUCCESS;
@@ -36,11 +40,11 @@ public class DirectMessageController {
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
     public void directSend(@Header("Authorization") String accessToken, DirectMessageRequestDto directMessageRequestDto) {
-        String rooId = directMessageRequestDto.roomId();
+        String roomId = directMessageRequestDto.roomId();
         DirectMessageResponseDto directMessageResponse =
                 directMessageService.sendMessage(accessToken, directMessageRequestDto);
         template.convertAndSend(
-                DIRECT_DESTINATION + rooId,
+                DIRECT_DESTINATION + roomId,
                 directMessageResponse);
 
         directMessageService.saveDirectMessage(directMessageResponse);

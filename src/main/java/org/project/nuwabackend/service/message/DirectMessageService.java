@@ -86,12 +86,6 @@ public class DirectMessageService {
         String directChannelContent = directMessageRequestDto.content();
         Long receiverId = directMessageRequestDto.receiverId();
 
-        // 채널들이 워크스페이스 멤버로 엮여 있는데 이 부분이 멤버인게 데이터가 맞지 않아 변경
-//        Member findMember = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND_MEMBER));
-
-//        Long senderId = findMember.getId();
-
         // 메세지 보낸 사람
         WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
@@ -107,10 +101,10 @@ public class DirectMessageService {
 
         Long readCount = isAllConnected ? 0L : 1L;
 
-        log.info("알림 전송");
         // 채팅을 읽지 않았을 때 알림을 전송
         // 읽었을 땐 알림을 보내지 않습니다.
-        if (readCount.equals(0L)) {
+        if (!readCount.equals(0L)) {
+            log.info("알림 전송");
             notificationService.send(
                     directChannelContent,
                     createDirectUrl(directChannelRoomId),
