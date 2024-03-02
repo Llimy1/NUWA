@@ -301,4 +301,14 @@ public class WorkSpaceService {
                 .sorted(Comparator.comparing(FavoriteWorkSpaceMemberInfoResponse::messageCount, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
     }
+
+    // 워크스페이스 상태 편집
+    // TODO: test code
+    @Transactional
+    public void updateWorkSpaceMemberStatus(String email, Long workSpaceId, String workSpaceMemberStatus) {
+        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        workSpaceMember.updateWorkSpaceMemberStatus(workSpaceMemberStatus);
+    }
 }

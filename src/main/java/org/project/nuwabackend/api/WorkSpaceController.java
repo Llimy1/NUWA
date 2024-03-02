@@ -35,6 +35,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -175,5 +176,19 @@ public class WorkSpaceController {
         GlobalSuccessResponseDto<Object> favoriteWorkSpaceMemberReturnSuccessResponse =
                 globalService.successResponse(FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS.getMessage(), favoriteWorkSpaceMemberInfoResponseList);
         return ResponseEntity.status(OK).body(favoriteWorkSpaceMemberReturnSuccessResponse);
+    }
+
+    // 워크스페이스 상태 편집
+    @PatchMapping("/workspace/{workSpaceId}/member/status")
+    public ResponseEntity<Object> updateWorkSpaceMemberStatus(@MemberEmail String email,
+                                                              @PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                              @RequestParam(value = "workSpaceMemberStatus") String workSpaceMemberStatus) {
+        log.info("워크스페이스 상태 편집 API 호출");
+        workSpaceService.updateWorkSpaceMemberStatus(email, workSpaceId, workSpaceMemberStatus);
+
+        GlobalSuccessResponseDto<Object> updateWorkSpaceMemberStatusSuccessResponse =
+                globalService.successResponse(WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS.getMessage(), null);
+
+        return ResponseEntity.status(OK).body(updateWorkSpaceMemberStatusSuccessResponse);
     }
 }
