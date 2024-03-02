@@ -29,28 +29,29 @@ rollback() {
     exit 1
 }
 
-health_check() {
+app_health_check() {
     local service=$1
     local retries=20 # 3초 간격으로 20번 시도, 총 1분
     local count=0
+    local log_line="Started NuwaBackendApplication in"
 
+    echo "Checking if $service is up by searching for '$log_line' in logs..."
     while [ $count -lt $retries ]; do
-        echo "$service health check attempt $(($count + 1))/$retries..."
-        sleep 3
-        REQUEST=$(curl -s http://127.0.0.1:$2) # $2는 서비스 포트
-
-        if [ -n "$REQUEST" ]; then
-            echo "Health check success."
+        if docker-compose logs $service | grep "$log_line"; then
+            echo "$service has started successfully."
             return 0
+        else
+            echo "Waiting for $service to start... Attempt $(($count + 1))/$retries."
+            sleep 3
         fi
         ((count++))
     done
 
-    echo "Health check failed."
+    echo "$service failed to start."
     return 1
 }
 
-if [ -z $IS_GREEN ]; then # 현재 blue가 실행중이면 green으로 전환
+if [ -z "$IS_GREEN" ]; then # 현재 blue가 실행중이면 green으로 전환
     echo "### BLUE => GREEN ###"
 
     echo "1. Get green image"
@@ -59,7 +60,7 @@ if [ -z $IS_GREEN ]; then # 현재 blue가 실행중이면 green으로 전환
     echo "2. Green container up"
     docker-compose up -d green
 
-    if health_check "green" 8081; then
+    if app_health_check "green"; then
         echo "4. Reload nginx"
         sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
         sudo nginx -s reload
@@ -78,7 +79,7 @@ else
     echo "2. Blue container up"
     docker-compose up -d blue
 
-    if health_check "blue" 8082; then
+    if app_health_check "blue"; then
         echo "4. Reload nginx"
         sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
         sudo nginx -s reload
