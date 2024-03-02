@@ -273,27 +273,32 @@ public class WorkSpaceService {
 
             // 내 아이디로 상대방 id 가져오기
             Long otherId = directMessageQueryService.neSenderId(direct.getRoomId(), email);
-            WorkSpaceMember other = workSpaceMemberRepository.findById(otherId)
-                    .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-            Member otherMember = other.getMember();
+            // 값이 없다면 빈 리스트로 반환
+            if (otherId != null) {
+                WorkSpaceMember other = workSpaceMemberRepository.findById(otherId)
+                        .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-            FavoriteWorkSpaceMemberInfoResponse favoriteWorkSpaceMemberInfoResponse = FavoriteWorkSpaceMemberInfoResponse.builder()
-                    .id(otherId)
-                    .name(other.getName())
-                    .job(other.getJob())
-                    .image(other.getImage())
-                    .workSpaceMemberType(other.getWorkSpaceMemberType())
-                    .email(otherMember.getEmail())
-                    .phoneNumber(otherMember.getPhoneNumber())
-                    .messageCount(count)
-                    .build();
+                Member otherMember = other.getMember();
 
-            favoriteWorkSpaceMemberInfoResponseList.add(favoriteWorkSpaceMemberInfoResponse);
+                FavoriteWorkSpaceMemberInfoResponse favoriteWorkSpaceMemberInfoResponse = FavoriteWorkSpaceMemberInfoResponse.builder()
+                        .id(otherId)
+                        .name(other.getName())
+                        .job(other.getJob())
+                        .image(other.getImage())
+                        .workSpaceMemberType(other.getWorkSpaceMemberType())
+                        .email(otherMember.getEmail())
+                        .phoneNumber(otherMember.getPhoneNumber())
+                        .messageCount(count)
+                        .build();
+
+
+                favoriteWorkSpaceMemberInfoResponseList.add(favoriteWorkSpaceMemberInfoResponse);
+            }
         });
 
         return favoriteWorkSpaceMemberInfoResponseList.stream()
-                .sorted(Comparator.comparing(FavoriteWorkSpaceMemberInfoResponse::messageCount))
+                .sorted(Comparator.comparing(FavoriteWorkSpaceMemberInfoResponse::messageCount, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
     }
 }

@@ -77,8 +77,11 @@ public class DirectMessageQueryService {
 
         DirectMessage directMessage = mongoTemplate.findOne(query, DirectMessage.class);
 
-        // 찾은 메세지에서 상대방 사용자 ID 반환
-        // TODO: 반환에 대해서 다시 고민
+//        if (directMessage != null) {
+//            return directMessage.getSenderId();
+//        } else {
+//            throw new IllegalArgumentException(DIRECT_MESSAGE_NOT_FOUND.getMessage());
+//        }
         return directMessage != null ? directMessage.getSenderId() : null;
     }
 }
