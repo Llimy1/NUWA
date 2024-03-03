@@ -31,24 +31,19 @@ rollback() {
 
 app_health_check() {
     local service=$1
-    local retries=20 # 3초 간격으로 20번 시도, 총 1분
-    local count=0
     local log_line="Started NuwaBackendApplication in"
 
-    echo "Checking if $service is up by searching for '$log_line' in logs..."
-    while [ $count -lt $retries ]; do
-        if docker-compose logs $service | grep "$log_line"; then
-            echo "$service has started successfully."
-            return 0
-        else
-            echo "Waiting for $service to start... Attempt $(($count + 1))/$retries."
-            sleep 3
-        fi
-        ((count++))
-    done
+    echo "Waiting for 30 seconds before health check..."
+    sleep 30
 
-    echo "$service failed to start."
-    return 1
+    echo "Checking if $service is up by searching for '$log_line' in logs..."
+    if docker-compose logs $service | tail -n 100 | grep "$log_line"; then
+        echo "$service has started successfully."
+        return 0
+    else
+        echo "$service failed to start."
+        return 1
+    fi
 }
 
 if [ -z "$IS_GREEN" ]; then # 현재 blue가 실행중이면 green으로 전환
