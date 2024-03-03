@@ -38,6 +38,9 @@ public class WorkSpaceMember extends BaseTimeJpa {
     @Column(name = "workspace_member_image")
     private String image;
 
+    @Column(name = "workspace_member_status")
+    private String status;
+
     @Column(name = "workspace_member_type")
     @Enumerated(EnumType.STRING)
     private WorkSpaceMemberType workSpaceMemberType;
@@ -51,10 +54,11 @@ public class WorkSpaceMember extends BaseTimeJpa {
     private WorkSpace workSpace;
 
     @Builder
-    public WorkSpaceMember(String name, String job, String image, WorkSpaceMemberType workSpaceMemberType, Member member, WorkSpace workSpace) {
+    public WorkSpaceMember(String name, String job, String image, String status, WorkSpaceMemberType workSpaceMemberType, Member member, WorkSpace workSpace) {
         this.name = name;
         this.job = job;
         this.image = image;
+        this.status = status;
         this.workSpaceMemberType = workSpaceMemberType;
         this.member = member;
         this.workSpace = workSpace;
@@ -88,5 +92,10 @@ public class WorkSpaceMember extends BaseTimeJpa {
         this.name = name;
         this.job = job;
         this.image = image;
+    }
+
+    // 워크스페이스 상태 편집
+    public void updateWorkSpaceMemberStatus(String status) {
+        this.status = status;
     }
 }

@@ -52,4 +52,36 @@ public class DirectMessageQueryService {
         return mongoTemplate.count(query, DirectMessage.class);
     }
 
+    // 내가 보낸 메세지 카운트
+    public Long countManyMessageSenderId(String directChannelRoomId, String email) {
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Long senderId = sender.getId();
+
+        // 해당 워크스페이스에 있는 메세지 중
+        Query query = new Query(Criteria.where("direct_room_id").is(directChannelRoomId)
+                .and("direct_sender_id").is(senderId));
+        return mongoTemplate.count(query, DirectMessage.class);
+    }
+
+    // 내가 아닌 상대방이 보낸 메세지로 상대방 id 찾아오기
+    public Long neSenderId(String directChannelRoomId, String email) {
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Long senderId = sender.getId();
+
+        Query query = new Query(Criteria.where("direct_room_id").is(directChannelRoomId)
+                .and("direct_sender_id").ne(senderId));
+
+        DirectMessage directMessage = mongoTemplate.findOne(query, DirectMessage.class);
+
+//        if (directMessage != null) {
+//            return directMessage.getSenderId();
+//        } else {
+//            throw new IllegalArgumentException(DIRECT_MESSAGE_NOT_FOUND.getMessage());
+//        }
+        return directMessage != null ? directMessage.getSenderId() : null;
+    }
 }

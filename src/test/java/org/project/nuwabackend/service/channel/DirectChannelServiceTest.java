@@ -14,7 +14,6 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
@@ -218,14 +217,12 @@ class DirectChannelServiceTest {
 
         List<DirectMessage> directMessageList = new ArrayList<>(List.of(directMessage1));
 
-        Slice<Direct> directSlice = new SliceImpl<>(directList, pageRequest, false);
-
-        given(directChannelRepository.findDirectChannelByCreateMemberIdOrJoinMemberId(any(), any()))
-                .willReturn(directSlice);
+        given(directChannelRepository.findDirectChannelListByCreateMemberIdOrJoinMemberId(any()))
+                .willReturn(directList);
 
         Long unReadCount = 10L;
 
-        directSlice.forEach(direct -> {
+        directList.forEach(direct -> {
 
             given(directMessageQueryService.countUnReadMessage(anyString(), anyString()))
                     .willReturn(unReadCount);
@@ -261,32 +258,20 @@ class DirectChannelServiceTest {
                 .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt).reversed())
                 .toList();
 
-        boolean hasNext = directSlice.hasNext();
-        int currentPage = directSlice.getNumber();
-        int pageSize = directSlice.getSize();
-        int pageElementCount = directSlice.getNumberOfElements();
-
-        DirectChannelListResponseDto mockDirectChannelListResponseDto = DirectChannelListResponseDto.builder()
-                .directChannelResponseListDto(sortByCreatedAtResponseList)
-                .hasNext(hasNext)
-                .currentPage(currentPage)
-                .pageSize(pageSize)
-                .pageElementCount(pageElementCount)
-                .build();
-
+        Slice<DirectChannelResponseDto> directChannelResponseDtoSlice = new SliceImpl<>(sortByCreatedAtResponseList, pageRequest, false);
         //when
-        DirectChannelListResponseDto directChannelListResponseDto =
+        Slice<DirectChannelResponseDto> directChannelListResponseDto =
                 directChannelService.directChannelSliceSortByMessageCreateDateDesc(email, workSpaceId, pageRequest);
 
         //then
         assertThat(directChannelListResponseDto).isNotNull();
-        assertThat(directChannelListResponseDto.directChannelResponseListDto()).
-                containsAll(mockDirectChannelListResponseDto.directChannelResponseListDto());
-        assertThat(directChannelListResponseDto.directChannelResponseListDto().get(0).getMessageCreatedAt())
-                .isEqualTo(mockDirectChannelListResponseDto.directChannelResponseListDto().get(0).getMessageCreatedAt());
-        assertThat(directChannelListResponseDto.currentPage()).isEqualTo(mockDirectChannelListResponseDto.currentPage());
-        assertThat(directChannelListResponseDto.hasNext()).isEqualTo(mockDirectChannelListResponseDto.hasNext());
-        assertThat(directChannelListResponseDto.pageSize()).isEqualTo(mockDirectChannelListResponseDto.pageSize());
+        assertThat(directChannelListResponseDto.getContent()).
+                containsAll(directChannelResponseDtoSlice.getContent());
+        assertThat(directChannelListResponseDto.getContent().get(0).getMessageCreatedAt())
+                .isEqualTo(directChannelResponseDtoSlice.getContent().get(0).getMessageCreatedAt());
+        assertThat(directChannelListResponseDto.getNumber()).isEqualTo(directChannelResponseDtoSlice.getNumber());
+        assertThat(directChannelListResponseDto.hasNext()).isEqualTo(directChannelResponseDtoSlice.hasNext());
+        assertThat(directChannelListResponseDto.getSize()).isEqualTo(directChannelResponseDtoSlice.getSize());
     }
 
     @Test
@@ -317,14 +302,13 @@ class DirectChannelServiceTest {
 
         List<DirectMessage> directMessageList = new ArrayList<>(List.of(directMessage1));
 
-        Slice<Direct> directSlice = new SliceImpl<>(directList, pageRequest, false);
 
-        given(directChannelRepository.findSearchDirectChannelByCreateMemberIdOrJoinMemberId(any(), anyString(), any()))
-                .willReturn(directSlice);
+        given(directChannelRepository.findSearchDirectChannelByCreateMemberIdOrJoinMemberId(any(), anyString()))
+                .willReturn(directList);
 
         Long unReadCount = 10L;
 
-        directSlice.forEach(direct -> {
+        directList.forEach(direct -> {
 
             given(directMessageQueryService.countUnReadMessage(anyString(), anyString()))
                     .willReturn(unReadCount);
@@ -360,31 +344,21 @@ class DirectChannelServiceTest {
                 .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt).reversed())
                 .toList();
 
-        boolean hasNext = directSlice.hasNext();
-        int currentPage = directSlice.getNumber();
-        int pageSize = directSlice.getSize();
-        int pageElementCount = directSlice.getNumberOfElements();
-
-        DirectChannelListResponseDto mockDirectChannelListResponseDto = DirectChannelListResponseDto.builder()
-                .directChannelResponseListDto(sortByCreatedAtResponseList)
-                .hasNext(hasNext)
-                .currentPage(currentPage)
-                .pageSize(pageSize)
-                .pageElementCount(pageElementCount)
-                .build();
+        Slice<DirectChannelResponseDto> directChannelResponseDtoSlice =
+                new SliceImpl<>(sortByCreatedAtResponseList, pageRequest, false);
 
         //when
-        DirectChannelListResponseDto searchDirectChannelListResponseDto =
+        Slice<DirectChannelResponseDto> searchDirectChannelListResponseDto =
                 directChannelService.searchDirectChannelSliceSortByMessageCreateDateDesc(email, workSpaceId, workSpaceMemberName, pageRequest);
 
         //then
         assertThat(searchDirectChannelListResponseDto).isNotNull();
-        assertThat(searchDirectChannelListResponseDto.directChannelResponseListDto()).
-                containsAll(mockDirectChannelListResponseDto.directChannelResponseListDto());
-        assertThat(searchDirectChannelListResponseDto.directChannelResponseListDto().get(0).getMessageCreatedAt())
-                .isEqualTo(mockDirectChannelListResponseDto.directChannelResponseListDto().get(0).getMessageCreatedAt());
-        assertThat(searchDirectChannelListResponseDto.currentPage()).isEqualTo(mockDirectChannelListResponseDto.currentPage());
-        assertThat(searchDirectChannelListResponseDto.hasNext()).isEqualTo(mockDirectChannelListResponseDto.hasNext());
-        assertThat(searchDirectChannelListResponseDto.pageSize()).isEqualTo(mockDirectChannelListResponseDto.pageSize());
+        assertThat(searchDirectChannelListResponseDto.getContent()).
+                containsAll(directChannelResponseDtoSlice.getContent());
+        assertThat(searchDirectChannelListResponseDto.getContent().get(0).getMessageCreatedAt())
+                .isEqualTo(directChannelResponseDtoSlice.getContent().get(0).getMessageCreatedAt());
+        assertThat(searchDirectChannelListResponseDto.getNumber()).isEqualTo(directChannelResponseDtoSlice.getNumber());
+        assertThat(searchDirectChannelListResponseDto.hasNext()).isEqualTo(directChannelResponseDtoSlice.hasNext());
+        assertThat(searchDirectChannelListResponseDto.getSize()).isEqualTo(directChannelResponseDtoSlice.getSize());
     }
 }

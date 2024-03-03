@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponse;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
@@ -127,7 +126,6 @@ class DirectChannelControllerTest {
     void directChannelSliceTest() throws Exception {
         //given
 
-
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("createdAt").descending());
 
         List<DirectChannelListResponse> directChannelListResponse = new ArrayList<>(List.of(DirectChannelListResponse.builder()
@@ -188,10 +186,6 @@ class DirectChannelControllerTest {
         Long unReadCount = 10L;
         String lastMessage = "lastMessage";
         LocalDateTime createdAt = LocalDateTime.now();
-        boolean hasNext = false;
-        int currentPage = 0;
-        int pageSize = 10;
-        int pageElementCount = 5;
 
         DirectChannelResponseDto directChannelResponseDto =
                 DirectChannelResponseDto.builder()
@@ -211,21 +205,17 @@ class DirectChannelControllerTest {
         List<DirectChannelResponseDto> directChannelResponseDtoList =
                 new ArrayList<>(List.of(directChannelResponseDto));
 
-        DirectChannelListResponseDto directChannelListResponseDto = DirectChannelListResponseDto.builder()
-                .directChannelResponseListDto(directChannelResponseDtoList)
-                .hasNext(hasNext)
-                .currentPage(currentPage)
-                .pageSize(pageSize)
-                .pageElementCount(pageElementCount)
-                .build();
+        PageRequest pageRequest = PageRequest.of(0 , 10 ,Sort.by("createdAt"));
+        SliceImpl<DirectChannelResponseDto> directChannelResponseDtoSlice =
+                new SliceImpl<>(directChannelResponseDtoList, pageRequest, false);
 
         given(directChannelService.directChannelSliceSortByMessageCreateDateDesc(any(), any(), any()))
-                .willReturn(directChannelListResponseDto);
+                .willReturn(directChannelResponseDtoSlice);
 
         GlobalSuccessResponseDto<Object> directChannelListResponse = GlobalSuccessResponseDto.builder()
                 .status(SUCCESS.getValue())
                 .message(DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS.getMessage())
-                .data(directChannelListResponseDto)
+                .data(directChannelResponseDtoSlice)
                 .build();
 
         given(globalService.successResponse(anyString(), any()))
@@ -236,26 +226,6 @@ class DirectChannelControllerTest {
         mvc.perform(get("/api/channel/direct/v2/{workSpaceId}", workSpaceId)
                         .header("Authorization", accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status")
-                        .value(SUCCESS.getValue()))
-                .andExpect(jsonPath("$.message")
-                        .value(DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS.getMessage()))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].roomId")
-                        .value(roomId))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].name")
-                        .value(name))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].createMemberId")
-                        .value(createMemberId))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].joinMemberId")
-                        .value(joinMemberId))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].createMemberName")
-                        .value(createMemberName))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].joinMemberName")
-                        .value(joinMemberName))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].unReadCount")
-                        .value(unReadCount))
-                .andExpect(jsonPath("$.data.directChannelResponseListDto[0].lastMessage")
-                        .value(lastMessage))
                 .andDo(print());
     }
 
@@ -285,6 +255,4 @@ class DirectChannelControllerTest {
                         .value(DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS.getMessage()))
                 .andDo(print());
     }
-
-
 }

@@ -13,6 +13,7 @@ import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.s3.FileService;
 import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
@@ -46,10 +47,12 @@ public class FileController {
 
     @PostMapping("/file/upload")
     public ResponseEntity<Object> uploadFile(@MemberEmail String email,
+                                              @RequestParam(value = "fileType") FileType fileType,
+                                              @RequestParam(value = "channelId", required = false) Long channelId,
                                               @RequestPart(name = "fileList") List<MultipartFile> multipartFileList,
                                               @RequestPart(name = "fileRequestDto") FileRequestDto fileRequestDto) {
         log.info("파일 업로드 API 호출");
-        List<FileUploadResponseDto> uploadIdResponse = fileService.upload(email, multipartFileList, fileRequestDto);
+        List<FileUploadResponseDto> uploadIdResponse = fileService.upload(email, fileType, channelId, multipartFileList, fileRequestDto);
 
         GlobalSuccessResponseDto<Object> uploadFileSuccessResponse =
                 globalService.successResponse(FILE_UPLOAD_SUCCESS.getMessage(), uploadIdResponse);
@@ -70,11 +73,11 @@ public class FileController {
     @GetMapping("/file/{workSpaceId}")
     public ResponseEntity<Object> fileOrImageList(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                   @RequestParam(value = "fileExtension", required = false) String fileExtension,
-                                                  @RequestParam(value = "fileType", required = false) FileType fileType,
+                                                  @RequestParam(value = "fileUploadType", required = false) FileUploadType fileUploadType,
                                                   @CustomPageable Pageable pageable) {
         log.info("파일 조회 API 호출");
         Slice<FileInfoResponseDto> fileInfoResponseDtoList =
-                fileService.fileList(workSpaceId, fileExtension, fileType, pageable);
+                fileService.fileList(workSpaceId, fileExtension, fileUploadType, pageable);
 
         GlobalSuccessResponseDto<Object> fileInfoSuccessResponse =
                 globalService.successResponse(FILE_INFO_RETURN_SUCCESS.getMessage(),
@@ -87,11 +90,11 @@ public class FileController {
     public ResponseEntity<Object> searchFileList(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                   @RequestParam(value = "fileName", required = false) String fileName,
                                                   @RequestParam(value = "fileExtension", required = false) String fileExtension,
-                                                  @RequestParam(value = "fileType", required = false) FileType fileType,
+                                                  @RequestParam(value = "fileUploadType", required = false) FileUploadType fileUploadType,
                                                   @CustomPageable Pageable pageable) {
         log.info("파일 검색 API 호출");
         Slice<FileInfoResponseDto> searchFileInfoResponseDtoList =
-                fileService.searchFileName(workSpaceId, fileName, fileExtension, fileType, pageable);
+                fileService.searchFileName(workSpaceId, fileName, fileExtension, fileUploadType, pageable);
 
         GlobalSuccessResponseDto<Object> searchFileInfoSuccessResponse =
                 globalService.successResponse(SEARCH_FILE_INFO_RETURN_SUCCESS.getMessage(),

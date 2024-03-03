@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
 import org.project.nuwabackend.type.FilePathType;
+import org.project.nuwabackend.type.FileType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,7 +59,6 @@ class S3ServiceTest {
         //given
         Map<String, Long> imageUrlMap = new HashMap<>();
 
-        String channelType = "direct";
         String uploadFileName = originFileName + "_" + LocalDateTime.now() + fileExtension;
         Long byteSize = 1024L;
         String contentType = "image/jpeg";
@@ -77,7 +77,7 @@ class S3ServiceTest {
                 .willReturn(new URL(expectedUrl));
 
         //when
-        FileUploadResultDto fileUploadResultDto = s3Service.upload(channelType, List.of(multipartFile));
+        FileUploadResultDto fileUploadResultDto = s3Service.upload(FileType.CHAT, List.of(multipartFile));
 
         //then
         fileUploadResultDto.uploadImageUrlMap().forEach((key, value) -> {
