@@ -39,11 +39,11 @@ public class DirectMessageController {
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
     public void directSend(@Header("Authorization") String accessToken, DirectMessageRequestDto directMessageRequestDto) {
-        String rooId = directMessageRequestDto.roomId();
+        String roomId = directMessageRequestDto.roomId();
         DirectMessageResponseDto directMessageResponse =
                 directMessageService.sendMessage(accessToken, directMessageRequestDto);
         template.convertAndSend(
-                DIRECT_DESTINATION + rooId,
+                DIRECT_DESTINATION + roomId,
                 directMessageResponse);
 
         directMessageService.saveDirectMessage(directMessageResponse);
