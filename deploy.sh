@@ -9,6 +9,15 @@ else
     echo "Redis container is already running."
 fi
 
+# Mongo 컨테이너 상태 확인 및 시작
+IS_REDIS_RUNNING=$(docker ps | grep mongo)
+if [ -z "$IS_REDIS_RUNNING" ]; then
+    echo "Starting Mongo container..."
+    docker-compose up -d mongo
+else
+    echo "Mongo container is already running."
+fi
+
 IS_GREEN=$(docker ps | grep green) # 현재 실행중인 App이 blue인지 확인
 DEFAULT_CONF="/etc/nginx/nginx.conf"
 

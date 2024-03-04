@@ -72,3 +72,15 @@ services:
       - ./data/nuwa-redis/redis.conf:/usr/local/etc/nuwa-redis/redis.conf
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+  mongo:
+    image: mongo
+    container_name: nuwa-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/nuwa-mongo:/data
+    environment:
+      MONGODB_IP: ${MONGODB_IP}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_NAME: ${MONGODB_NAME}
