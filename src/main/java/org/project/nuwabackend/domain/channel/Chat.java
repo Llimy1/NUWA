@@ -8,8 +8,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.jdbc.Work;
-import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 
@@ -24,12 +22,12 @@ public class Chat extends Channel{
     private WorkSpaceMember createMember;
 
     @Builder
-    public Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
+    private Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         super(name, workSpace);
         this.createMember = createMember;
     }
 
-    // TODO: test code
+    // 채팅 채널 생성
     public static Chat createChatChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Chat.builder()
                 .name(name)

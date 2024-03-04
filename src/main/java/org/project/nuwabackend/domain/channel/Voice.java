@@ -23,12 +23,11 @@ public class Voice extends Channel {
     private WorkSpaceMember createMember;
 
     @Builder
-    public Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
+    private Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         super(name, workSpace);
         this.createMember = createMember;
     }
 
-    // TODO: test code
     public static Voice createVoiceChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
         return Voice.builder()
                 .name(name)

@@ -47,4 +47,10 @@ public class WorkSpace extends BaseTimeJpa {
                 .introduce(introduce)
                 .build();
     }
+
+    // 워크스페이스 수정
+    public void updateWorkSpace(String name, String image) {
+        this.name = name;
+        this.image = image;
+    }
 }

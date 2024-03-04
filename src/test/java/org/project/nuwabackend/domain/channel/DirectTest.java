@@ -66,7 +66,7 @@ class DirectTest {
         //when
         Direct direct = Direct.createDirectChannel(workSpace, workSpaceCreateMember, workSpaceJoinMember);
 
-        //thenR
+        //then
         assertThat(direct.getRoomId()).isNotNull();
         assertThat(direct.getWorkSpace()).isEqualTo(workSpace);
         assertThat(direct.getCreateMember()).isEqualTo(workSpaceCreateMember);

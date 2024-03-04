@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 
+import java.util.Objects;
+
 import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -34,7 +36,7 @@ public class ChatJoinMember {
     private Chat chatChannel;
 
     @Builder
-    public ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
+    private ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
         this.joinMember = joinMember;
         this.chatChannel = chatChannel;
     }
@@ -45,5 +47,17 @@ public class ChatJoinMember {
                 .joinMember(joinMember)
                 .chatChannel(chatChannel)
                 .build();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChatJoinMember that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

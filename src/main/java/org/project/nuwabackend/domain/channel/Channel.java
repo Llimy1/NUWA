@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import static jakarta.persistence.FetchType.LAZY;
@@ -46,5 +47,17 @@ public abstract class Channel extends BaseTimeJpa {
         this.roomId = UUID.randomUUID().toString();
         this.name = name;
         this.workSpace = workSpace;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Channel channel)) return false;
+        return Objects.equals(id, channel.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

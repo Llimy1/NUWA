@@ -25,12 +25,12 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
+// TODO: test code 추후 로직 작성 후
 public class VoiceChannelController {
 
     private final VoiceChannelService voiceChannelService;
     private final GlobalService globalService;
 
-    // TODO: test code
     @PostMapping("/channel/voice")
     public ResponseEntity<Object> createChatChannel(@MemberEmail String email, @RequestBody VoiceChannelRequest voiceChannelRequest) {
         log.info("음성 채널 생성 API");
@@ -45,7 +45,6 @@ public class VoiceChannelController {
         return ResponseEntity.status(CREATED).body(createVoiceChannelSuccessResponse);
     }
 
-    // TODO: test code
     @PostMapping("/channel/voice/join")
     public ResponseEntity<Object> joinChatChannel(@RequestBody VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
         log.info("채팅 채널 참여 API");
