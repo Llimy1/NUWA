@@ -20,4 +20,4 @@ spring:
       port: ${REDIS_PORT}
       password: ${REDIS_PASSWORD}
     mongodb:
-      uri: mongodb://${MONGODB_IP}:${MONGODB_PORT}/${MONGODB_NAME}?authSource=admin
+      uri: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@${MONGODB_IP}:${MONGODB_PORT}/${MONGODB_NAME}?authSource=admin&authMechanism=SCRAM-SHA-256

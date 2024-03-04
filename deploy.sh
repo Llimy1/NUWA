@@ -9,62 +9,88 @@ else
     echo "Redis container is already running."
 fi
 
-IS_GREEN=$(docker ps | grep green) # 현재 실행중인 App이 blue인지 확인
-DEFAULT_CONF=" /etc/nginx/nginx.conf"
-
-if [ -z $IS_GREEN  ];then # blue라면
-
-  echo "### BLUE => GREEN ###"
-
-
-  echo "1. get green image"
-  docker-compose pull green # 이미지 받아서
-
-
-  echo "2. green container up"
-  docker-compose up -d green # 컨테이너 실행
-
-  while [ 1 = 1 ]; do
-  echo "3. green health check..."
-  sleep 3
-
-  REQUEST=$(curl http://127.0.0.1:8081) # green으로 request
-    if [ -n "$REQUEST" ]; then # 서비스 가능하면 health check 중지
-            echo "health check success"
-            break ;
-            fi
-  done;
-
-  echo "4. reload nginx"
-  sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
-  sudo nginx -s reload
-
-  echo "5. blue container down"
-  docker-compose stop blue
+# Mongo 컨테이너 상태 확인 및 시작
+IS_REDIS_RUNNING=$(docker ps | grep mongo)
+if [ -z "$IS_REDIS_RUNNING" ]; then
+    echo "Starting Mongo container..."
+    docker-compose up -d mongo
 else
-  echo "### GREEN => BLUE ###"
+    echo "Mongo container is already running."
+fi
 
-  echo "1. get blue image"
-  docker-compose pull blue
+IS_GREEN=$(docker ps | grep green) # 현재 실행중인 App이 blue인지 확인
+DEFAULT_CONF="/etc/nginx/nginx.conf"
 
-  echo "2. blue container up"
-  docker-compose up -d blue
-
-  while [ 1 = 1 ]; do
-    echo "3. blue health check..."
-    sleep 3
-    REQUEST=$(curl http://127.0.0.1:8082) # blue로 request
-
-    if [ -n "$REQUEST" ]; then # 서비스 가능하면 health check 중지
-      echo "health check success"
-      break ;
+rollback() {
+    echo "Rollback to previous state..."
+    if [ $1 == "green" ]; then
+        sudo docker stop green
+        sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
+        sudo nginx -s reload
+        sudo docker-compose up -d blue
+    else
+        sudo docker stop blue
+        sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
+        sudo nginx -s reload
+        sudo docker-compose up -d green
     fi
-  done;
+    echo "Rollback completed."
+    exit 1
+}
 
-  echo "4. reload nginx"
-  sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
-  sudo nginx -s reload
+app_health_check() {
+    local service=$1
+    local log_line="Started NuwaBackendApplication in"
 
-  echo "5. green container down"
-  cd $DOCKER_DIR && docker-compose stop green
+    echo "Waiting for 30 seconds before health check..."
+    sleep 30
+
+    echo "Checking if $service is up by searching for '$log_line' in logs..."
+    if docker-compose logs $service | tail -n 100 | grep "$log_line"; then
+        echo "$service has started successfully."
+        return 0
+    else
+        echo "$service failed to start."
+        return 1
+    fi
+}
+
+if [ -z "$IS_GREEN" ]; then # 현재 blue가 실행중이면 green으로 전환
+    echo "### BLUE => GREEN ###"
+
+    echo "1. Get green image"
+    docker-compose pull green
+
+    echo "2. Green container up"
+    docker-compose up -d green
+
+    if app_health_check "green"; then
+        echo "4. Reload nginx"
+        sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
+        sudo nginx -s reload
+
+        echo "5. Blue container down"
+        sudo docker stop blue
+    else
+        rollback "green"
+    fi
+else
+    echo "### GREEN => BLUE ###"
+
+    echo "1. Get blue image"
+    docker-compose pull blue
+
+    echo "2. Blue container up"
+    docker-compose up -d blue
+
+    if app_health_check "blue"; then
+        echo "4. Reload nginx"
+        sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
+        sudo nginx -s reload
+
+        echo "5. Green container down"
+        sudo docker stop green
+    else
+        rollback "blue"
+    fi
 fi

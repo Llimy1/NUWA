@@ -3,114 +3,206 @@ package org.project.nuwabackend.service.s3;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.channel.Channel;
-import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.multimedia.File;
-import org.project.nuwabackend.domain.multimedia.Image;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
+import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.file.request.FileRequestDto;
-import org.project.nuwabackend.dto.file.response.FileUploadIdResponseDto;
+import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
+import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
-import org.project.nuwabackend.dto.file.response.FileUrlListResponse;
 import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
+import org.project.nuwabackend.dto.file.response.TopSevenFileInfoResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.FileRepository;
-import org.project.nuwabackend.repository.jpa.ImageRepository;
-import org.project.nuwabackend.repository.jpa.MemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
+import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
+import org.project.nuwabackend.type.FileType;
+import org.project.nuwabackend.type.FileUploadType;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
 public class FileService {
 
-    private final WorkSpaceRepository workSpaceRepository;
+    private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final ChannelRepository channelRepository;
-    private final MemberRepository memberRepository;
-    private final ImageRepository imageRepository;
     private final FileRepository fileRepository;
+
+    private final FileQueryService fileQueryService;
     private final S3Service s3Service;
 
     @Transactional
-    public FileUploadIdResponseDto upload(String email, List<MultipartFile> multipartFileList, FileRequestDto fileRequestDto) {
+    public List<FileUploadResponseDto> upload(String email, FileType fileType, Long channelId, List<MultipartFile> multipartFileList, FileRequestDto fileRequestDto) {
         log.info("업로드 (이미지 or 파일)");
         Long workSpaceId = fileRequestDto.workSpaceId();
-        Long channelId = fileRequestDto.channelId();
 
-        Member findMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(MEMBER_ID_NOT_FOUND));
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        WorkSpace findWorkSpace = workSpaceRepository.findById(workSpaceId)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
+        WorkSpace findWorkSpace = findWorkSpaceMember.getWorkSpace();
 
-        Channel findChannel = channelRepository.findById(channelId)
-                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+        // 일반 API와 채널에 대한 업로드가 필요
+        FileUploadResultDto fileUploadResultDto = s3Service.upload(fileType, multipartFileList);
 
-        String dtype = findChannel.getClass().getSimpleName();
+        Map<String, Long> fileUrlMap = fileUploadResultDto.uploadFileUrlMap();
+        Map<String, Long> imageUrlMap = fileUploadResultDto.uploadImageUrlMap();
 
-        FileUploadResultDto fileUploadResultDto = s3Service.upload(dtype, multipartFileList);
 
-        List<String> fileUrlList = fileUploadResultDto.uploadFileUrlList();
-        List<String> imageUrlList = fileUploadResultDto.uploadImageUrlList();
+        if (!fileType.equals(FileType.CANVAS)) {
+            Channel findChannel = channelRepository.findById(channelId)
+                    .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
-        List<Long> imageIdList = new ArrayList<>();
-        List<Long> fileIdList = new ArrayList<>();
-
-        // 이미지 URL 리스트가 비어 있지 않은 경우 처리
-        if (!imageUrlList.isEmpty()) {
-            List<Image> imageList = new ArrayList<>();
-            for (String imageUrl : imageUrlList) {
-                Image image = Image.createImage(imageUrl, findMember, findWorkSpace, findChannel);
-                imageList.add(image);
-            }
-            List<Image> savedImageList = imageRepository.saveAll(imageList);
-            savedImageList.forEach(image -> imageIdList.add(image.getId()));
+            return channelUploadList(fileUrlMap, imageUrlMap, fileType, findWorkSpaceMember, findWorkSpace, findChannel);
         }
 
-        // 파일 URL 리스트가 비어 있지 않은 경우 처리
-        if (!fileUrlList.isEmpty()) {
-            List<File> fileList = new ArrayList<>();
-            for (String fileUrl : fileUrlList) {
-                File file = File.createFile(fileUrl, findMember, findWorkSpace, findChannel);
-                fileList.add(file);
-            }
-            List<File> savedFileList = fileRepository.saveAll(fileList);
-            savedFileList.forEach(file -> fileIdList.add(file.getId()));
-        }
-
-        return new FileUploadIdResponseDto(fileIdList, imageIdList);
+        return basicUploadList(fileUrlMap, imageUrlMap, fileType, findWorkSpaceMember, findWorkSpace);
     }
 
     // 이미지와 파일 url 조회
-    public FileUrlListResponse fileUrlList(List<Long> fileIdList, List<Long> imageIdList) {
+    public List<FileUrlResponseDto> fileUrlList(List<Long> fileIdList) {
 
         List<File> fileList = fileRepository.findByIdIn(fileIdList);
-        List<Image> imageList = imageRepository.findByIdIn(imageIdList);
 
-        List<FileUrlResponseDto> fileUrlListResponseList = new ArrayList<>();
-        List<FileUrlResponseDto> imageUrlListResponseList = new ArrayList<>();
+        return fileList.stream().map(file -> FileUrlResponseDto.builder()
+                        .fileId(file.getId())
+                        .fileUrl(file.getUrl())
+                        .fileUploadType(file.getFileUploadType())
+                        .fileType(file.getFileType())
+                        .fileCreatedAt(file.getCreatedAt())
+                        .build())
+                .toList();
+    }
 
-        fileList.forEach(file -> {
-            fileUrlListResponseList.add(new FileUrlResponseDto(file.getId(), file.getUrl()));
-        });
+    // 파일 조회
+    public Slice<FileInfoResponseDto> fileList(Long workSpaceId, String fileExtension, FileUploadType fileUploadType, Pageable pageable) {
+        log.info("파일 조회");
+        return fileQueryService.fileList(workSpaceId, fileExtension, fileUploadType, pageable);
+    }
 
-        imageList.forEach(image -> {
-            imageUrlListResponseList.add(new FileUrlResponseDto(image.getId(), image.getUrl()));
-        });
+    // 파일 검색
+    public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileUploadType fileUploadType, Pageable pageable) {
+        log.info("파일 검색");
+        return fileQueryService.searchFileName(workSpaceId, fileName, fileExtension, fileUploadType, pageable);
+    }
+
+    // 최근 파일 조회 (7개)
+    public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
+        log.info("최근 생성 시간 순 7개 파일 조회");
+        return fileQueryService.topSevenFileOrderByCreatedAt(workSpaceId);
+    }
+
+    // 파일 원본 이름
+    private static String getOriginFileName(String fileUrl) {
+        int slashIndex = fileUrl.lastIndexOf("/") + 1;
+        int underBarIndex = fileUrl.lastIndexOf("_");
+
+        String decode = URLDecoder.decode(fileUrl.substring(slashIndex, underBarIndex), StandardCharsets.UTF_8).trim();
+
+        return Normalizer.normalize(decode, Normalizer.Form.NFC);
+    }
+
+    // 파일 확장자
+    private String getExtension(String fileUrl) {
+        int dotIndex = fileUrl.lastIndexOf(".") + 1;
+
+        return fileUrl.substring(dotIndex);
+    }
+
+    // 일반 파일 리스트 반환
+    private List<FileUploadResponseDto> basicUploadList(Map<String, Long> fileUrlMap, Map<String, Long> imageUrlMap,
+                                  FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace) {
+        List<File> fileList = new ArrayList<>();
+
+        // 이미지 URL 리스트가 비어 있지 않은 경우 처리
+        if (!imageUrlMap.isEmpty()) {
+
+            imageUrlMap.forEach((key, value) -> {
+
+                String originFileName = getOriginFileName(key);
+                String extension = getExtension(key);
+
+                File file = File.createFile(key, originFileName, value, extension, FileUploadType.IMAGE, fileType,
+                        workSpaceMember, workSpace);
+                fileList.add(file);
+            });
+        }
+
+        // 파일 URL 리스트가 비어 있지 않은 경우 처리
+        if (!fileUrlMap.isEmpty()) {
+            fileUrlMap.forEach((key, value) -> {
+
+                String originFileName = getOriginFileName(key);
+                String extension = getExtension(key);
+
+                File file = File.createFile(key, originFileName, value, extension, FileUploadType.FILE, fileType,
+                        workSpaceMember, workSpace);
+
+                fileList.add(file);
+            });
+        }
+        return fileRepository.saveAll(fileList).stream().map(file -> FileUploadResponseDto.builder()
+                        .fileId(file.getId())
+                        .fileUploadType(file.getFileUploadType())
+                        .fileType(file.getFileType())
+                        .build())
+                .toList();
+    }
 
 
-        return new FileUrlListResponse(fileUrlListResponseList, imageUrlListResponseList);
+    // 채널 파일 리스트 반환
+    private List<FileUploadResponseDto> channelUploadList(Map<String, Long> fileUrlMap, Map<String, Long> imageUrlMap,
+                                                       FileType fileType, WorkSpaceMember workSpaceMember, WorkSpace workSpace, Channel channel) {
+
+        List<File> fileList = new ArrayList<>();
+
+        // 이미지 URL 리스트가 비어 있지 않은 경우 처리
+        if (!imageUrlMap.isEmpty()) {
+
+            imageUrlMap.forEach((key, value) -> {
+
+                String originFileName = getOriginFileName(key);
+                String extension = getExtension(key);
+
+                File file = File.createChannelFile(key, originFileName, value, extension, FileUploadType.IMAGE, fileType,
+                        workSpaceMember, workSpace, channel);
+                fileList.add(file);
+            });
+        }
+
+        // 파일 URL 리스트가 비어 있지 않은 경우 처리
+        if (!fileUrlMap.isEmpty()) {
+            fileUrlMap.forEach((key, value) -> {
+
+                String originFileName = getOriginFileName(key);
+                String extension = getExtension(key);
+
+                File file = File.createChannelFile(key, originFileName, value, extension, FileUploadType.FILE, fileType,
+                        workSpaceMember, workSpace, channel);
+
+                fileList.add(file);
+            });
+        }
+        return fileRepository.saveAll(fileList).stream().map(file -> FileUploadResponseDto.builder()
+                        .fileId(file.getId())
+                        .fileUploadType(file.getFileUploadType())
+                        .fileType(file.getFileType())
+                        .build())
+                .toList();
     }
 }

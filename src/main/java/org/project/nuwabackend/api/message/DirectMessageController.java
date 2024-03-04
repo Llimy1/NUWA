@@ -16,6 +16,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_MESSAGE_LIST_RETURN_SUCCESS;
@@ -36,25 +39,32 @@ public class DirectMessageController {
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
     public void directSend(@Header("Authorization") String accessToken, DirectMessageRequestDto directMessageRequestDto) {
-        String rooId = directMessageRequestDto.roomId();
+        String roomId = directMessageRequestDto.roomId();
         DirectMessageResponseDto directMessageResponse =
                 directMessageService.sendMessage(accessToken, directMessageRequestDto);
         template.convertAndSend(
-                DIRECT_DESTINATION + rooId,
+                DIRECT_DESTINATION + roomId,
                 directMessageResponse);
 
         directMessageService.saveDirectMessage(directMessageResponse);
     }
 
+    @PostMapping("/test/direct/message")
+    public void testDirectSend(@RequestHeader("Authorization") String accessToken, @RequestBody DirectMessageRequestDto directMessageRequestDto) {
+        DirectMessageResponseDto directMessageResponseDto =
+                directMessageService.sendMessage(accessToken, directMessageRequestDto);
+        directMessageService.saveDirectMessage(directMessageResponseDto);
+    }
+
     // 채팅 메세지 리스트 반환
     @GetMapping("/api/message/direct/{directChannelRoomId}")
-    public ResponseEntity<Object> directMessageSliceSortByDate(
+    public ResponseEntity<Object> directMessageSliceOrderByCreatedDate(
             @PathVariable("directChannelRoomId") String directChannelRoomId,
             @CustomPageable Pageable pageable) {
 
         log.info("채팅 메세지 리스트 반환 API 호출");
         Slice<DirectMessageResponseDto> directMessageResponseDtoList =
-                directMessageService.directMessageSliceSortByDate(directChannelRoomId, pageable);
+                directMessageService.directMessageSliceOrderByCreatedDate(directChannelRoomId, pageable);
 
         GlobalSuccessResponseDto<Object> directMessageSuccessResponse =
                 globalService.successResponse(
