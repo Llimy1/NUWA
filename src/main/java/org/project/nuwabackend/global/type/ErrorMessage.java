@@ -25,6 +25,7 @@ public enum ErrorMessage {
     CHANNEL_NOT_FOUND("채널이 존재하지 않습니다."),
     FILE_EXTENSION_NOT_FOUND("파일의 확장자가 존재하지 않습니다."),
     FILE_EXTENSION_NOT_APPLY("파일의 확장자를 지원하지 않습니다."),
+    EMAIL_NOT_FOUND("이메일 전송에 실패했습니다."),
     SEARCH_FILE_NAME_NOT_FOUND("검색어를 입력하지 않았습니다.");
 
     private final String message;

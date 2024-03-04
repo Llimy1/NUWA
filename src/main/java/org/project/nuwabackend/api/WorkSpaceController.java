@@ -33,6 +33,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.FAVORITE_WORK_S
 import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_MEMBER_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS;
@@ -105,7 +106,7 @@ public class WorkSpaceController {
         List<WorkSpaceMemberInfoResponse> WorkSpaceMemberInfoResponse = workSpaceService.getAllMembersByWorkspace(workSpaceId);
 
         GlobalSuccessResponseDto<Object> getWorkspacesSuccessResponse = globalService.successResponse(
-                READ_MY_WORK_SPACE_SUCCESS.getMessage(),
+                READ_MY_WORK_SPACE_MEMBER_SUCCESS.getMessage(),
                 WorkSpaceMemberInfoResponse);
         return ResponseEntity.status(OK).body(getWorkspacesSuccessResponse);
     }
