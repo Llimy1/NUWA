@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomPageable {
-    int page() default 1;
-    int size() default 20;
+    int page() default 0;
+    int size() default 10;
     String sortBy() default "createdAt";
+    String sortOrder() default "asc";
 }

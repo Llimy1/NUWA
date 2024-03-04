@@ -25,6 +25,7 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FO
 @Slf4j
 @Service
 @RequiredArgsConstructor
+// TODO: test code 추후 로직 작성 후
 public class VoiceChannelService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
@@ -34,18 +35,16 @@ public class VoiceChannelService {
     private final VoiceJoinMemberRepository voiceJoinMemberRepository;
 
     // 음성 채널 생성
-    // TODO: test code
     public Long createVoiceChannel(String email, VoiceChannelRequest voiceChannelRequest) {
         Long workSpaceId = voiceChannelRequest.workSpaceId();
         String voiceChannelName = voiceChannelRequest.voiceChannelName();
 
-        // 워크스페이스가 존재하는지 확인
-        WorkSpace workSpace = workSpaceRepository.findById(workSpaceId)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
 
         // 워크스페이스에 멤버가 존재 하는지 확인
-        WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmail(email)
+        WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        WorkSpace workSpace = createWorkSpaceMember.getWorkSpace();
 
         Voice voiceChannel = Voice.createVoiceChannel(voiceChannelName, workSpace, createWorkSpaceMember);
 
@@ -55,17 +54,16 @@ public class VoiceChannelService {
     }
 
     // 채팅 채널 참가
-    // TODO: test code
     public void joinVoiceChannel(VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
-        List<String> joinMemberNameList = voiceChannelJoinMemberRequest.joinMemberNameList();
+        List<Long> joinMemberIdList = voiceChannelJoinMemberRequest.joinMemberIdList();
         Long chatChannelId = voiceChannelJoinMemberRequest.voiceChannelId();
 
         Voice voiceChannel = voiceChannelRepository.findById(chatChannelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
         List<VoiceJoinMember> voiceJoinMemberList = new ArrayList<>();
-        for (String name : joinMemberNameList) {
-            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByName(name)
+        for (Long id : joinMemberIdList) {
+            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
 

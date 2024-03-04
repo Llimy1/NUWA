@@ -49,7 +49,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("**").permitAll())
+                        .requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("**").permitAll()
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/actuator/prometheus").permitAll()
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/notification/**").permitAll()
+                        .requestMatchers("/socket/**").permitAll()
+                        .requestMatchers("/pub/**").permitAll()
+                        .requestMatchers("/sub/**").permitAll())
 
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e ->
