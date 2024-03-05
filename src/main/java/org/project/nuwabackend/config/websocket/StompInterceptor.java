@@ -75,13 +75,11 @@ public class StompInterceptor implements ChannelInterceptor {
 
     // 토큰 꺼내기
     private String getAccessToken(StompHeaderAccessor accessor) {
-        log.info("getAccessToken = " + accessor.getFirstNativeHeader("Authorization"));
         return accessor.getFirstNativeHeader("Authorization");
     }
 
     // 토큰 판별
     private String verifyToken(String accessToken) {
-        log.info("accessToken = " + accessToken);
         if (!jwtUtil.verifyToken(accessToken)) {
             throw new JwtException(JWT_EXPIRED);
         }
