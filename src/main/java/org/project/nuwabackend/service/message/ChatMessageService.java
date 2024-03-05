@@ -1,5 +1,6 @@
 package org.project.nuwabackend.service.message;
 
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.channel.Chat;
@@ -76,24 +77,19 @@ public class ChatMessageService {
         // 채팅방 ID로 Redis 입장 정보 가져오기
         List<String> connectEmailList =
                 chatChannelRedisService.chatConnectEmailList(roomId);
-//
-//        List<ChatJoinMember> chatJoinMemberList =
-//                workSpaceMemberQueryService.chatJoinMemberNotInEmailAndChannelId(connectEmailList, channelId);
 
+        // 접속한 유저를 제외한 워크스페이스 멤버 리스트
+        List<WorkSpaceMember> chatMemberList =
+                workSpaceMemberQueryService.chatCreateMemberOrJoinMemberNotInEmailAndChannelId(connectEmailList, channelId);
 
-        List<ChatJoinMember> joinMemberList =
-                chatJoinMemberRepository.findByChatChannelId(channelId);
-
-        List<Long> joinMemberIdList = new ArrayList<>();
-        joinMemberList.forEach(joinMember -> {
-            joinMemberIdList.add(joinMember.getId());
-
+        chatMemberList.forEach(chatMember -> {
             log.info("알림 전송");
-            // TODO: 알림 로직
-            notificationService.send(content,
+            notificationService.send(
+                    content,
                     createChatUrl(roomId),
                     NotificationType.CHAT,
-                    joinMember.getJoinMember());
+                    chatMember
+                    );
         });
 
         return ChatMessageResponseDto.builder()
@@ -101,7 +97,6 @@ public class ChatMessageService {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
-                .publishList(joinMemberIdList)
                 .messageType(messageType)
                 .createdAt(LocalDateTime.now())
                 .build();

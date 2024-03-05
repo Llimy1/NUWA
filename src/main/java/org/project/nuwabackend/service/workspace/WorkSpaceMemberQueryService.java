@@ -1,7 +1,9 @@
 package org.project.nuwabackend.service.workspace;
 
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,18 +26,28 @@ public class WorkSpaceMemberQueryService {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-//    public List<WorkSpaceMember> chatCreateMemberOrJoinMemberNotInEmailAndChannelId(List<String> emailList, Long channelId) {
-//        jpaQueryFactory.select(chat.createMember)
-//                .from(chat)
-//                .where(channelIdEq(channelId))
-//                .fetch();
+    public List<WorkSpaceMember> chatCreateMemberOrJoinMemberNotInEmailAndChannelId(List<String> emailList, Long channelId) {
+        WorkSpaceMember createMember = jpaQueryFactory.select(chat.createMember)
+                .from(chat)
+                .where(
+                        channelIdEq(channelId),
+                        emailNotIn(emailList))
+                .fetchOne();
 //
-//        jpaQueryFactory.select(chatJoinMember.joinMember)
-//                .from(chatJoinMember)
-//                .join(chatJoinMember.chatChannel, chat)
-//                .where(channelIdEq(channelId))
-//                .fetch();
-//    }
+        List<WorkSpaceMember> joinMemberList = jpaQueryFactory.select(chatJoinMember.joinMember)
+                .from(chatJoinMember)
+                .join(chatJoinMember.chatChannel, chat)
+                .where(
+                        channelIdEq(channelId),
+                        emailNotIn(emailList))
+                .fetch();
+
+        if (createMember != null) {
+            joinMemberList.add(createMember);
+        }
+
+        return joinMemberList;
+    }
 
     private BooleanExpression emailNotIn(List<String> emailList) {
         return !emailList.isEmpty() ? member.email.notIn(emailList) : null;

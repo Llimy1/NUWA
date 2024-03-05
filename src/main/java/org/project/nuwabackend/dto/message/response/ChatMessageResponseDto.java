@@ -14,7 +14,6 @@ public record ChatMessageResponseDto(
         Long senderId,
         String senderName,
         String content,
-        List<Long> publishList,
         MessageType messageType,
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
         LocalDateTime createdAt) {
