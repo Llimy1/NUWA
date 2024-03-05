@@ -24,11 +24,13 @@ DEFAULT_CONF="/etc/nginx/nginx.conf"
 rollback() {
     echo "Rollback to previous state..."
     if [ $1 == "green" ]; then
+        sudo docker stop blue
         sudo docker stop green
         sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
         sudo nginx -s reload
         sudo docker-compose up -d blue
     else
+        sudo docker stop green
         sudo docker stop blue
         sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
         sudo nginx -s reload
@@ -45,13 +47,12 @@ app_health_check() {
     echo "Waiting for 30 seconds before health check..."
     sleep 30
 
-    echo "Checking if $service is up by searching for '$log_line' in logs..."
-    if docker-compose logs $service | tail -n 100 | grep "$log_line"; then
-        echo "$service has started successfully."
-        return 0
+    echo "Starting health check. Waiting up to 60 seconds for '$log_line' in $service logs..."
+    if timeout 60 bash -c -- "while ! docker-compose logs $service | grep -q '$log_line'; do sleep 1; done"; then
+        echo "$service has started successfully within 90 seconds."
     else
-        echo "$service failed to start."
-        return 1
+        echo "Failed to detect '$log_line' in $service logs within 90 seconds. Stopping $service..."
+        docker-compose stop $service
     fi
 }
 
