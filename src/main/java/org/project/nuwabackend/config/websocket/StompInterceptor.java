@@ -47,13 +47,8 @@ public class StompInterceptor implements ChannelInterceptor {
     private void handleMessage(StompCommand command, StompHeaderAccessor accessor, String email) {
 
         switch (command) {
-            case CONNECT:
-                connect(accessor, email);
-                break;
-            case SUBSCRIBE:
-            case SEND:
-                verifyToken(getAccessToken(accessor));
-                break;
+            case CONNECT -> connect(accessor, email);
+            case SUBSCRIBE, SEND -> verifyToken(getAccessToken(accessor));
         }
     }
 
