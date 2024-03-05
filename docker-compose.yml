@@ -32,6 +32,8 @@ services:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
       AWS_BUCKET: ${AWS_BUCKET}
+      GMAIL_ADDRESS: ${GMAIL_ADDRESS}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
 
   blue:
     container_name: blue
@@ -64,6 +66,8 @@ services:
       AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
       AWS_SECRET_KEY: ${AWS_SECRET_KEY}
       AWS_BUCKET: ${AWS_BUCKET}
+      GMAIL_ADDRESS: ${GMAIL_ADDRESS}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
 
   redis:
     image: redis:alpine
