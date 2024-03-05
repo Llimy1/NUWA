@@ -12,6 +12,7 @@ import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.resolver.CustomPageableHandlerMethodArgumentResolver;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.message.DirectMessageService;
+import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
@@ -71,6 +72,7 @@ class DirectMessageControllerTest {
                         .senderId(senderId)
                         .senderName(senderName)
                         .content(content)
+                        .messageType(MessageType.TEXT)
                         .readCount(readCount)
                         .createdAt(LocalDateTime.now()).build());
 
@@ -95,5 +97,4 @@ class DirectMessageControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
     }
-
 }

@@ -19,6 +19,7 @@ import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
+import org.project.nuwabackend.type.MessageType;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -201,7 +202,7 @@ class DirectChannelServiceTest {
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
 
-        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, LocalDateTime.now());
+        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, MessageType.TEXT, LocalDateTime.now());
 
         ReflectionTestUtils.setField(directMessage1, "id", UUID.randomUUID().toString());
         ReflectionTestUtils.setField(directMessage1, "createdAt", LocalDateTime.now());
@@ -286,7 +287,7 @@ class DirectChannelServiceTest {
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
 
-        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, LocalDateTime.now());
+        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, MessageType.TEXT, LocalDateTime.now());
 
         ReflectionTestUtils.setField(directMessage1, "id", UUID.randomUUID().toString());
         ReflectionTestUtils.setField(directMessage1, "createdAt", LocalDateTime.now());

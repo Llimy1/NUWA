@@ -3,6 +3,7 @@ package org.project.nuwabackend.domain.mongo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.project.nuwabackend.type.MessageType;
 
 import java.time.LocalDateTime;
 
@@ -25,7 +26,7 @@ class DirectMessageTest {
     void createDirectMessageTest() {
         //given
         //when
-        DirectMessage directMessage = DirectMessage.createDirectMessage(workSpaceId, roomId, senderId, senderName, content, readCount, now);
+        DirectMessage directMessage = DirectMessage.createDirectMessage(workSpaceId, roomId, senderId, senderName, content, readCount, MessageType.TEXT, now);
 
         //then
         assertThat(directMessage.getWorkSpaceId()).isEqualTo(workSpaceId);

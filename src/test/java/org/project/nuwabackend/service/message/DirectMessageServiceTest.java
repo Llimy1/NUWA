@@ -18,6 +18,7 @@ import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.channel.DirectChannelRedisService;
 import org.project.nuwabackend.service.notification.NotificationService;
+import org.project.nuwabackend.type.MessageType;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -127,6 +128,7 @@ class DirectMessageServiceTest {
                 directMessageResponseDto.senderName(),
                 directMessageResponseDto.content(),
                 directMessageResponseDto.readCount(),
+                MessageType.TEXT,
                 LocalDateTime.now());
 
         given(directMessageRepository.save(any()))
@@ -152,6 +154,7 @@ class DirectMessageServiceTest {
                 directMessageResponseDto.senderName(),
                 directMessageResponseDto.content(),
                 directMessageResponseDto.readCount(),
+                MessageType.TEXT,
                 LocalDateTime.now());
 
         List<DirectMessage> directMessageList =

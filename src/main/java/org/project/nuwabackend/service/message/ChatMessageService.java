@@ -16,6 +16,7 @@ import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.ChatMessageRepository;
 import org.project.nuwabackend.service.notification.NotificationService;
 import org.project.nuwabackend.service.auth.JwtUtil;
+import org.project.nuwabackend.type.MessageType;
 import org.project.nuwabackend.type.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -51,6 +52,7 @@ public class ChatMessageService {
         Long workSpaceId = chatMessageRequestDto.workSpaceId();
         String roomId = chatMessageRequestDto.roomId();
         String content = chatMessageRequestDto.content();
+        MessageType messageType = chatMessageRequestDto.messageType();
 
         String email = jwtUtil.getEmail(accessToken);
 
@@ -87,6 +89,7 @@ public class ChatMessageService {
                 .senderName(senderName)
                 .content(content)
                 .publishList(joinMemberIdList)
+                .messageType(messageType)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -99,10 +102,11 @@ public class ChatMessageService {
         Long senderId = chatMessageResponseDto.senderId();
         String senderName = chatMessageResponseDto.senderName();
         String content = chatMessageResponseDto.content();
+        MessageType messageType = chatMessageResponseDto.messageType();
         LocalDateTime createdAt = chatMessageResponseDto.createdAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, messageType, createdAt);
 
         chatMessageRepository.save(chatMessage);
     }
@@ -118,6 +122,7 @@ public class ChatMessageService {
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());
     }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -34,16 +35,20 @@ public class ChatMessage {
     @Field(name = "chat_content")
     private String content;
 
+    @Field(name = "message_type")
+    private MessageType messageType;
+
     @Field(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, LocalDateTime createdAt) {
+    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
+        this.messageType = messageType;
         this.createdAt = createdAt;
     }
 
@@ -59,13 +64,14 @@ public class ChatMessage {
         return Objects.hash(id);
     }
 
-    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, LocalDateTime createdAt) {
+    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, MessageType messageType, LocalDateTime createdAt) {
         return ChatMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .messageType(messageType)
                 .createdAt(createdAt)
                 .build();
     }
