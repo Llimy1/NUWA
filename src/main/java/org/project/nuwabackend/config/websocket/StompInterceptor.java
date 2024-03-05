@@ -75,6 +75,7 @@ public class StompInterceptor implements ChannelInterceptor {
 
     // 토큰 꺼내기
     private String getAccessToken(StompHeaderAccessor accessor) {
+        log.info("getAccessToken = " + accessor.getFirstNativeHeader("Authorization"));
         return accessor.getFirstNativeHeader("Authorization");
     }
 
