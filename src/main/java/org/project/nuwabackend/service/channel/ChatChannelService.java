@@ -8,10 +8,13 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
 import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -70,5 +73,15 @@ public class ChatChannelService {
         chatJoinMemberRepository.saveAll(chatJoinMemberList);
     }
 
-
+    // 채팅방 리스트 조회
+    // TODO: test code
+    public Slice<ChatChannelListResponseDto> chatChannelList(Long workSpaceId, Pageable pageable) {
+        return chatChannelRepository.findByWorkSpaceId(workSpaceId, pageable)
+                .map(chat -> ChatChannelListResponseDto.builder()
+                        .workSpaceId(workSpaceId)
+                        .channelId(chat.getId())
+                        .name(chat.getName())
+                        .roomId(chat.getRoomId())
+                        .build());
+    }
 }

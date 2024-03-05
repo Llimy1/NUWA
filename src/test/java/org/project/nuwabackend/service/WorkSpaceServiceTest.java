@@ -19,6 +19,7 @@ import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
+import org.project.nuwabackend.service.workspace.WorkSpaceService;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.test.util.ReflectionTestUtils;
 

@@ -23,7 +23,7 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "WHERE m.email = :email AND w.id = :workSpaceId")
     Optional<WorkSpaceMember> findByMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
 
-    // 이메일과 워크스페이스 ID로 워크스페이스 멤버 찾기
+    // 이메일로 워크스페이스 멤버 찾기
     @Query("SELECT wm " +
             "FROM WorkSpaceMember wm " +
             "JOIN wm.member m " +

@@ -12,6 +12,7 @@ import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.notification.NotificationService;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.channel.DirectChannelRedisService;
+import org.project.nuwabackend.type.MessageType;
 import org.project.nuwabackend.type.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -46,6 +47,7 @@ public class DirectMessageService {
         String senderName = directMessageResponseDto.senderName();
         String directContent = directMessageResponseDto.content();
         Long readCount = directMessageResponseDto.readCount();
+        MessageType messageType = directMessageResponseDto.messageType();
         LocalDateTime createdAt = directMessageResponseDto.createdAt();
 
         DirectMessage directMessage = DirectMessage.createDirectMessage(
@@ -55,6 +57,7 @@ public class DirectMessageService {
                 senderName,
                 directContent,
                 readCount,
+                messageType,
                 createdAt);
 
         directMessageRepository.save(directMessage);
@@ -71,6 +74,7 @@ public class DirectMessageService {
                         .senderName(directMessage.getSenderName())
                         .content(directMessage.getContent())
                         .readCount(directMessage.getReadCount())
+                        .messageType(directMessage.getMessageType())
                         .createdAt(directMessage.getCreatedAt())
                         .build());
     }
@@ -85,6 +89,7 @@ public class DirectMessageService {
         String directChannelRoomId = directMessageRequestDto.roomId();
         String directChannelContent = directMessageRequestDto.content();
         Long receiverId = directMessageRequestDto.receiverId();
+        MessageType messageType = directMessageRequestDto.messageType();
 
         // 메세지 보낸 사람
         WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -119,6 +124,7 @@ public class DirectMessageService {
                 .senderName(senderName)
                 .content(directChannelContent)
                 .readCount(readCount)
+                .messageType(messageType)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

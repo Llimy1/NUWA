@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.global.exception.JwtException;
 import org.project.nuwabackend.service.auth.JwtUtil;
+import org.project.nuwabackend.service.channel.ChatChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
@@ -30,6 +31,7 @@ public class StompInterceptor implements ChannelInterceptor {
 
     private final DirectChannelRedisService directChannelRedisService;
     private final DirectMessageQueryService directMessageQueryService;
+    private final ChatChannelRedisService chatChannelRedisService;
     private final JwtUtil jwtUtil;
 
 
@@ -45,13 +47,8 @@ public class StompInterceptor implements ChannelInterceptor {
     private void handleMessage(StompCommand command, StompHeaderAccessor accessor, String email) {
 
         switch (command) {
-            case CONNECT:
-                connect(accessor, email);
-                break;
-            case SUBSCRIBE:
-            case SEND:
-                verifyToken(getAccessToken(accessor));
-                break;
+            case CONNECT -> connect(accessor, email);
+            case SUBSCRIBE, SEND -> verifyToken(getAccessToken(accessor));
         }
     }
 
@@ -90,15 +87,17 @@ public class StompInterceptor implements ChannelInterceptor {
         String directChannelRoomId = getRoomId(accessor);
 
         // 다이렉트 채널 입장 -> Redis 정보 저장
-        directChannelRedisService.saveDirectChannelMemberInfo(directChannelRoomId, email);
+        directChannelRedisService.saveChannelMemberInfo(directChannelRoomId, email);
 
         // 다이렉트 메세지 전부 읽음 처리
         directMessageQueryService.updateReadCountZero(directChannelRoomId, email);
     }
 
-    // TODO: 채팅 채널 연결시
     private void connectToChatChannel(StompHeaderAccessor accessor, String email) {
+        String chatChannelRoomId = getRoomId(accessor);
 
+        // 채팅 채널 입장 -> Redis 정보 저장
+        chatChannelRedisService.saveChannelMemberInfo(chatChannelRoomId, email);
     }
 
     // TODO: 음성 채널 연결시

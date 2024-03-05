@@ -1,5 +1,6 @@
 package org.project.nuwabackend.service.message;
 
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.channel.Chat;
@@ -14,8 +15,11 @@ import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
 import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.ChatMessageRepository;
+import org.project.nuwabackend.service.channel.ChatChannelRedisService;
+import org.project.nuwabackend.service.workspace.WorkSpaceMemberQueryService;
 import org.project.nuwabackend.service.notification.NotificationService;
 import org.project.nuwabackend.service.auth.JwtUtil;
+import org.project.nuwabackend.type.MessageType;
 import org.project.nuwabackend.type.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -36,10 +40,11 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 public class ChatMessageService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
-    private final ChatJoinMemberRepository chatJoinMemberRepository;
     private final ChatChannelRepository chatChannelRepository;
     private final ChatMessageRepository chatMessageRepository;
 
+    private final WorkSpaceMemberQueryService workSpaceMemberQueryService;
+    private final ChatChannelRedisService chatChannelRedisService;
     private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
 
@@ -51,6 +56,7 @@ public class ChatMessageService {
         Long workSpaceId = chatMessageRequestDto.workSpaceId();
         String roomId = chatMessageRequestDto.roomId();
         String content = chatMessageRequestDto.content();
+        MessageType messageType = chatMessageRequestDto.messageType();
 
         String email = jwtUtil.getEmail(accessToken);
 
@@ -67,18 +73,22 @@ public class ChatMessageService {
         Long channelId = findChat.getId();
 
         // channelId로 해당 채널 참가 인원 리스트 가져오기
-        List<ChatJoinMember> joinMemberList = chatJoinMemberRepository.findByChatChannelId(channelId);
+        // 채팅방 ID로 Redis 입장 정보 가져오기
+        List<String> connectEmailList =
+                chatChannelRedisService.chatConnectEmailList(roomId);
 
-        List<Long> joinMemberIdList = new ArrayList<>();
-        joinMemberList.forEach(joinMember -> {
-            joinMemberIdList.add(joinMember.getId());
+        // 접속한 유저를 제외한 워크스페이스 멤버 리스트
+        List<WorkSpaceMember> chatMemberList =
+                workSpaceMemberQueryService.chatCreateMemberOrJoinMemberNotInEmailAndChannelId(connectEmailList, channelId);
 
+        chatMemberList.forEach(chatMember -> {
             log.info("알림 전송");
-            // TODO: 알림 로직
-            notificationService.send(content,
+            notificationService.send(
+                    content,
                     createChatUrl(roomId),
                     NotificationType.CHAT,
-                    joinMember.getJoinMember());
+                    chatMember
+                    );
         });
 
         return ChatMessageResponseDto.builder()
@@ -86,7 +96,7 @@ public class ChatMessageService {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
-                .publishList(joinMemberIdList)
+                .messageType(messageType)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -99,10 +109,11 @@ public class ChatMessageService {
         Long senderId = chatMessageResponseDto.senderId();
         String senderName = chatMessageResponseDto.senderName();
         String content = chatMessageResponseDto.content();
+        MessageType messageType = chatMessageResponseDto.messageType();
         LocalDateTime createdAt = chatMessageResponseDto.createdAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, messageType, createdAt);
 
         chatMessageRepository.save(chatMessage);
     }
@@ -118,6 +129,7 @@ public class ChatMessageService {
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());
     }

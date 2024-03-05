@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -37,17 +38,21 @@ public class DirectMessage {
     @Field(name = "direct_read_count")
     private Long readCount;
 
+    @Field(name = "message_type")
+    private MessageType messageType;
+
     @Field(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
+    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
         this.readCount = readCount;
+        this.messageType = messageType;
         this.createdAt = createdAt;
     }
 
@@ -63,7 +68,7 @@ public class DirectMessage {
         return Objects.hash(id);
     }
 
-    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, LocalDateTime createdAt) {
+    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, MessageType messageType, LocalDateTime createdAt) {
         return DirectMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
@@ -71,6 +76,7 @@ public class DirectMessage {
                 .senderName(senderName)
                 .content(content)
                 .readCount(readCount)
+                .messageType(messageType)
                 .createdAt(createdAt)
                 .build();
     }

@@ -19,6 +19,7 @@ import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.ChatMessageRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.notification.NotificationService;
+import org.project.nuwabackend.type.MessageType;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -115,7 +116,7 @@ class ChatMessageServiceTest {
         LocalDateTime createdAt = chatMessageResponseDto.createdAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, MessageType.TEXT, createdAt);
 
         given(chatMessageRepository.save(any()))
                 .willReturn(chatMessage);
@@ -139,7 +140,7 @@ class ChatMessageServiceTest {
         LocalDateTime createdAt = chatMessageResponseDto.createdAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, MessageType.TEXT, createdAt);
 
         List<ChatMessage> chatMessageList = new ArrayList<>(List.of(chatMessage));
 
@@ -155,6 +156,7 @@ class ChatMessageServiceTest {
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());
 
