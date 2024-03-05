@@ -40,7 +40,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 public class ChatMessageService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
-    private final ChatJoinMemberRepository chatJoinMemberRepository;
     private final ChatChannelRepository chatChannelRepository;
     private final ChatMessageRepository chatMessageRepository;
 
