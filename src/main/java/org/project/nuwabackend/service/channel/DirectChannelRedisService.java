@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.redis.DirectChannelRedis;
 import org.project.nuwabackend.global.exception.NotFoundException;
+import org.project.nuwabackend.repository.redis.ChannelRedisService;
 import org.project.nuwabackend.repository.redis.DirectChannelRedisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,25 +16,28 @@ import static org.project.nuwabackend.global.type.ErrorMessage.REDIS_DIRECT_CHAN
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DirectChannelRedisService {
+@Transactional(readOnly = true)
+public class DirectChannelRedisService implements ChannelRedisService {
 
     private final DirectChannelRedisRepository directChannelRedisRepository;
 
-
     // Redis에 채널 입장 정보 저장
+    @Override
     @Transactional
-    public void saveDirectChannelMemberInfo(String directChannelRoomId, String email) {
-        log.info("채널 입장 정보 저장");
+    public void saveChannelMemberInfo(String channelRoomId, String email) {
+        log.info("다이렉트 채널 입장 정보 저장");
         DirectChannelRedis directChannelInfo =
-                DirectChannelRedis.createDirectChannelRedis(directChannelRoomId, email);
+                DirectChannelRedis.createDirectChannelRedis(channelRoomId, email);
 
         directChannelRedisRepository.save(directChannelInfo);
     }
 
     // Redis에 채널 입장 정보 삭제
+    @Override
     @Transactional
-    public void deleteDirectChannelMemberInfo(String directChannelRoomId, String email) {
-        DirectChannelRedis directChannelRedis = directChannelRedisRepository.findByDirectRoomIdAndEmail(directChannelRoomId, email)
+    public void deleteChannelMemberInfo(String channelRoomId, String email) {
+        log.info("다이렉트 채널 입장 정보 삭제");
+        DirectChannelRedis directChannelRedis = directChannelRedisRepository.findByDirectRoomIdAndEmail(channelRoomId, email)
                 .orElseThrow(() -> new NotFoundException(REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO));
 
         directChannelRedisRepository.delete(directChannelRedis);
@@ -50,4 +54,6 @@ public class DirectChannelRedisService {
         List<DirectChannelRedis> connectList = directChannelRedisRepository.findByDirectRoomId(directChannelRoomId);
         return connectList.size() == 1;
     }
+
+
 }

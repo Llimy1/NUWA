@@ -112,10 +112,10 @@ public class DirectChannelController {
     // 채팅창 나가기 (Redis 정보 삭제)
     @PostMapping("/channel/direct/{directChannelRoomId}")
     public ResponseEntity<Object> deleteDirectChannelMemberInfo(
-            @PathVariable("directChannelRoomId") String directChannelRoomId,
+            @PathVariable(value = "directChannelRoomId") String directChannelRoomId,
             @MemberEmail String email) {
         log.info("채팅방 나가기(Redis 정보 삭제)");
-        directChannelRedisService.deleteDirectChannelMemberInfo(directChannelRoomId, email);
+        directChannelRedisService.deleteChannelMemberInfo(directChannelRoomId, email);
 
         GlobalSuccessResponseDto<Object> deleteDirectChannelMemberInfo =
                 globalService.successResponse(

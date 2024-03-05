@@ -15,7 +15,7 @@ import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberInfoRespons
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
-import org.project.nuwabackend.service.WorkSpaceService;
+import org.project.nuwabackend.service.workspace.WorkSpaceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;

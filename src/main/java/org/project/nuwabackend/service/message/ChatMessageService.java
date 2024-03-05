@@ -14,6 +14,8 @@ import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
 import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.ChatMessageRepository;
+import org.project.nuwabackend.service.channel.ChatChannelRedisService;
+import org.project.nuwabackend.service.workspace.WorkSpaceMemberQueryService;
 import org.project.nuwabackend.service.notification.NotificationService;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.type.MessageType;
@@ -41,6 +43,8 @@ public class ChatMessageService {
     private final ChatChannelRepository chatChannelRepository;
     private final ChatMessageRepository chatMessageRepository;
 
+    private final WorkSpaceMemberQueryService workSpaceMemberQueryService;
+    private final ChatChannelRedisService chatChannelRedisService;
     private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
 
@@ -69,7 +73,16 @@ public class ChatMessageService {
         Long channelId = findChat.getId();
 
         // channelId로 해당 채널 참가 인원 리스트 가져오기
-        List<ChatJoinMember> joinMemberList = chatJoinMemberRepository.findByChatChannelId(channelId);
+        // 채팅방 ID로 Redis 입장 정보 가져오기
+        List<String> connectEmailList =
+                chatChannelRedisService.chatConnectEmailList(roomId);
+//
+//        List<ChatJoinMember> chatJoinMemberList =
+//                workSpaceMemberQueryService.chatJoinMemberNotInEmailAndChannelId(connectEmailList, channelId);
+
+
+        List<ChatJoinMember> joinMemberList =
+                chatJoinMemberRepository.findByChatChannelId(channelId);
 
         List<Long> joinMemberIdList = new ArrayList<>();
         joinMemberList.forEach(joinMember -> {

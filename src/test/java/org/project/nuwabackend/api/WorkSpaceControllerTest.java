@@ -18,7 +18,7 @@ import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
-import org.project.nuwabackend.service.WorkSpaceService;
+import org.project.nuwabackend.service.workspace.WorkSpaceService;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
