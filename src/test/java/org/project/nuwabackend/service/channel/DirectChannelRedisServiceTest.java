@@ -65,7 +65,7 @@ class DirectChannelRedisServiceTest {
                 .willReturn(directChannelRedisOne);
 
         //when
-        directChannelRedisService.saveDirectChannelMemberInfo(
+        directChannelRedisService.saveChannelMemberInfo(
                 directChannelRedisOne.getDirectRoomId(),
                 directChannelRedisOne.getEmail());
 
@@ -81,7 +81,7 @@ class DirectChannelRedisServiceTest {
                 .willReturn(Optional.of(directChannelRedisOne));
 
         //when
-        directChannelRedisService.deleteDirectChannelMemberInfo(
+        directChannelRedisService.deleteChannelMemberInfo(
                 directChannelRedisOne.getDirectRoomId(),
                 directChannelRedisOne.getEmail());
 

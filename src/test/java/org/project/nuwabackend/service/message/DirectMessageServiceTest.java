@@ -174,6 +174,7 @@ class DirectMessageServiceTest {
                         .senderName(direct.getSenderName())
                         .content(direct.getContent())
                         .readCount(direct.getReadCount())
+                        .messageType(direct.getMessageType())
                         .createdAt(direct.getCreatedAt())
                         .build());
 

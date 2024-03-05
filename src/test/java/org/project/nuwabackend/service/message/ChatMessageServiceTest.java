@@ -156,6 +156,7 @@ class ChatMessageServiceTest {
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());
 
