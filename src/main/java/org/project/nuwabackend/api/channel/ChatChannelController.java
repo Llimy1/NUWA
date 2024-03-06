@@ -3,10 +3,10 @@ package org.project.nuwabackend.api.channel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
+import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
 import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
-import org.project.nuwabackend.dto.channel.response.ChatChannelRoomIdResponse;
+import org.project.nuwabackend.dto.channel.response.ChatChannelRoomIdResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
@@ -15,14 +15,12 @@ import org.project.nuwabackend.service.channel.ChatChannelRedisService;
 import org.project.nuwabackend.service.channel.ChatChannelService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CHAT_CHANNEL_LIST_RETURN_SUCCESS;
@@ -49,19 +47,19 @@ public class ChatChannelController {
         log.info("채팅 채널 생성 API");
         String chatChannelRoomId = chatChannelService.createChatChannel(email, chatChannelRequestDto);
 
-        ChatChannelRoomIdResponse chatChannelRoomIdResponse = new ChatChannelRoomIdResponse(chatChannelRoomId);
+        ChatChannelRoomIdResponseDto chatChannelRoomIdResponseDto = new ChatChannelRoomIdResponseDto(chatChannelRoomId);
         GlobalSuccessResponseDto<Object> createChatChannelSuccessResponse =
                 globalService.successResponse(
                         CREATE_CHAT_CHANNEL_SUCCESS.getMessage(),
-                        chatChannelRoomIdResponse);
+                        chatChannelRoomIdResponseDto);
 
         return ResponseEntity.status(CREATED).body(createChatChannelSuccessResponse);
     }
 
     @PostMapping("/channel/chat/join")
-    public ResponseEntity<Object> joinChatChannel(@RequestBody ChatChannelJoinMemberRequest chatChannelJoinMemberRequest) {
+    public ResponseEntity<Object> joinChatChannel(@RequestBody ChatChannelJoinMemberRequestDto chatChannelJoinMemberRequestDto) {
         log.info("채팅 채널 참여 API");
-        chatChannelService.joinChatChannel(chatChannelJoinMemberRequest);
+        chatChannelService.joinChatChannel(chatChannelJoinMemberRequestDto);
         GlobalSuccessResponseDto<Object> joinChatChannelSuccessResponse =
                 globalService.successResponse(JOIN_CHAT_CHANNEL_SUCCESS.getMessage(), null);
 
@@ -72,7 +70,7 @@ public class ChatChannelController {
     @GetMapping("/channel/chat/{workSpaceId}")
     public ResponseEntity<Object> chatChannelList(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                              @CustomPageable Pageable pageable) {
-        log.info("채팅 채널 리스트 - 이름 순으로 조회");
+        log.info("채팅 채널 리스트");
         Slice<ChatChannelListResponseDto> chatChannelListResponseDto =
                 chatChannelService.chatChannelList(workSpaceId, pageable);
 

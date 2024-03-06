@@ -6,7 +6,7 @@ import org.project.nuwabackend.domain.channel.Chat;
 import org.project.nuwabackend.domain.channel.ChatJoinMember;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
+import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
 import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
@@ -54,9 +54,9 @@ public class ChatChannelService {
     }
 
     // 채팅 채널 참가
-    public void joinChatChannel(ChatChannelJoinMemberRequest chatChannelJoinMemberRequest) {
-        List<Long> joinMemberIdList = chatChannelJoinMemberRequest.joinMemberIdList();
-        Long chatChannelId = chatChannelJoinMemberRequest.chatChannelId();
+    public void joinChatChannel(ChatChannelJoinMemberRequestDto chatChannelJoinMemberRequestDto) {
+        List<Long> joinMemberIdList = chatChannelJoinMemberRequestDto.joinMemberIdList();
+        Long chatChannelId = chatChannelJoinMemberRequestDto.chatChannelId();
 
         Chat chatChannel = chatChannelRepository.findById(chatChannelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
@@ -74,7 +74,6 @@ public class ChatChannelService {
     }
 
     // 채팅방 리스트 조회
-    // TODO: test code
     public Slice<ChatChannelListResponseDto> chatChannelList(Long workSpaceId, Pageable pageable) {
         return chatChannelRepository.findByWorkSpaceId(workSpaceId, pageable)
                 .map(chat -> ChatChannelListResponseDto.builder()

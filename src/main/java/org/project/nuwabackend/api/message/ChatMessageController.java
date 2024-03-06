@@ -37,11 +37,11 @@ public class ChatMessageController {
     // 메세지 보낼 때
     @MessageMapping("/chat/send")
     public void directSend(@Header("Authorization") String accessToken, ChatMessageRequestDto chatMessageRequestDto) {
-        String rooId = chatMessageRequestDto.roomId();
+        String roomId = chatMessageRequestDto.roomId();
         ChatMessageResponseDto chatMessageResponseDto =
                 chatMessageService.sendMessage(accessToken, chatMessageRequestDto);
         template.convertAndSend(
-                DIRECT_DESTINATION + rooId,
+                DIRECT_DESTINATION + roomId,
                 chatMessageResponseDto);
 
         chatMessageService.saveChatMessage(chatMessageResponseDto);

@@ -18,7 +18,6 @@ import static org.project.nuwabackend.global.type.ErrorMessage.REDIS_CHAT_CHANNE
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-// TODO: test code
 public class ChatChannelRedisService implements ChannelRedisService {
 
     private final ChatChannelRedisRepository chatChannelRedisRepository;
@@ -57,5 +56,4 @@ public class ChatChannelRedisService implements ChannelRedisService {
 
         return connectEmailList;
     }
-
 }

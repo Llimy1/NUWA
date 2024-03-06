@@ -6,8 +6,9 @@ import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.request.DirectChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelInfoResponseDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
@@ -42,11 +44,11 @@ public class DirectChannelService {
 
     // 다이렉트 채널 생성
     @Transactional
-    public String createDirectChannel(String email, DirectChannelRequest directChannelRequest) {
+    public String createDirectChannel(String email, DirectChannelRequestDto directChannelRequestDto) {
         log.info("다이렉트 채널 생성");
 
-        Long joinMemberId = directChannelRequest.joinMemberId();
-        Long workSpaceId = directChannelRequest.workSpaceId();
+        Long joinMemberId = directChannelRequestDto.joinMemberId();
+        Long workSpaceId = directChannelRequestDto.workSpaceId();
 
         // 워크스페이스에 멤버가 존재 하는지 확인
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -75,9 +77,24 @@ public class DirectChannelService {
         return saveDirect.getRoomId();
     }
 
+    // roomId로 채널 정보 조회
+    public DirectChannelInfoResponseDto directChannelInfo(Long workSpaceId, String roomId) {
+        Direct direct = directChannelRepository.findByWorkSpaceIdAndRoomId(workSpaceId, roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        return DirectChannelInfoResponseDto.builder()
+                .channelId(direct.getId())
+                .channelName(direct.getName())
+                .createMemberId(direct.getCreateMember().getId())
+                .createMemberName(direct.getCreateMember().getName())
+                .joinMemberId(direct.getJoinMember().getId())
+                .joinMemberName(direct.getJoinMember().getName())
+                .build();
+    }
+
     // 다이렉트 채널 리스트 조회
     // 현재는 생성 순으로 반환
-    public Slice<DirectChannelListResponse> directChannelSlice(String email, Long workSpaceId, Pageable pageable) {
+    public Slice<DirectChannelListResponseDto> directChannelSlice(String email, Long workSpaceId, Pageable pageable) {
         log.info("채널 리스트 반환");
 
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -86,7 +103,7 @@ public class DirectChannelService {
         Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
 
         return directChannelRepository.findDirectChannelByCreateMemberIdOrJoinMemberId(findWorkSpaceMemberId, pageable)
-                .map(direct -> DirectChannelListResponse.builder()
+                .map(direct -> DirectChannelListResponseDto.builder()
                         .roomId(direct.getRoomId())
                         .name(direct.getName())
                         .createMemberId(direct.getCreateMember().getId())
@@ -117,8 +134,7 @@ public class DirectChannelService {
                 directChannelResponseDtoList(directChannelList, email)
                         .stream()
                         .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
-                                        Comparator.nullsLast(Comparator.naturalOrder())).reversed()
-                                .thenComparing(DirectChannelResponseDto::getUnReadCount).reversed())
+                                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                         .toList();
 
         return sliceDtoResponse(directChannelResponseDtoList, pageable);
@@ -143,8 +159,7 @@ public class DirectChannelService {
                 directChannelResponseDtoList(searchDirectChannelList, email)
                         .stream()
                         .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
-                                        Comparator.nullsLast(Comparator.naturalOrder())).reversed()
-                                .thenComparing(DirectChannelResponseDto::getUnReadCount).reversed())
+                                        Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                         .toList();
 
         // 페이징 정보 추가
@@ -170,7 +185,7 @@ public class DirectChannelService {
             DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
                     .roomId(direct.getRoomId())
                     .name(direct.getName())
-                    .workSpaceId(direct.getId())
+                    .workSpaceId(direct.getWorkSpace().getId())
                     .createMemberId(direct.getCreateMember().getId())
                     .joinMemberId(direct.getJoinMember().getId())
                     .createMemberName(direct.getCreateMember().getName())

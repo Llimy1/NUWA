@@ -13,7 +13,8 @@ import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
+import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponseDto;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
@@ -24,11 +25,15 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
@@ -190,8 +195,8 @@ class WorkSpaceControllerTest {
         String email = "abcd@gmail.com";
         String phoneNumber = "01000000000";
 
-        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfoResponse =
-                IndividualWorkSpaceMemberInfoResponse.builder()
+        IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
+                IndividualWorkSpaceMemberInfoResponseDto.builder()
                 .id(id)
                 .name(name)
                 .job(job)
@@ -201,13 +206,13 @@ class WorkSpaceControllerTest {
                 .workSpaceMemberType(WorkSpaceMemberType.CREATED)
                 .build();
         given(workSpaceService.individualWorkSpaceMemberInfo(any(), any()))
-                .willReturn(individualWorkSpaceMemberInfoResponse);
+                .willReturn(individualWorkSpaceMemberInfoResponseDto);
 
         GlobalSuccessResponseDto<Object> individualWorkSpaceMemberInfoSuccessResponse =
                 GlobalSuccessResponseDto.builder()
                         .status(SUCCESS.getValue())
                         .message(INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS.getMessage())
-                        .data(individualWorkSpaceMemberInfoResponse)
+                        .data(individualWorkSpaceMemberInfoResponseDto)
                         .build();
         given(globalService.successResponse(anyString(), any()))
                 .willReturn(individualWorkSpaceMemberInfoSuccessResponse);
@@ -287,5 +292,51 @@ class WorkSpaceControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("[API] Favorite WorkSpace Member List Test")
+    void favoriteWorkSpaceMemberListTest() throws Exception {
+        //given
+        Long id = 1L;
+        String name = "name";
+        String job = "job";
+        String image = "image";
+        String email = "abcd@gmail.com";
+        String phoneNumber = "01000000000";
+        Long messageCount = 10L;
 
+        FavoriteWorkSpaceMemberInfoResponseDto build = FavoriteWorkSpaceMemberInfoResponseDto.builder()
+                .id(id)
+                .name(name)
+                .job(job)
+                .image(image)
+                .email(email)
+                .phoneNumber(phoneNumber)
+                .messageCount(messageCount)
+                .workSpaceMemberType(WorkSpaceMemberType.CREATED)
+                .build();
+
+        List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtoList =
+                new ArrayList<>(List.of(build));
+
+        given(workSpaceService.favoriteWorkSpaceMemberList(any(), any()))
+                .willReturn(favoriteWorkSpaceMemberInfoResponseDtoList);
+
+        GlobalSuccessResponseDto<Object> globalSuccessResponseDto =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS.getMessage())
+                        .data(favoriteWorkSpaceMemberInfoResponseDtoList)
+                        .build();
+
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(globalSuccessResponseDto);
+
+
+        //when
+        //then
+        mvc.perform(get("/api/workspace/{workSpaceId}/favorite", workSpaceId)
+                .param("MemberEmail", email))
+                .andExpect(status().isOk())
+                .andDo(print());
+    }
 }

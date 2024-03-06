@@ -2,10 +2,9 @@ package org.project.nuwabackend.api.channel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
-import org.project.nuwabackend.dto.channel.request.VoiceChannelJoinMemberRequest;
-import org.project.nuwabackend.dto.channel.request.VoiceChannelRequest;
-import org.project.nuwabackend.dto.channel.response.VoiceChannelIdResponse;
+import org.project.nuwabackend.dto.channel.request.VoiceChannelJoinMemberRequestDto;
+import org.project.nuwabackend.dto.channel.request.VoiceChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.VoiceChannelIdResponseDto;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_VOICE_CHANNEL_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_CHAT_CHANNEL_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_VOICE_CHANNEL_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 
@@ -32,23 +30,23 @@ public class VoiceChannelController {
     private final GlobalService globalService;
 
     @PostMapping("/channel/voice")
-    public ResponseEntity<Object> createChatChannel(@MemberEmail String email, @RequestBody VoiceChannelRequest voiceChannelRequest) {
+    public ResponseEntity<Object> createChatChannel(@MemberEmail String email, @RequestBody VoiceChannelRequestDto voiceChannelRequestDto) {
         log.info("음성 채널 생성 API");
-        Long voiceChannelId = voiceChannelService.createVoiceChannel(email, voiceChannelRequest);
+        Long voiceChannelId = voiceChannelService.createVoiceChannel(email, voiceChannelRequestDto);
 
-        VoiceChannelIdResponse voiceChannelIdResponse = new VoiceChannelIdResponse(voiceChannelId);
+        VoiceChannelIdResponseDto voiceChannelIdResponseDto = new VoiceChannelIdResponseDto(voiceChannelId);
         GlobalSuccessResponseDto<Object> createVoiceChannelSuccessResponse =
                 globalService.successResponse(
                         CREATE_VOICE_CHANNEL_SUCCESS.getMessage(),
-                        voiceChannelIdResponse);
+                        voiceChannelIdResponseDto);
 
         return ResponseEntity.status(CREATED).body(createVoiceChannelSuccessResponse);
     }
 
     @PostMapping("/channel/voice/join")
-    public ResponseEntity<Object> joinChatChannel(@RequestBody VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
+    public ResponseEntity<Object> joinChatChannel(@RequestBody VoiceChannelJoinMemberRequestDto voiceChannelJoinMemberRequestDto) {
         log.info("채팅 채널 참여 API");
-        voiceChannelService.joinVoiceChannel(voiceChannelJoinMemberRequest);
+        voiceChannelService.joinVoiceChannel(voiceChannelJoinMemberRequestDto);
         GlobalSuccessResponseDto<Object> joinVoiceChannelSuccessResponse =
                 globalService.successResponse(JOIN_VOICE_CHANNEL_SUCCESS.getMessage(), null);
 

@@ -6,8 +6,8 @@ import org.project.nuwabackend.domain.channel.Voice;
 import org.project.nuwabackend.domain.channel.VoiceJoinMember;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.request.VoiceChannelJoinMemberRequest;
-import org.project.nuwabackend.dto.channel.request.VoiceChannelRequest;
+import org.project.nuwabackend.dto.channel.request.VoiceChannelJoinMemberRequestDto;
+import org.project.nuwabackend.dto.channel.request.VoiceChannelRequestDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.VoiceChannelRepository;
 import org.project.nuwabackend.repository.jpa.VoiceJoinMemberRepository;
@@ -20,7 +20,6 @@ import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -35,9 +34,9 @@ public class VoiceChannelService {
     private final VoiceJoinMemberRepository voiceJoinMemberRepository;
 
     // 음성 채널 생성
-    public Long createVoiceChannel(String email, VoiceChannelRequest voiceChannelRequest) {
-        Long workSpaceId = voiceChannelRequest.workSpaceId();
-        String voiceChannelName = voiceChannelRequest.voiceChannelName();
+    public Long createVoiceChannel(String email, VoiceChannelRequestDto voiceChannelRequestDto) {
+        Long workSpaceId = voiceChannelRequestDto.workSpaceId();
+        String voiceChannelName = voiceChannelRequestDto.voiceChannelName();
 
 
         // 워크스페이스에 멤버가 존재 하는지 확인
@@ -54,9 +53,9 @@ public class VoiceChannelService {
     }
 
     // 채팅 채널 참가
-    public void joinVoiceChannel(VoiceChannelJoinMemberRequest voiceChannelJoinMemberRequest) {
-        List<Long> joinMemberIdList = voiceChannelJoinMemberRequest.joinMemberIdList();
-        Long chatChannelId = voiceChannelJoinMemberRequest.voiceChannelId();
+    public void joinVoiceChannel(VoiceChannelJoinMemberRequestDto voiceChannelJoinMemberRequestDto) {
+        List<Long> joinMemberIdList = voiceChannelJoinMemberRequestDto.joinMemberIdList();
+        Long chatChannelId = voiceChannelJoinMemberRequestDto.voiceChannelId();
 
         Voice voiceChannel = voiceChannelRepository.findById(chatChannelId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));

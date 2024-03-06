@@ -40,9 +40,10 @@ public interface DirectChannelRepository extends JpaRepository<Direct, Long> {
             "FROM Direct d " +
             "JOIN d.createMember cm " +
             "JOIN d.joinMember jm " +
-            "WHERE (cm.id = :createMemberId OR jm.id = :joinMemberId) " +
-            "OR (cm.id = :joinMemberId OR jm.id = :createMemberId)")
+            "WHERE (cm.id = :createMemberId OR jm.id = :createMemberId) " +
+            "AND (cm.id = :joinMemberId OR jm.id = :joinMemberId)")
     Optional<Direct> findByCreateMemberIdOrJoinMemberId(@Param("createMemberId") Long createMemberId, @Param("joinMemberId") Long joinMemberId);
 
+    Optional<Direct> findByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId);
 
 }

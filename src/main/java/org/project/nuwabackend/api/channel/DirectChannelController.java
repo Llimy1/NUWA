@@ -2,10 +2,11 @@ package org.project.nuwabackend.api.channel;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.request.DirectChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelInfoResponseDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
-import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponse;
+import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_CREATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.SEARCH_DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS;
@@ -43,17 +45,17 @@ public class DirectChannelController {
 
     // 채팅방 생성하기
     @PostMapping("/channel/direct")
-    public ResponseEntity<Object> createDirectChannel(@MemberEmail String email, @RequestBody DirectChannelRequest directChannelRequest) {
+    public ResponseEntity<Object> createDirectChannel(@MemberEmail String email, @RequestBody DirectChannelRequestDto directChannelRequestDto) {
         log.info("채팅방 생성 API 호출");
-        String directChannelRoomId = directChannelService.createDirectChannel(email, directChannelRequest);
+        String directChannelRoomId = directChannelService.createDirectChannel(email, directChannelRequestDto);
 
-        DirectChannelRoomIdResponse directChannelRoomIdResponse =
-                new DirectChannelRoomIdResponse(directChannelRoomId);
+        DirectChannelRoomIdResponseDto directChannelRoomIdResponseDto =
+                new DirectChannelRoomIdResponseDto(directChannelRoomId);
 
         GlobalSuccessResponseDto<Object> directChannelCreateSuccessResponse =
                 globalService.successResponse(
                         DIRECT_CHANNEL_CREATE_SUCCESS.getMessage(),
-                        directChannelRoomIdResponse);
+                        directChannelRoomIdResponseDto);
 
         return ResponseEntity.status(CREATED).body(directChannelCreateSuccessResponse);
     }
@@ -64,7 +66,7 @@ public class DirectChannelController {
             @MemberEmail String email,
             @CustomPageable Pageable pageable) {
         log.info("채널 리스트 조회 API 호출");
-        Slice<DirectChannelListResponse> directChannelListResponses =
+        Slice<DirectChannelListResponseDto> directChannelListResponses =
                 directChannelService.directChannelSlice(email, workSpaceId, pageable);
 
         GlobalSuccessResponseDto<Object> directChannelListSuccessResponse =
@@ -73,6 +75,18 @@ public class DirectChannelController {
                         directChannelListResponses);
 
         return ResponseEntity.status(OK).body(directChannelListSuccessResponse);
+    }
+
+    @GetMapping("/channel/direct/info/{workSpaceId}")
+    public ResponseEntity<Object> directChannelInfo(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                    @RequestParam(value = "directChannelRoomId") String directChannelRoomId) {
+        log.info("채팅방 정보 조회 API 호출");
+        DirectChannelInfoResponseDto directChannelInfoResponseDto = directChannelService.directChannelInfo(workSpaceId, directChannelRoomId);
+
+        GlobalSuccessResponseDto<Object> directChannelInfoReturnSuccessResponse =
+                globalService.successResponse(DIRECT_CHANNEL_INFO_RETURN_SUCCESS.getMessage(), directChannelInfoResponseDto);
+
+        return ResponseEntity.status(OK).body(directChannelInfoReturnSuccessResponse);
     }
 
     @GetMapping("/channel/direct/v2/{workSpaceId}")
@@ -92,7 +106,6 @@ public class DirectChannelController {
     }
 
     @GetMapping("/channel/direct/search/{workSpaceId}")
-    // TODO: test code
     public ResponseEntity<Object> searchDirectChannelSliceSortByMessageCreateDate(
             @PathVariable(value = "workSpaceId") Long workSpaceId,
             @RequestParam(value = "workSpaceMemberName") String workSpaceMemberName,
