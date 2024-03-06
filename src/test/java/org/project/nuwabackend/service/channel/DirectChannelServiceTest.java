@@ -13,6 +13,7 @@ import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelInfoResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
@@ -361,5 +362,22 @@ class DirectChannelServiceTest {
         assertThat(searchDirectChannelListResponseDto.getNumber()).isEqualTo(directChannelResponseDtoSlice.getNumber());
         assertThat(searchDirectChannelListResponseDto.hasNext()).isEqualTo(directChannelResponseDtoSlice.hasNext());
         assertThat(searchDirectChannelListResponseDto.getSize()).isEqualTo(directChannelResponseDtoSlice.getSize());
+    }
+
+    @Test
+    @DisplayName("[Service] Direct Channel Info Test")
+    void directChannelInfoTest() {
+        //given
+        Direct direct = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, receiverWorkSpaceMember);
+        ReflectionTestUtils.setField(direct, "id", 1L);
+
+        given(directChannelRepository.findByWorkSpaceIdAndRoomId(any(), anyString()))
+                .willReturn(Optional.of(direct));
+
+        //when
+        DirectChannelInfoResponseDto directChannelInfoResponseDto = directChannelService.directChannelInfo(workSpaceId, direct.getRoomId());
+
+        //then
+        assertThat(directChannelInfoResponseDto.channelId()).isEqualTo(direct.getId());
     }
 }

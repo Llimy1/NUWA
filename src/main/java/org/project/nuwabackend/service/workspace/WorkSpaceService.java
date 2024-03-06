@@ -252,7 +252,6 @@ public class WorkSpaceService {
     }
 
     // 즐겨 찾는 팀원 조회 (내가 보낸 채팅 수가 가장 많은 순으로 반환)
-    // TODO: test code
     public List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberList(String email, Long workSpaceId) {
         log.info("즐겨 찾는 팀원 조회(내가 보낸 채팅 수가 가장 많은 순)");
 
@@ -303,7 +302,6 @@ public class WorkSpaceService {
     }
 
     // 워크스페이스 상태 편집
-    // TODO: test code
     @Transactional
     public void updateWorkSpaceMemberStatus(String email, Long workSpaceId, String workSpaceMemberStatus) {
         WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)

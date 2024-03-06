@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
@@ -14,15 +15,21 @@ import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
+import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponseDto;
 import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
 import org.project.nuwabackend.global.exception.DuplicationException;
+import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
+import org.project.nuwabackend.service.message.DirectMessageQueryService;
 import org.project.nuwabackend.service.workspace.WorkSpaceService;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,6 +53,10 @@ class WorkSpaceServiceTest {
     WorkSpaceMemberRepository workSpaceMemberRepository;
     @Mock
     MemberRepository memberRepository;
+    @Mock
+    DirectChannelRepository directChannelRepository;
+    @Mock
+    DirectMessageQueryService directMessageQueryService;
 
     @InjectMocks
     WorkSpaceService workSpaceService;
@@ -95,6 +106,7 @@ class WorkSpaceServiceTest {
                 workSpaceMemberJob,
                 workSpaceMemberImage,
                 WorkSpaceMemberType.CREATED, member, workSpace);
+        ReflectionTestUtils.setField(workSpaceMember, "id", 1L);
     }
 
     @Test
@@ -268,5 +280,91 @@ class WorkSpaceServiceTest {
         assertThat(workSpaceMember.getName()).isEqualTo(updateWorkSpaceMemberName);
         assertThat(workSpaceMember.getJob()).isEqualTo(updateWorkSpaceMemberJob);
         assertThat(workSpaceMember.getImage()).isEqualTo(updateWorkSpaceMemberImage);
+    }
+
+    @Test
+    @DisplayName("[Service] favorite WorkSpace Member List Test")
+    void favoriteWorkSpaceMemberListTest() {
+        //given
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
+                .willReturn(Optional.of(workSpaceMember));
+
+        String email1 = "abcde@gmail.com";
+        String nickname1 = "nickname";
+        String password1 = "password";
+        String phoneNumber1 = "01000000000";
+
+        Member member1 = Member.createMember(email1, password1, nickname1, phoneNumber1);
+
+        String workSpaceMemberName = "workSpaceMemberName";
+        String workSpaceMemberImage = "workSpaceMemberImage";
+
+        WorkSpaceMember other = WorkSpaceMember.joinWorkSpaceMember(workSpaceMemberName, workSpaceMemberImage, WorkSpaceMemberType.JOIN, member1, workSpace);
+        ReflectionTestUtils.setField(other, "id", 2L);
+
+        Direct directChannel =
+                Direct.createDirectChannel(workSpace, workSpaceMember, other);
+
+        List<Direct> directList = new ArrayList<>(List.of(directChannel));
+
+        given(directChannelRepository.findDirectChannelListByCreateMemberIdOrJoinMemberId(workspaceId))
+                .willReturn(directList);
+
+        Long count = 10L;
+        Long otherId = 2L;
+        List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtoList = new ArrayList<>();
+        directList.forEach(direct -> {
+                given(directMessageQueryService.countManyMessageSenderId(anyString(), anyString()))
+                        .willReturn(count);
+                given(directMessageQueryService.neSenderId(anyString(), anyString()))
+                        .willReturn(otherId);
+                given(workSpaceMemberRepository.findById(any()))
+                        .willReturn(Optional.of(other));
+
+                Member otherMember = other.getMember();
+
+            FavoriteWorkSpaceMemberInfoResponseDto favoriteWorkSpaceMemberInfoResponseDto = FavoriteWorkSpaceMemberInfoResponseDto.builder()
+                    .id(otherId)
+                    .name(other.getName())
+                    .job(other.getJob())
+                    .image(other.getImage())
+                    .workSpaceMemberType(other.getWorkSpaceMemberType())
+                    .email(otherMember.getEmail())
+                    .phoneNumber(otherMember.getPhoneNumber())
+                    .messageCount(count)
+                    .build();
+
+            favoriteWorkSpaceMemberInfoResponseDtoList.add(favoriteWorkSpaceMemberInfoResponseDto);
+            }
+        );
+
+        List<FavoriteWorkSpaceMemberInfoResponseDto> list = favoriteWorkSpaceMemberInfoResponseDtoList.stream()
+                .sorted(Comparator.comparing(FavoriteWorkSpaceMemberInfoResponseDto::messageCount, Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+
+        //when
+        List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtos =
+                workSpaceService.favoriteWorkSpaceMemberList(email1, workspaceId);
+
+        //then
+        assertThat(favoriteWorkSpaceMemberInfoResponseDtos).containsAll(list);
+        assertThat(favoriteWorkSpaceMemberInfoResponseDtos.get(0).email())
+                .isEqualTo(list.get(0).email());
+    }
+
+    @Test
+    @DisplayName("[Service] Update WorkSpace Member Status Test")
+    void updateWorkSpaceMemberStatusTest() {
+        //given
+        String workSpaceMemberStatus = "rest";
+
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workspaceId))
+                .willReturn(Optional.of(workSpaceMember));
+
+        //when
+        workSpaceService.updateWorkSpaceMemberStatus(email, workspaceId, workSpaceMemberStatus);
+
+        //then
+        assertThat(workSpaceMember.getStatus()).isEqualTo(workSpaceMemberStatus);
     }
 }

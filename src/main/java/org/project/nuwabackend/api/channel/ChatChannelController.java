@@ -70,7 +70,7 @@ public class ChatChannelController {
     @GetMapping("/channel/chat/{workSpaceId}")
     public ResponseEntity<Object> chatChannelList(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                              @CustomPageable Pageable pageable) {
-        log.info("채팅 채널 리스트 - 이름 순으로 조회");
+        log.info("채팅 채널 리스트");
         Slice<ChatChannelListResponseDto> chatChannelListResponseDto =
                 chatChannelService.chatChannelList(workSpaceId, pageable);
 

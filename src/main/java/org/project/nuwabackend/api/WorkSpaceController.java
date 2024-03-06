@@ -167,7 +167,6 @@ public class WorkSpaceController {
     }
 
     // 워크스페이스 즐겨 찾는 팀원 조회 (내가 보낸 채팅 수가 많은 순으로)
-    // TODO: test code
     @GetMapping("/workspace/{workSpaceId}/favorite")
     public ResponseEntity<Object> favoriteWorkSpaceMemberList(@MemberEmail String email,
                                                               @PathVariable(value = "workSpaceId") Long workSpaceId) {

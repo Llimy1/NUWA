@@ -78,7 +78,6 @@ public class DirectChannelService {
     }
 
     // roomId로 채널 정보 조회
-    // TODO: test code
     public DirectChannelInfoResponseDto directChannelInfo(Long workSpaceId, String roomId) {
         Direct direct = directChannelRepository.findByWorkSpaceIdAndRoomId(workSpaceId, roomId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));

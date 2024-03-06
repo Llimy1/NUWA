@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.dto.channel.request.DirectChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelInfoResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponseDto;
@@ -34,6 +35,7 @@ import static org.mockito.BDDMockito.given;
 import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_CREATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LAST_MESSAGE_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DIRECT_CHANNEL_LIST_RETURN_SUCCESS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -253,6 +255,46 @@ class DirectChannelControllerTest {
                         .value(SUCCESS.getValue()))
                 .andExpect(jsonPath("$.message")
                         .value(DELETE_DIRECT_CHANNEL_MEMBER_INFO_SUCCESS.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("[API] Direct Channel Info Test")
+    void directChannelInfoTest() throws Exception {
+        //given
+        Long channelId = 1L;
+        String channelName = "name";
+        Long createMemberId = 1L;
+        String createMemberName = "create";
+        Long joinMemberId = 2L;
+        String joinMemberName = "join";
+
+        DirectChannelInfoResponseDto directChannelInfoResponseDto = DirectChannelInfoResponseDto.builder()
+                .channelId(channelId)
+                .channelName(channelName)
+                .createMemberId(createMemberId)
+                .createMemberName(createMemberName)
+                .joinMemberId(joinMemberId)
+                .joinMemberName(joinMemberName)
+                .build();
+        given(directChannelService.directChannelInfo(any(), anyString()))
+                .willReturn(directChannelInfoResponseDto);
+
+        GlobalSuccessResponseDto<Object> globalSuccessResponseDto =
+                GlobalSuccessResponseDto.builder()
+                        .status(SUCCESS.getValue())
+                        .message(DIRECT_CHANNEL_INFO_RETURN_SUCCESS.getMessage())
+                        .data(directChannelInfoResponseDto)
+                        .build();
+
+        given(globalService.successResponse(anyString(), any()))
+                .willReturn(globalSuccessResponseDto);
+
+        //when
+        //then
+        mvc.perform(get("/api/channel/direct/info/{workSpaceId}", workSpaceId)
+                .param("directChannelRoomId", roomId))
+                .andExpect(status().isOk())
                 .andDo(print());
     }
 }

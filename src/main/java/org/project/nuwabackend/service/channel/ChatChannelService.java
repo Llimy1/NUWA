@@ -74,7 +74,6 @@ public class ChatChannelService {
     }
 
     // 채팅방 리스트 조회
-    // TODO: test code
     public Slice<ChatChannelListResponseDto> chatChannelList(Long workSpaceId, Pageable pageable) {
         return chatChannelRepository.findByWorkSpaceId(workSpaceId, pageable)
                 .map(chat -> ChatChannelListResponseDto.builder()

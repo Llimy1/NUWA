@@ -77,7 +77,6 @@ public class DirectChannelController {
         return ResponseEntity.status(OK).body(directChannelListSuccessResponse);
     }
 
-    // TODO: test code
     @GetMapping("/channel/direct/info/{workSpaceId}")
     public ResponseEntity<Object> directChannelInfo(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                     @RequestParam(value = "directChannelRoomId") String directChannelRoomId) {
@@ -107,7 +106,6 @@ public class DirectChannelController {
     }
 
     @GetMapping("/channel/direct/search/{workSpaceId}")
-    // TODO: test code
     public ResponseEntity<Object> searchDirectChannelSliceSortByMessageCreateDate(
             @PathVariable(value = "workSpaceId") Long workSpaceId,
             @RequestParam(value = "workSpaceMemberName") String workSpaceMemberName,

@@ -12,7 +12,6 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor
 @RedisHash(value = "chatChannel")
-// TODO: test code
 public class ChatChannelRedis {
 
     @Id
@@ -47,6 +46,4 @@ public class ChatChannelRedis {
                 .email(email)
                 .build();
     }
-
-
 }

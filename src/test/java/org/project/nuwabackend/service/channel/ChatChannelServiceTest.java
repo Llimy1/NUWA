@@ -14,10 +14,15 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
 import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
 import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -144,5 +149,37 @@ class ChatChannelServiceTest {
         verify(chatChannelRepository).findById(chatChannelId);
         verify(workSpaceMemberRepository).findById(joinMemberIdList.get(0));
         verify(chatJoinMemberRepository).saveAll(chatJoinMemberList);
+    }
+
+    @Test
+    @DisplayName("[Service] Chat Channel List Test")
+    void chatChannelListTest() {
+        //given
+        Long workSpaceId = 1L;
+        String channelName = "channel";
+        Chat chatChannel =
+                Chat.createChatChannel(channelName, workSpace, workSpaceMember);
+        List<Chat> chatList = new ArrayList<>(List.of(chatChannel));
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        SliceImpl<Chat> chats = new SliceImpl<>(chatList, pageRequest, false);
+
+        given(chatChannelRepository.findByWorkSpaceId(any(), any()))
+                .willReturn(chats);
+
+        Slice<ChatChannelListResponseDto> map = chats.map(chat -> ChatChannelListResponseDto.builder()
+                .workSpaceId(workSpaceId)
+                .channelId(chat.getId())
+                .name(chat.getName())
+                .roomId(chat.getRoomId())
+                .build());
+
+        //when
+        Slice<ChatChannelListResponseDto> chatChannelListResponseDtos =
+                chatChannelService.chatChannelList(workSpaceId, pageRequest);
+
+        //then
+        assertThat(chatChannelListResponseDtos.getContent())
+                .containsAll(map.getContent());
     }
 }
