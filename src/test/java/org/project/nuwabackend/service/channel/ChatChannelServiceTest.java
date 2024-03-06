@@ -12,7 +12,7 @@ import org.project.nuwabackend.domain.channel.ChatJoinMember;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequest;
+import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
 import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
 import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
@@ -48,7 +48,7 @@ class ChatChannelServiceTest {
     WorkSpace workSpace;
     WorkSpaceMember workSpaceMember;
     ChatChannelRequestDto chatChannelRequestDto;
-    ChatChannelJoinMemberRequest chatChannelJoinMemberRequest;
+    ChatChannelJoinMemberRequestDto chatChannelJoinMemberRequestDto;
     String email = "abcd@gmail.com";
 
     @BeforeEach
@@ -84,7 +84,7 @@ class ChatChannelServiceTest {
         Long chatChannelId = 1L;
         List<Long> joinMemberIdList = new ArrayList<>(List.of(1L));
 
-        chatChannelJoinMemberRequest = new ChatChannelJoinMemberRequest(chatChannelId, joinMemberIdList);
+        chatChannelJoinMemberRequestDto = new ChatChannelJoinMemberRequestDto(chatChannelId, joinMemberIdList);
     }
 
     @Test
@@ -116,8 +116,8 @@ class ChatChannelServiceTest {
     @DisplayName("[Service] Join Chat Channel Test")
     void joinChatChannelTest() {
         //given
-        Long chatChannelId = chatChannelJoinMemberRequest.chatChannelId();
-        List<Long> joinMemberIdList = chatChannelJoinMemberRequest.joinMemberIdList();
+        Long chatChannelId = chatChannelJoinMemberRequestDto.chatChannelId();
+        List<Long> joinMemberIdList = chatChannelJoinMemberRequestDto.joinMemberIdList();
         String channelName = "chat";
         Chat chatChannel =
                 Chat.createChatChannel(channelName, workSpace, workSpaceMember);
@@ -138,7 +138,7 @@ class ChatChannelServiceTest {
                 .willReturn(chatJoinMemberList);
 
         //when
-        chatChannelService.joinChatChannel(chatChannelJoinMemberRequest);
+        chatChannelService.joinChatChannel(chatChannelJoinMemberRequestDto);
 
         //then
         verify(chatChannelRepository).findById(chatChannelId);

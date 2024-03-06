@@ -10,8 +10,8 @@ import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponse;
-import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
+import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponseDto;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberInfoResponse;
 import org.project.nuwabackend.global.exception.DuplicationException;
@@ -200,7 +200,7 @@ public class WorkSpaceService {
     }
 
     // 개인 별 프로필 조회
-    public IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfo(String email, Long workSpaceId) {
+    public IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfo(String email, Long workSpaceId) {
         log.info("개인 별 프로필 조회");
         // 워크스페이스 멤버 찾기
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -210,7 +210,7 @@ public class WorkSpaceService {
 
         String phoneNumber = findMember.getPhoneNumber();
 
-        return IndividualWorkSpaceMemberInfoResponse.builder()
+        return IndividualWorkSpaceMemberInfoResponseDto.builder()
                 .id(findWorkSpaceMember.getId())
                 .name(findWorkSpaceMember.getName())
                 .job(findWorkSpaceMember.getJob())
@@ -253,7 +253,7 @@ public class WorkSpaceService {
 
     // 즐겨 찾는 팀원 조회 (내가 보낸 채팅 수가 가장 많은 순으로 반환)
     // TODO: test code
-    public List<FavoriteWorkSpaceMemberInfoResponse> favoriteWorkSpaceMemberList(String email, Long workSpaceId) {
+    public List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberList(String email, Long workSpaceId) {
         log.info("즐겨 찾는 팀원 조회(내가 보낸 채팅 수가 가장 많은 순)");
 
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -265,7 +265,7 @@ public class WorkSpaceService {
         List<Direct> directChannelList =
                 directChannelRepository.findDirectChannelListByCreateMemberIdOrJoinMemberId(findWorkSpaceMemberId);
 
-        List<FavoriteWorkSpaceMemberInfoResponse> favoriteWorkSpaceMemberInfoResponseList = new ArrayList<>();
+        List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtoList = new ArrayList<>();
         // 채팅방 순회하면서 채팅방 별로 내가 보낸 채팅 개수 가져오기
         directChannelList.forEach(direct -> {
 
@@ -281,7 +281,7 @@ public class WorkSpaceService {
 
                 Member otherMember = other.getMember();
 
-                FavoriteWorkSpaceMemberInfoResponse favoriteWorkSpaceMemberInfoResponse = FavoriteWorkSpaceMemberInfoResponse.builder()
+                FavoriteWorkSpaceMemberInfoResponseDto favoriteWorkSpaceMemberInfoResponseDto = FavoriteWorkSpaceMemberInfoResponseDto.builder()
                         .id(otherId)
                         .name(other.getName())
                         .job(other.getJob())
@@ -293,12 +293,12 @@ public class WorkSpaceService {
                         .build();
 
 
-                favoriteWorkSpaceMemberInfoResponseList.add(favoriteWorkSpaceMemberInfoResponse);
+                favoriteWorkSpaceMemberInfoResponseDtoList.add(favoriteWorkSpaceMemberInfoResponseDto);
             }
         });
 
-        return favoriteWorkSpaceMemberInfoResponseList.stream()
-                .sorted(Comparator.comparing(FavoriteWorkSpaceMemberInfoResponse::messageCount, Comparator.nullsLast(Comparator.naturalOrder())))
+        return favoriteWorkSpaceMemberInfoResponseDtoList.stream()
+                .sorted(Comparator.comparing(FavoriteWorkSpaceMemberInfoResponseDto::messageCount, Comparator.nullsLast(Comparator.naturalOrder())))
                 .toList();
     }
 

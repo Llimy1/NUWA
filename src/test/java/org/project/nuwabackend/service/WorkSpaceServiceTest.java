@@ -14,7 +14,7 @@ import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
 import org.project.nuwabackend.global.exception.DuplicationException;
 import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
@@ -183,7 +183,7 @@ class WorkSpaceServiceTest {
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(workSpaceMember));
 
-        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfo = IndividualWorkSpaceMemberInfoResponse.builder()
+        IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfo = IndividualWorkSpaceMemberInfoResponseDto.builder()
                 .id(workSpaceMember.getId())
                 .name(workSpaceMember.getName())
                 .image(workSpaceMember.getImage())
@@ -192,16 +192,16 @@ class WorkSpaceServiceTest {
                 .email(member.getEmail())
                 .build();
         //when
-        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfoResponse =
+        IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
                 workSpaceService.individualWorkSpaceMemberInfo(email, workspaceId);
 
         //then
-        assertThat(individualWorkSpaceMemberInfoResponse.id()).isEqualTo(individualWorkSpaceMemberInfo.id());
-        assertThat(individualWorkSpaceMemberInfoResponse.name()).isEqualTo(individualWorkSpaceMemberInfo.name());
-        assertThat(individualWorkSpaceMemberInfoResponse.job()).isEqualTo(individualWorkSpaceMemberInfo.job());
-        assertThat(individualWorkSpaceMemberInfoResponse.image()).isEqualTo(individualWorkSpaceMemberInfo.image());
-        assertThat(individualWorkSpaceMemberInfoResponse.email()).isEqualTo(individualWorkSpaceMemberInfo.email());
-        assertThat(individualWorkSpaceMemberInfoResponse.phoneNumber()).isEqualTo(individualWorkSpaceMemberInfo.phoneNumber());
+        assertThat(individualWorkSpaceMemberInfoResponseDto.id()).isEqualTo(individualWorkSpaceMemberInfo.id());
+        assertThat(individualWorkSpaceMemberInfoResponseDto.name()).isEqualTo(individualWorkSpaceMemberInfo.name());
+        assertThat(individualWorkSpaceMemberInfoResponseDto.job()).isEqualTo(individualWorkSpaceMemberInfo.job());
+        assertThat(individualWorkSpaceMemberInfoResponseDto.image()).isEqualTo(individualWorkSpaceMemberInfo.image());
+        assertThat(individualWorkSpaceMemberInfoResponseDto.email()).isEqualTo(individualWorkSpaceMemberInfo.email());
+        assertThat(individualWorkSpaceMemberInfoResponseDto.phoneNumber()).isEqualTo(individualWorkSpaceMemberInfo.phoneNumber());
     }
 
     @Test

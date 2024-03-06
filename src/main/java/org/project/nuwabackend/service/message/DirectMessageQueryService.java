@@ -48,7 +48,7 @@ public class DirectMessageQueryService {
         // 접속한 멤버ID가 아닌 메세지 전부 카운트
         Query query = new Query(Criteria.where("direct_room_id").is(directChannelRoomId)
                 .and("direct_read_count").is(1L)
-                .and("direct_sender_id").is(senderId));
+                .and("direct_sender_id").ne(senderId));
         return mongoTemplate.count(query, DirectMessage.class);
     }
 

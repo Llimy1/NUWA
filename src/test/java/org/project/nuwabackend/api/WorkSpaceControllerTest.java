@@ -13,7 +13,7 @@ import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponse;
+import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
@@ -190,8 +190,8 @@ class WorkSpaceControllerTest {
         String email = "abcd@gmail.com";
         String phoneNumber = "01000000000";
 
-        IndividualWorkSpaceMemberInfoResponse individualWorkSpaceMemberInfoResponse =
-                IndividualWorkSpaceMemberInfoResponse.builder()
+        IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
+                IndividualWorkSpaceMemberInfoResponseDto.builder()
                 .id(id)
                 .name(name)
                 .job(job)
@@ -201,13 +201,13 @@ class WorkSpaceControllerTest {
                 .workSpaceMemberType(WorkSpaceMemberType.CREATED)
                 .build();
         given(workSpaceService.individualWorkSpaceMemberInfo(any(), any()))
-                .willReturn(individualWorkSpaceMemberInfoResponse);
+                .willReturn(individualWorkSpaceMemberInfoResponseDto);
 
         GlobalSuccessResponseDto<Object> individualWorkSpaceMemberInfoSuccessResponse =
                 GlobalSuccessResponseDto.builder()
                         .status(SUCCESS.getValue())
                         .message(INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS.getMessage())
-                        .data(individualWorkSpaceMemberInfoResponse)
+                        .data(individualWorkSpaceMemberInfoResponseDto)
                         .build();
         given(globalService.successResponse(anyString(), any()))
                 .willReturn(individualWorkSpaceMemberInfoSuccessResponse);

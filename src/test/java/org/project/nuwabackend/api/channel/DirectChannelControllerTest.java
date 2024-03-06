@@ -8,10 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.request.DirectChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
-import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponse;
+import org.project.nuwabackend.dto.channel.response.DirectChannelRoomIdResponseDto;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.resolver.CustomPageableHandlerMethodArgumentResolver;
 import org.project.nuwabackend.global.service.GlobalService;
@@ -62,7 +62,7 @@ class DirectChannelControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    DirectChannelRequest directChannelRequest;
+    DirectChannelRequestDto directChannelRequestDto;
 
     String directChannelRoomId = "directChannelRoomId";
     String accessToken = "accessToken";
@@ -82,23 +82,23 @@ class DirectChannelControllerTest {
         Long workSpaceId = 1L;
         Long joinMemberId = 1L;
 
-        directChannelRequest = new DirectChannelRequest(workSpaceId, joinMemberId);
+        directChannelRequestDto = new DirectChannelRequestDto(workSpaceId, joinMemberId);
     }
 
     @Test
     @DisplayName("[API] Create Direct Channel Success Test")
     void createDirectChannelTest() throws Exception {
         //given
-        String body = objectMapper.writeValueAsString(directChannelRequest);
+        String body = objectMapper.writeValueAsString(directChannelRequestDto);
 
-        DirectChannelRoomIdResponse directChannelRoomIdResponse =
-                new DirectChannelRoomIdResponse(directChannelRoomId);
+        DirectChannelRoomIdResponseDto directChannelRoomIdResponseDto =
+                new DirectChannelRoomIdResponseDto(directChannelRoomId);
 
         GlobalSuccessResponseDto<Object> createDirectChannelSuccessResponse =
                 GlobalSuccessResponseDto.builder()
                         .status(SUCCESS.getValue())
                         .message(DIRECT_CHANNEL_CREATE_SUCCESS.getMessage())
-                        .data(directChannelRoomIdResponse)
+                        .data(directChannelRoomIdResponseDto)
                         .build();
 
         given(directChannelService.createDirectChannel(any(), any()))
@@ -128,7 +128,7 @@ class DirectChannelControllerTest {
 
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("createdAt").descending());
 
-        List<DirectChannelListResponse> directChannelListResponse = new ArrayList<>(List.of(DirectChannelListResponse.builder()
+        List<DirectChannelListResponseDto> directChannelListResponseDto = new ArrayList<>(List.of(DirectChannelListResponseDto.builder()
                 .roomId(roomId)
                 .name(name)
                 .workSpaceId(workSpaceId)
@@ -138,8 +138,8 @@ class DirectChannelControllerTest {
                 .joinMemberName(joinMemberName)
                 .build()));
 
-        SliceImpl<DirectChannelListResponse> directChannelListResponses =
-                new SliceImpl<>(directChannelListResponse, pageRequest, false);
+        SliceImpl<DirectChannelListResponseDto> directChannelListResponses =
+                new SliceImpl<>(directChannelListResponseDto, pageRequest, false);
 
         given(directChannelService.directChannelSlice(any(), any(), any()))
                 .willReturn(directChannelListResponses);

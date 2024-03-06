@@ -12,8 +12,8 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.request.DirectChannelRequest;
-import org.project.nuwabackend.dto.channel.response.DirectChannelListResponse;
+import org.project.nuwabackend.dto.channel.request.DirectChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.DirectChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
@@ -56,7 +56,7 @@ class DirectChannelServiceTest {
     @InjectMocks
     DirectChannelService directChannelService;
 
-    private DirectChannelRequest directChannelRequest;
+    private DirectChannelRequestDto directChannelRequestDto;
     private WorkSpace workSpace;
     private WorkSpaceMember senderWorkSpaceMember;
     private WorkSpaceMember receiverWorkSpaceMember;
@@ -121,15 +121,15 @@ class DirectChannelServiceTest {
                 workSpace);
         ReflectionTestUtils.setField(receiverWorkSpaceMember, "id", 2L);
 
-        directChannelRequest = new DirectChannelRequest(workSpaceId, joinMemberId);
+        directChannelRequestDto = new DirectChannelRequestDto(workSpaceId, joinMemberId);
     }
 
     @Test
     @DisplayName("[Service] Direct Channel Save Test")
     void saveDirectChannelTest() {
         //given
-        Long joinMemberId = directChannelRequest.joinMemberId();
-        Long workSpaceId = directChannelRequest.workSpaceId();
+        Long joinMemberId = directChannelRequestDto.joinMemberId();
+        Long workSpaceId = directChannelRequestDto.workSpaceId();
 
         Direct direct = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, receiverWorkSpaceMember);
 
@@ -141,7 +141,7 @@ class DirectChannelServiceTest {
                 .willReturn(direct);
 
         //when
-        String directChannelId = directChannelService.createDirectChannel(sender.getEmail(), directChannelRequest);
+        String directChannelId = directChannelService.createDirectChannel(sender.getEmail(), directChannelRequestDto);
 
         //then
         assertThat(directChannelId).isNotNull();
@@ -168,8 +168,8 @@ class DirectChannelServiceTest {
 
         Slice<Direct> directSlice = new SliceImpl<>(directList, pageRequest, false);
 
-        Slice<DirectChannelListResponse> directSliceMap = directSlice.map(
-                direct -> DirectChannelListResponse.builder()
+        Slice<DirectChannelListResponseDto> directSliceMap = directSlice.map(
+                direct -> DirectChannelListResponseDto.builder()
                         .roomId(direct.getRoomId())
                         .name(direct.getName())
                         .createMemberId(direct.getCreateMember().getId())
@@ -184,7 +184,7 @@ class DirectChannelServiceTest {
         given(directChannelRepository.findDirectChannelByCreateMemberIdOrJoinMemberId(any(), any()))
                 .willReturn(directSlice);
         //when
-        Slice<DirectChannelListResponse> directChannelListResponseList =
+        Slice<DirectChannelListResponseDto> directChannelListResponseList =
                 directChannelService.directChannelSlice(email, workSpaceId, pageRequest);
         //then
         assertThat(directChannelListResponseList).isNotNull();
