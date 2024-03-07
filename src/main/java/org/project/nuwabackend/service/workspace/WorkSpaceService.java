@@ -22,6 +22,7 @@ import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
+import org.project.nuwabackend.service.notification.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +39,7 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
+import static org.project.nuwabackend.type.NotificationType.NOTICE;
 import static org.project.nuwabackend.type.WorkSpaceMemberType.CREATED;
 import static org.project.nuwabackend.type.WorkSpaceMemberType.JOIN;
 
@@ -52,6 +54,8 @@ public class WorkSpaceService {
     private final DirectChannelRepository directChannelRepository;
     private final WorkSpaceRepository workSpaceRepository;
     private final MemberRepository memberRepository;
+
+    private final NotificationService notificationService;
 
     @Transactional
     public Long createWorkSpace(String email, WorkSpaceRequestDto workSpaceRequestDto) {
@@ -328,8 +332,14 @@ public class WorkSpaceService {
         WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(workSpaceMemberId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
+        String workSpaceMemberName = workSpaceMember.getName();
+
         if (workSpaceMember.getWorkSpaceMemberType().equals(JOIN)) {
             workSpaceMember.updateCreateWorkSpaceMemberType();
+
+            notificationService.send(workSpaceMemberName + "님이 워크스페이스 소유주로 변경되었습니다.",
+                    createWorkSpaceUrl(workSpaceMemberId), NOTICE, workSpaceMember);
+
         } else {
             throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
         }
@@ -344,6 +354,9 @@ public class WorkSpaceService {
 
         if (workSpaceMember.getIsDelete().equals(true))
             throw new IllegalArgumentException(WORK_SPACE_MEMBER_BEFORE_QUIT.getMessage());
+
+        if (workSpaceMember.getWorkSpaceMemberType().equals(CREATED))
+            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
 
         workSpaceMember.deleteWorkSpaceMember();
 
@@ -362,5 +375,9 @@ public class WorkSpaceService {
     @Transactional
     public void deleteWorkSpace(Long workSpaceId) {
         workSpaceRepository.deleteById(workSpaceId);
+    }
+
+    private String createWorkSpaceUrl(Long workSpaceId) {
+        return "http://localhost:3000/workspace/" + workSpaceId;
     }
 }

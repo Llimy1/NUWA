@@ -36,7 +36,9 @@ import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SP
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_MEMBER_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_QUIT_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -190,5 +192,32 @@ public class WorkSpaceController {
                 globalService.successResponse(WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS.getMessage(), null);
 
         return ResponseEntity.status(OK).body(updateWorkSpaceMemberStatusSuccessResponse);
+    }
+
+    // 워크스페이스 권한 변경
+    // TODO: test code
+    @PatchMapping("/workspace/{workSpaceMemberId}")
+    public ResponseEntity<Object> relocateCreateWorkSpaceMemberType(@PathVariable(value = "workSpaceMemberId") Long workSpaceMemberId) {
+        log.info("권한 변경 API 호출");
+        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMemberId);
+
+        GlobalSuccessResponseDto<Object> workSpaceMemberTypeRelocateSuccessResponse =
+                globalService.successResponse(WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS.getMessage(), null);
+
+        return ResponseEntity.status(OK).body(workSpaceMemberTypeRelocateSuccessResponse);
+    }
+
+    // 워크스페이스 나가기
+    // TODO : test code
+    @PatchMapping("/workspace/{workSpaceId}/quit")
+    public ResponseEntity<Object> quitWorkSpaceMember(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                      @MemberEmail String email) {
+        log.info("워크스페이스 나가기 API 호출");
+        workSpaceService.quitWorkSpaceMember(email, workSpaceId);
+
+        GlobalSuccessResponseDto<Object> quitWorkSpaceMemberSuccessResponse =
+                globalService.successResponse(WORK_SPACE_MEMBER_QUIT_SUCCESS.getMessage(), null);
+
+        return ResponseEntity.status(OK).body(quitWorkSpaceMemberSuccessResponse);
     }
 }
