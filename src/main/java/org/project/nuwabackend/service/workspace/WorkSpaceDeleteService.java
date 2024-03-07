@@ -44,13 +44,13 @@ public class WorkSpaceDeleteService {
 
         if (workSpace.getCount().equals(1)) {
             // TODO: 해당 워크스페이스에 존재하는 모든 데이터 삭제
-            directChannelService.deleteDirectChannelList(workSpaceId);
             directMessageQueryService.deleteDirectMessageWorkSpaceId(workSpaceId);
-            chatChannelService.deleteChatChannelList(workSpaceId);
             chatMessageQueryService.deleteChatMessageWorkSpaceId(workSpaceId);
-            workSpaceService.deleteWorkSpaceMember(workSpaceId);
-            fileService.deleteFileWorkSpaceId(workSpaceId);
+            chatChannelService.deleteChatChannelList(workSpaceId);
+            directChannelService.deleteDirectChannelList(workSpaceId);
             notificationService.deleteNotificationWorkSpaceId(workSpaceId);
+            fileService.deleteFileWorkSpaceId(workSpaceId);
+            workSpaceService.deleteWorkSpaceMember(workSpaceId);
             workSpaceService.deleteWorkSpace(workSpaceId);
         } else {
             throw new IllegalArgumentException(WORK_SPACE_NOT_ONLY_MEMBER.getMessage());
