@@ -47,6 +47,8 @@ public interface DirectChannelRepository extends JpaRepository<Direct, Long> {
 
     Optional<Direct> findByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId);
 
+    Optional<Direct> findByRoomId(String roomId);
+
     @Query("DELETE FROM Direct d WHERE d.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)
     void deleteDirectByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);

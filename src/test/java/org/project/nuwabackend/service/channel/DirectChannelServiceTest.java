@@ -226,7 +226,7 @@ class DirectChannelServiceTest {
 
         directList.forEach(direct -> {
 
-            given(directMessageQueryService.countUnReadMessage(anyString(), anyString()))
+            given(directMessageQueryService.countUnReadMessage(anyString(), anyString(), any()))
                     .willReturn(unReadCount);
 
             PageRequest pageRequest1 = PageRequest.of(0, 1);
@@ -312,7 +312,7 @@ class DirectChannelServiceTest {
 
         directList.forEach(direct -> {
 
-            given(directMessageQueryService.countUnReadMessage(anyString(), anyString()))
+            given(directMessageQueryService.countUnReadMessage(anyString(), anyString(), any()))
                     .willReturn(unReadCount);
 
             PageRequest pageRequest1 = PageRequest.of(0, 1);

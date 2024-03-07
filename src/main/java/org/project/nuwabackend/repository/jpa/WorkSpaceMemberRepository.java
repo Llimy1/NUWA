@@ -24,14 +24,6 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "WHERE m.email = :email AND w.id = :workSpaceId AND wm.isDelete = false ")
     Optional<WorkSpaceMember> findByMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
 
-    // 이메일로 워크스페이스 멤버 찾기
-    @Query("SELECT wm " +
-            "FROM WorkSpaceMember wm " +
-            "JOIN wm.member m " +
-            "JOIN wm.workSpace w " +
-            "WHERE m.email = :email AND wm.isDelete = false ")
-    Optional<WorkSpaceMember> findByMemberEmail(@Param("email") String email);
-
     List<WorkSpaceMember> findByMember(Member findMember);
 
     @Query("SELECT wsm.workSpace FROM WorkSpaceMember wsm WHERE wsm.member = :member")
@@ -50,9 +42,9 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
 
     //Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(WorkSpace workSpace, Member member);
 
-    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace.id = :workspaceId AND wsm.member.email = :email")
-    Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(@Param("workspaceId") Long workspaceId,
-                                                              @Param("email") String email);
+//    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace.id = :workspaceId AND wsm.member.email = :email")
+//    Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(@Param("workspaceId") Long workspaceId,
+//                                                              @Param("email") String email);
 
     @Query("DELETE FROM WorkSpaceMember wm WHERE wm.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)

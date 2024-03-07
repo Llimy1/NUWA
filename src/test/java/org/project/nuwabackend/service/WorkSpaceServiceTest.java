@@ -318,9 +318,9 @@ class WorkSpaceServiceTest {
         Long otherId = 2L;
         List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtoList = new ArrayList<>();
         directList.forEach(direct -> {
-                given(directMessageQueryService.countManyMessageSenderId(anyString(), anyString()))
+                given(directMessageQueryService.countManyMessageSenderId(anyString(), anyString(), any()))
                         .willReturn(count);
-                given(directMessageQueryService.neSenderId(anyString(), anyString()))
+                given(directMessageQueryService.neSenderId(anyString(), anyString(), any()))
                         .willReturn(otherId);
                 given(workSpaceMemberRepository.findById(any()))
                         .willReturn(Optional.of(other));

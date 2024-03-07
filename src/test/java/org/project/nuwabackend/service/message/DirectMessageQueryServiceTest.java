@@ -7,10 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,7 +34,8 @@ class DirectMessageQueryServiceTest {
 
     @Mock
     WorkSpaceMemberRepository workSpaceMemberRepository;
-
+    @Mock
+    DirectChannelRepository directChannelRepository;
     @Mock
     MongoTemplate mongoTemplate;
 
@@ -58,13 +61,14 @@ class DirectMessageQueryServiceTest {
         String senderWorkSpaceMemberImage = "senderImage";
         String senderWorkSpaceMemberJob = "senderJob";
 
-        String senderEmail = "senderEmail";
         String senderPassword = "senderPassword";
         String senderNickname = "senderNickname";
         String senderPhoneNumber = "senderPhoneNumber";
 
         workSpace = WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
-        sender = Member.createMember(senderEmail, senderPassword, senderNickname, senderPhoneNumber);
+        ReflectionTestUtils.setField(workSpace, "id", 1L);
+
+        sender = Member.createMember(email, senderPassword, senderNickname, senderPhoneNumber);
         senderWorkSpaceMember = WorkSpaceMember.createWorkSpaceMember(
                 senderWorkSpaceMemberName,
                 senderWorkSpaceMemberJob,
@@ -79,10 +83,19 @@ class DirectMessageQueryServiceTest {
     @DisplayName("[Service] Update Read Count Zero Test")
     void updateReadCountZeroTest() {
         //given
-        given(workSpaceMemberRepository.findByMemberEmail(anyString()))
+        Member member = Member.createMember("abcd@gmail.com", "1234", "abcd", "01000000000");
+        WorkSpaceMember workSpaceMember2 =
+                WorkSpaceMember.joinWorkSpaceMember("홍길동", "N", WorkSpaceMemberType.JOIN, member, workSpace);
+
+        Direct directChannel = Direct.createDirectChannel(workSpace, senderWorkSpaceMember, workSpaceMember2);
+        String roomId = directChannel.getRoomId();
+
+        given(directChannelRepository.findByRoomId(anyString()))
+                .willReturn(Optional.of(directChannel));
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
         //when
-        directMessageQueryService.updateReadCountZero(directChannelRoomId, email);
+        directMessageQueryService.updateReadCountZero(roomId, email);
 
         //then
         verify(mongoTemplate).updateMulti(any(Query.class), any(), eq(DirectMessage.class));
@@ -93,14 +106,14 @@ class DirectMessageQueryServiceTest {
     void countUnReadMessageTest() {
         //given
         Long testCount = 10L;
-
-        given(workSpaceMemberRepository.findByMemberEmail(anyString()))
+        Long workSpaceId = 1L;
+        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
         given(mongoTemplate.count(any(Query.class), eq(DirectMessage.class)))
                 .willReturn(testCount);
 
         //when
-        Long count = directMessageQueryService.countUnReadMessage(directChannelRoomId, email);
+        Long count = directMessageQueryService.countUnReadMessage(directChannelRoomId, email, workSpaceId);
 
         //then
         verify(mongoTemplate).count(any(Query.class), eq(DirectMessage.class));

@@ -2,9 +2,11 @@ package org.project.nuwabackend.service.message;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.global.exception.NotFoundException;
+import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
@@ -20,13 +23,19 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 public class DirectMessageQueryService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
+    private final DirectChannelRepository directChannelRepository;
     private final MongoTemplate mongoTemplate;
 
     // 다이렉트 채널 읽지 않은 메세지 전부 읽음으로 변경 => 벌크 연산
     public void updateReadCountZero(String directChannelRoomId, String email) {
         log.info("채팅 전부 읽음으로 변경");
 
-        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+        Direct direct = directChannelRepository.findByRoomId(directChannelRoomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        Long workSpaceId = direct.getWorkSpace().getId();
+
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         Long senderId = sender.getId();
@@ -39,8 +48,8 @@ public class DirectMessageQueryService {
     }
 
     // 읽지 않은 메세지 카운트
-    public Long countUnReadMessage(String directChannelRoomId, String email) {
-        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+    public Long countUnReadMessage(String directChannelRoomId, String email, Long workSpaceId) {
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         Long senderId = sender.getId();
@@ -53,8 +62,8 @@ public class DirectMessageQueryService {
     }
 
     // 내가 보낸 메세지 카운트
-    public Long countManyMessageSenderId(String directChannelRoomId, String email) {
-        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+    public Long countManyMessageSenderId(String directChannelRoomId, String email, Long workSpaceId) {
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         Long senderId = sender.getId();
@@ -66,8 +75,8 @@ public class DirectMessageQueryService {
     }
 
     // 내가 아닌 상대방이 보낸 메세지로 상대방 id 찾아오기
-    public Long neSenderId(String directChannelRoomId, String email) {
-        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmail(email)
+    public Long neSenderId(String directChannelRoomId, String email, Long workSpaceId) {
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         Long senderId = sender.getId();

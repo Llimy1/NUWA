@@ -35,7 +35,7 @@ public class InvitationLinkService {
         Long workSpaceId = invitationLinkRequest.workSpaceId();
 
         // 해당 워크스페이스의 멤버인지 확인
-        workSpaceMemberRepository.findByWorkSpaceIdAndMemberEmail(workSpaceId, email)
+        workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         return invitationLinkRedisRepository.findTopByWorkSpaceIdOrderByTokenDesc(workSpaceId)

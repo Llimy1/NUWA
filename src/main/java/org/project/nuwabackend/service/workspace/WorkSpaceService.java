@@ -295,10 +295,10 @@ public class WorkSpaceService {
         // 채팅방 순회하면서 채팅방 별로 내가 보낸 채팅 개수 가져오기
         directChannelList.forEach(direct -> {
 
-            Long count = directMessageQueryService.countManyMessageSenderId(direct.getRoomId(), email);
+            Long count = directMessageQueryService.countManyMessageSenderId(direct.getRoomId(), email, workSpaceId);
 
             // 내 아이디로 상대방 id 가져오기
-            Long otherId = directMessageQueryService.neSenderId(direct.getRoomId(), email);
+            Long otherId = directMessageQueryService.neSenderId(direct.getRoomId(), email, workSpaceId);
 
             // 값이 없다면 빈 리스트로 반환
             if (otherId != null) {

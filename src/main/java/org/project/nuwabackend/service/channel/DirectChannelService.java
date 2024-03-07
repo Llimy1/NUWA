@@ -131,7 +131,7 @@ public class DirectChannelService {
         // 리스트를 순회하면서 해당 roomId에 맞는 마지막 채팅과 시간 가져오기
         // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
         List<DirectChannelResponseDto> directChannelResponseDtoList =
-                directChannelResponseDtoList(directChannelList, email)
+                directChannelResponseDtoList(directChannelList, email, workSpaceId)
                         .stream()
                         .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
                                         Comparator.nullsLast(Comparator.naturalOrder())).reversed())
@@ -156,7 +156,7 @@ public class DirectChannelService {
         // 리스트를 순회하면서 해당 roomId에 맞는 마지막 채팅과 시간 가져오기
         // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
         List<DirectChannelResponseDto> searchDirectChannelResponseDtoList =
-                directChannelResponseDtoList(searchDirectChannelList, email)
+                directChannelResponseDtoList(searchDirectChannelList, email, workSpaceId)
                         .stream()
                         .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
                                         Comparator.nullsLast(Comparator.naturalOrder())).reversed())
@@ -174,13 +174,13 @@ public class DirectChannelService {
     }
 
     // 채팅 정보 넣기
-    private List<DirectChannelResponseDto> directChannelResponseDtoList(List<Direct> directList, String email) {
+    private List<DirectChannelResponseDto> directChannelResponseDtoList(List<Direct> directList, String email, Long workSpaceId) {
         List<DirectChannelResponseDto> directChannelResponseDtoList = new ArrayList<>();
 
         directList.forEach(direct -> {
             PageRequest pageRequest = PageRequest.of(0, 1);
 
-            Long unReadCount = directMessageQueryService.countUnReadMessage(direct.getRoomId(), email);
+            Long unReadCount = directMessageQueryService.countUnReadMessage(direct.getRoomId(), email, workSpaceId);
 
             DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
                     .roomId(direct.getRoomId())
