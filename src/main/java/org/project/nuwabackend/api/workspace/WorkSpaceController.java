@@ -1,4 +1,4 @@
-package org.project.nuwabackend.api;
+package org.project.nuwabackend.api.workspace;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
