@@ -197,9 +197,11 @@ public class WorkSpaceController {
     // 워크스페이스 권한 변경
     // TODO: test code
     @PatchMapping("/workspace/{workSpaceMemberId}/relocate")
-    public ResponseEntity<Object> relocateCreateWorkSpaceMemberType(@PathVariable(value = "workSpaceMemberId") Long workSpaceMemberId) {
+    public ResponseEntity<Object> relocateCreateWorkSpaceMemberType(@PathVariable(value = "workSpaceMemberId") Long workSpaceMemberId,
+                                                                    @MemberEmail String email,
+                                                                    @RequestParam(value = "workSpaceId") Long workSpaceId) {
         log.info("권한 변경 API 호출");
-        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMemberId);
+        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMemberId, email, workSpaceId);
 
         GlobalSuccessResponseDto<Object> workSpaceMemberTypeRelocateSuccessResponse =
                 globalService.successResponse(WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS.getMessage(), null);

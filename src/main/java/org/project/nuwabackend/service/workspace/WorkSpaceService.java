@@ -341,18 +341,22 @@ public class WorkSpaceService {
     // TODO: test code
     // TODO: 권한 넘어간 알림 보내기
     @Transactional
-    public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId) {
-        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(workSpaceMemberId)
+    public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId, String email, Long workSpaceId) {
+
+        WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        String workSpaceMemberName = workSpaceMember.getName();
+        WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(workSpaceMemberId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        if (workSpaceMember.getWorkSpaceMemberType().equals(JOIN)) {
-            workSpaceMember.updateCreateWorkSpaceMemberType();
+
+        String workSpaceMemberName = joinWorkSpaceMember.getName();
+        if (joinWorkSpaceMember.getWorkSpaceMemberType().equals(JOIN)) {
+            joinWorkSpaceMember.updateCreateWorkSpaceMemberType();
+            createWorkSpaceMember.updateJoinWorkSpaceMemberType();
 
             notificationService.send(workSpaceMemberName + "님이 워크스페이스 소유주로 변경되었습니다.",
-                    createWorkSpaceUrl(workSpaceMemberId), NOTICE, workSpaceMember);
-
+                    createWorkSpaceUrl(workSpaceId), NOTICE, joinWorkSpaceMember);
         } else {
             throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
         }
@@ -364,9 +368,6 @@ public class WorkSpaceService {
     public void quitWorkSpaceMember(String email, Long workSpaceId) {
         WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
-
-        if (workSpaceMember.getIsDelete().equals(true))
-            throw new IllegalArgumentException(WORK_SPACE_MEMBER_BEFORE_QUIT.getMessage());
 
         if (workSpaceMember.getWorkSpaceMemberType().equals(CREATED))
             throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
