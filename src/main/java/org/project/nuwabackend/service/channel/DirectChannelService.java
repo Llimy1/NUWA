@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
@@ -63,10 +64,16 @@ public class DirectChannelService {
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         // 이미 채팅방이 존재를 하면 roomId를 예외로 반환
-        directChannelRepository.findByCreateMemberIdOrJoinMemberId(createMemberId, joinMemberId)
-                .ifPresent(direct -> {
-                    throw new IllegalArgumentException(direct.getRoomId());
-                });
+
+        Optional<Direct> optionalDirect = directChannelRepository.findByCreateMemberIdOrJoinMemberId(createMemberId, joinMemberId);
+        if (optionalDirect.isPresent()) {
+            Direct direct = optionalDirect.get();
+
+            if (direct.getIsCreateMemberDelete()) direct.restoreCreateMember();
+            else if (direct.getIsJoinMemberDelete()) direct.restoreJoinMember();
+
+            return direct.getRoomId();
+        }
 
         // 워크스페이스 존재하고 멤버도 전부 존재하면 채널 저장
         Direct direct = Direct.createDirectChannel(workSpace, createWorkSpaceMember, joinWorkSpaceMember);
@@ -87,8 +94,10 @@ public class DirectChannelService {
                 .channelName(direct.getName())
                 .createMemberId(direct.getCreateMember().getId())
                 .createMemberName(direct.getCreateMember().getName())
+                .isCreateDelete(direct.getIsCreateMemberDelete())
                 .joinMemberId(direct.getJoinMember().getId())
                 .joinMemberName(direct.getJoinMember().getName())
+                .isJoinDelete(direct.getIsJoinMemberDelete())
                 .build();
     }
 
@@ -106,6 +115,7 @@ public class DirectChannelService {
                 .map(direct -> DirectChannelListResponseDto.builder()
                         .roomId(direct.getRoomId())
                         .name(direct.getName())
+                        .workSpaceId(workSpaceId)
                         .createMemberId(direct.getCreateMember().getId())
                         .joinMemberId(direct.getJoinMember().getId())
                         .createMemberName(direct.getCreateMember().getName())
@@ -216,5 +226,35 @@ public class DirectChannelService {
     @Transactional
     public void deleteDirectChannelList(Long workSpaceId) {
         directChannelRepository.deleteDirectByWorkSpaceId(workSpaceId);
+    }
+
+    // TODO: test code
+    // 채널 삭제 -> 나에게만 삭제 / 서로 삭제시 -> 완전 삭제
+    @Transactional
+    public Boolean deleteChannelMember(Long workSpaceId, String email, String roomId) {
+        Direct findDirectChannel = directChannelRepository.findByWorkSpaceIdAndRoomIdAndEmail(workSpaceId, roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        WorkSpaceMember createMember = findDirectChannel.getCreateMember();
+        Long createMemberId = createMember.getId();
+        WorkSpaceMember joinMember = findDirectChannel.getJoinMember();
+        Long joinMemberId = joinMember.getId();
+
+        // 나에게만 삭제
+        if (findWorkSpaceMemberId.equals(createMemberId)) findDirectChannel.deleteCreateMember();
+        else if (joinMemberId.equals(findWorkSpaceMemberId)) findDirectChannel.deleteJoinMember();
+
+        boolean flag = false;
+        // 양쪽 전부 삭제시 완전 삭제
+        if (findDirectChannel.getIsCreateMemberDelete() && findDirectChannel.getIsJoinMemberDelete()) {
+            directChannelRepository.delete(findDirectChannel);
+            flag = true;
+        }
+
+        return flag;
     }
 }

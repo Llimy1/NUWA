@@ -14,6 +14,10 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     List<File> findByWorkSpaceId(Long workSpaceId);
 
+    @Query("DELETE FROM File f WHERE f.workSpace.id = :workSpaceId AND f.channel.roomId = :roomId")
+    @Modifying(clearAutomatically = true)
+    void deleteByWorkSpaceIdAndChannelRoomId(@Param("workSpaceId") Long workSpaceId, @Param("roomId") String roomId);
+
     @Query("DELETE FROM File f WHERE f.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)
     void deleteByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);

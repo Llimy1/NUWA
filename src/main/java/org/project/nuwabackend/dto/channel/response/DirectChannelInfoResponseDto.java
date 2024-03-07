@@ -8,6 +8,8 @@ public record DirectChannelInfoResponseDto(
         String channelName,
         Long createMemberId,
         String createMemberName,
+        Boolean isCreateDelete,
         Long joinMemberId,
-        String joinMemberName) {
+        String joinMemberName,
+        Boolean isJoinDelete) {
 }

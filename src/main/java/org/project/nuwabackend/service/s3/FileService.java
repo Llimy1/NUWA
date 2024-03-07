@@ -135,6 +135,12 @@ public class FileService {
         return file.getUrl();
     }
 
+    // TODO: test code
+    // WorkSPaceId와 RoomId에 해당되는 파일 전부 삭제
+    public void deleteFileByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
+        fileRepository.deleteByWorkSpaceIdAndChannelRoomId(workSpaceId, roomId);
+    }
+
     // 파일 원본 이름
     private static String getOriginFileName(String fileUrl) {
         int slashIndex = fileUrl.lastIndexOf("/") + 1;

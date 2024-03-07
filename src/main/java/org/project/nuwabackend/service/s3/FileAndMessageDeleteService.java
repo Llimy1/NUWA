@@ -30,5 +30,4 @@ public class FileAndMessageDeleteService {
         String fileUrl = fileService.deleteFile(fileId);
         chatMessageQueryService.deleteChatMessageByFile(workSpaceId, fileUrl);
     }
-
 }

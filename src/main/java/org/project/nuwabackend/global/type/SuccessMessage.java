@@ -48,8 +48,10 @@ public enum SuccessMessage {
     WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS("워크스페이스 멤버 권한 변경에 성공 했습니다."),
     WORK_SPACE_MEMBER_QUIT_SUCCESS("워크스페이스 멤버 나가기에 성공 했습니다."),
     DELETE_WORK_SPACE_SUCCESS("워크스페이스 삭제에 성공 했습니다."),
-    DELETE_FILE_AND_DIRECT_MESSAGE_SUCCESS("파일 삭제 및 연관된 다이렉트 채팅 메세지 삭제에 성공했습니다."),
-    DELETE_FILE_AND_CHAT_MESSAGE_SUCCESS("파일 삭제 및 연관된 채팅 메세지 삭제에 성공했습니다.");
+    DELETE_FILE_AND_DIRECT_MESSAGE_SUCCESS("파일 삭제 및 연관된 다이렉트 채팅 메세지 삭제에 성공 했습니다."),
+    DELETE_FILE_AND_CHAT_MESSAGE_SUCCESS("파일 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
+    DELETE_CHAT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("채팅 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
+    DELETE_DIRECT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("다이렉트 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다.");
 
     private final String message;
 

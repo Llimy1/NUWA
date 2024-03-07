@@ -27,6 +27,7 @@ public enum ErrorMessage {
     REDIS_CHAT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 채팅 채널 접속 정보가 존재하지 않습니다."),
     MEMBER_ID_NOT_FOUND("멤버가 존재하지 않습니다."),
     CHANNEL_NOT_FOUND("채널이 존재하지 않습니다."),
+    CREATE_CHANNEL_NOT_FOUND("내가 생성한 채널이 존재하지 않습니다."),
     FILE_NOT_FOUND("파일이 존재하지 않습니다."),
     FILE_EXTENSION_NOT_FOUND("파일의 확장자가 존재하지 않습니다."),
     FILE_EXTENSION_NOT_APPLY("파일의 확장자를 지원하지 않습니다."),

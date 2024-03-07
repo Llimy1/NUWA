@@ -29,6 +29,7 @@ public class FileAndMessageController {
     @DeleteMapping("/file/{workSpaceId}/direct")
     public ResponseEntity<Object> deleteFileAndDirectMessage(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                              @RequestParam(value = "fileId") Long fileId) {
+        log.info("다이렉트 파일 & 메세지 삭제 API");
         fileAndMessageDeleteService.deleteFileAndDirectMessage(workSpaceId, fileId);
 
         GlobalSuccessResponseDto<Object> deleteFileAndDirectMessageSuccessResponse =
@@ -41,6 +42,7 @@ public class FileAndMessageController {
     @DeleteMapping("/file/{workSpaceId}/chat")
     public ResponseEntity<Object> deleteFileAndChatMessage(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                              @RequestParam(value = "fileId") Long fileId) {
+        log.info("채팅 파일 & 메세지 삭제 API");
         fileAndMessageDeleteService.deleteFileAndChatMessage(workSpaceId, fileId);
 
         GlobalSuccessResponseDto<Object> deleteFileAndChatMessageSuccessResponse =

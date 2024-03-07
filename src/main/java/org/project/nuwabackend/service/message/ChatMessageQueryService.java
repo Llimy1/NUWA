@@ -35,4 +35,13 @@ public class ChatMessageQueryService {
 
         mongoTemplate.remove(query, ChatMessage.class);
     }
+
+    // WorkSpace ID와 Room ID에 해당되는 채팅 전부 삭제
+    // TODO: test code
+    public void deleteWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
+                .and("chat_room_id").is(roomId));
+
+        mongoTemplate.remove(query, ChatMessage.class);
+    }
 }

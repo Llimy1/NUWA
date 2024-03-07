@@ -112,4 +112,13 @@ public class DirectMessageQueryService {
                 .and("message_type").is(FILE));
         mongoTemplate.remove(query, DirectMessage.class);
     }
+
+    // 워크스페이스 ID와 Room ID 관련 다이렉트 메세지 전부 삭제
+    // TODO: test code
+    public void deleteDirectMessageByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
+                .and("direct_room_id").is(roomId));
+
+        mongoTemplate.remove(query, DirectMessage.class);
+    }
 }
