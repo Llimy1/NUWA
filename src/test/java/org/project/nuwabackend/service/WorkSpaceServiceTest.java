@@ -200,6 +200,7 @@ class WorkSpaceServiceTest {
                 .name(workSpaceMember.getName())
                 .image(workSpaceMember.getImage())
                 .job(workSpaceMember.getJob())
+                .status(workSpaceMember.getStatus())
                 .phoneNumber(member.getPhoneNumber())
                 .email(member.getEmail())
                 .build();

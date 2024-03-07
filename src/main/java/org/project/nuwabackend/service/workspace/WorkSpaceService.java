@@ -215,6 +215,7 @@ public class WorkSpaceService {
                 .name(findWorkSpaceMember.getName())
                 .job(findWorkSpaceMember.getJob())
                 .image(findWorkSpaceMember.getImage())
+                .status(findWorkSpaceMember.getStatus())
                 .phoneNumber(phoneNumber)
                 .email(email)
                 .build();

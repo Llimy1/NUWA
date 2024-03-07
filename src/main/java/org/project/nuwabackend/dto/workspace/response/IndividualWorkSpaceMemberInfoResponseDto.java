@@ -8,6 +8,7 @@ public record IndividualWorkSpaceMemberInfoResponseDto(Long id,
                                                        String name,
                                                        String job,
                                                        String image,
+                                                       String status,
                                                        String email,
                                                        String phoneNumber,
                                                        WorkSpaceMemberType workSpaceMemberType) {
