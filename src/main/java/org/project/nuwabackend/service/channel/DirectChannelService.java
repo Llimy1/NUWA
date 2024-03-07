@@ -63,8 +63,7 @@ public class DirectChannelService {
         WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(joinMemberId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        // 이미 채팅방이 존재를 하면 roomId를 예외로 반환
-
+        // 이미 채팅방이 존재하면 해당 Room Id 반환
         Optional<Direct> optionalDirect = directChannelRepository.findByCreateMemberIdOrJoinMemberId(createMemberId, joinMemberId);
         if (optionalDirect.isPresent()) {
             Direct direct = optionalDirect.get();
