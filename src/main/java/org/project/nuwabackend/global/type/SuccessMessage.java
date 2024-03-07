@@ -45,7 +45,8 @@ public enum SuccessMessage {
     FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS("즐겨 찾는 팀원 정보 조회에 성공 했습니다."),
     WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS("워크스페이스 멤버 상태 편집에 성공 했습니다."),
     WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS("워크스페이스 멤버 권한 변경에 성공 했습니다."),
-    WORK_SPACE_MEMBER_QUIT_SUCCESS("워크스페이스 멤버 나가기에 성공 했습니다.");
+    WORK_SPACE_MEMBER_QUIT_SUCCESS("워크스페이스 멤버 나가기에 성공 했습니다."),
+    DELETE_WORK_SPACE_SUCCESS("워크스페이스 삭제에 성공 했습니다.");
 
     private final String message;
 

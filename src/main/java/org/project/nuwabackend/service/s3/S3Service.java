@@ -2,6 +2,7 @@ package org.project.nuwabackend.service.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,68 +48,40 @@ public class S3Service {
 
             String uploadFileName = createFileName(originFileName);
             FilePathType filePath = getFilePath(uploadFileName);
-            Long byteSize = multipartFile.getSize();
+            long byteSize = multipartFile.getSize();
 
             String fileContentType = multipartFile.getContentType();
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(byteSize);
             objectMetadata.setContentType(fileContentType);
 
-            try (InputStream inputStream = multipartFile.getInputStream()) {
-                switch (filePath) {
-                    case IMAGE_PATH -> {
-                        switch (fileType) {
-                            case CANVAS -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/image/canvas", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                imageUrlMap.put(amazonS3.getUrl(bucket + "/image/canvas", uploadFileName).toString(), byteSize);
-                            }
-                            case DIRECT -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/image/direct", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                imageUrlMap.put(amazonS3.getUrl(bucket + "/image/direct", uploadFileName).toString(), byteSize);
-                            }
-                            case CHAT -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/image/chat", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                imageUrlMap.put(amazonS3.getUrl(bucket + "/image/chat", uploadFileName).toString(), byteSize);
-                            }
-                            case VOICE -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/image/voice", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                imageUrlMap.put(amazonS3.getUrl(bucket + "/image/voice", uploadFileName).toString(), byteSize);
-                            }
-                        }
-                    } case FILE_PATH -> {
-                        switch (fileType) {
-                            case CANVAS -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/file/canvas", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                fileUrlMap.put(amazonS3.getUrl(bucket + "/file/canvas", uploadFileName).toString(), byteSize);
-                            }
-                            case DIRECT -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/file/direct", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                fileUrlMap.put(amazonS3.getUrl(bucket + "/file/direct", uploadFileName).toString(), byteSize);
-                            }
-                            case CHAT -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/file/chat", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                fileUrlMap.put(amazonS3.getUrl(bucket + "/file/chat", uploadFileName).toString(), byteSize);
-                            }
-                            case VOICE -> {
-                                amazonS3.putObject(new PutObjectRequest(bucket + "/file/voice", uploadFileName, inputStream, objectMetadata)
-                                        .withCannedAcl(CannedAccessControlList.PublicRead));
-                                fileUrlMap.put(amazonS3.getUrl(bucket + "/file/voice", uploadFileName).toString(), byteSize);
-                            }
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage());
-            }
+            String bucketUrl = createBucketUrl(filePath, fileType);
+            uploadToS3(multipartFile, bucketUrl, uploadFileName, objectMetadata, filePath == IMAGE_PATH ? imageUrlMap : fileUrlMap, byteSize);
         }
         return new FileUploadResultDto(imageUrlMap, fileUrlMap);
+    }
+
+    private void uploadToS3(MultipartFile multipartFile, String bucketUrl, String uploadFileName,
+                            ObjectMetadata objectMetadata, Map<String, Long> urlMap, Long byteSize) {
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            amazonS3.putObject(new PutObjectRequest(bucketUrl, uploadFileName, inputStream, objectMetadata)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            urlMap.put(amazonS3.getUrl(bucketUrl, uploadFileName).toString(), byteSize);
+        } catch (IOException e) {
+            throw new IllegalStateException(e.getMessage());
+        }
+    }
+
+    // 파일 삭제
+    // TODO: test code
+    public void deleteFile(String fileUrl, FileType fileType) {
+        int lastIndex = fileUrl.lastIndexOf("/") + 1;
+        String fileName = fileUrl.substring(lastIndex);
+        FilePathType filePath = getFilePath(fileName);
+
+        String bucketUrl = createBucketUrl(filePath, fileType);
+
+        amazonS3.deleteObject(new DeleteObjectRequest(bucketUrl, fileName));
     }
 
     // 기존 파일 이름
@@ -155,5 +128,9 @@ public class S3Service {
         String fileExtension = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
 
         return validExtensions.contains(fileExtension);
+    }
+
+    private String createBucketUrl(FilePathType filePathType, FileType fileType) {
+        return bucket + filePathType.getValue() + "/" + fileType.getValue();
     }
 }
