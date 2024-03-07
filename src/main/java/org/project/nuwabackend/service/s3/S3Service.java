@@ -11,10 +11,14 @@ import org.project.nuwabackend.type.FilePathType;
 import org.project.nuwabackend.type.FileType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,18 +59,19 @@ public class S3Service {
             objectMetadata.setContentLength(byteSize);
             objectMetadata.setContentType(fileContentType);
 
-            String bucketUrl = createBucketUrl(filePath, fileType);
-            uploadToS3(multipartFile, bucketUrl, uploadFileName, objectMetadata, filePath == IMAGE_PATH ? imageUrlMap : fileUrlMap, byteSize);
+            String fileUrl = createFileUrl(filePath, fileType, uploadFileName);
+            System.out.println(fileUrl);
+            uploadToS3(multipartFile, bucket, fileUrl, objectMetadata, filePath == IMAGE_PATH ? imageUrlMap : fileUrlMap, byteSize);
         }
         return new FileUploadResultDto(imageUrlMap, fileUrlMap);
     }
 
-    private void uploadToS3(MultipartFile multipartFile, String bucketUrl, String uploadFileName,
+    private void uploadToS3(MultipartFile multipartFile, String bucket, String fileUrl,
                             ObjectMetadata objectMetadata, Map<String, Long> urlMap, Long byteSize) {
         try (InputStream inputStream = multipartFile.getInputStream()) {
-            amazonS3.putObject(new PutObjectRequest(bucketUrl, uploadFileName, inputStream, objectMetadata)
+            amazonS3.putObject(new PutObjectRequest(bucket, fileUrl, inputStream, objectMetadata)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
-            urlMap.put(amazonS3.getUrl(bucketUrl, uploadFileName).toString(), byteSize);
+            urlMap.put(amazonS3.getUrl(bucket, fileUrl).toString(), byteSize);
         } catch (IOException e) {
             throw new IllegalStateException(e.getMessage());
         }
@@ -79,9 +84,17 @@ public class S3Service {
         String fileName = fileUrl.substring(lastIndex);
         FilePathType filePath = getFilePath(fileName);
 
-        String bucketUrl = createBucketUrl(filePath, fileType);
+        String decode = URLDecoder.decode(fileName, StandardCharsets.UTF_8).trim();
 
-        amazonS3.deleteObject(new DeleteObjectRequest(bucketUrl, fileName));
+        String getFileUrl = createFileUrl(filePath, fileType, decode);
+
+        System.out.println(getFileUrl);
+
+        boolean exist = amazonS3.doesObjectExist(bucket, getFileUrl);
+        if (exist) {
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, getFileUrl);
+            amazonS3.deleteObject(deleteObjectRequest);
+        }
     }
 
     // 기존 파일 이름
@@ -130,7 +143,7 @@ public class S3Service {
         return validExtensions.contains(fileExtension);
     }
 
-    private String createBucketUrl(FilePathType filePathType, FileType fileType) {
-        return bucket + filePathType.getValue() + "/" + fileType.getValue();
+    private String createFileUrl(FilePathType filePathType, FileType fileType, String fileName) {
+        return filePathType.getValue() + fileType.getValue() + "/" + fileName;
     }
 }

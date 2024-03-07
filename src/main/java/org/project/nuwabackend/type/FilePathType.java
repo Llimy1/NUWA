@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum FilePathType {
-    IMAGE_PATH("/image"), FILE_PATH("/file");
+    IMAGE_PATH("image/"), FILE_PATH("file/");
 
     private final String value;
 

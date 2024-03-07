@@ -210,6 +210,13 @@ public class FileService {
     // TODO: test code
     @Transactional
     public void deleteFileWorkSpaceId(Long workSpaceId) {
+
+        List<File> findFileList = fileRepository.findByWorkSpaceId(workSpaceId);
+
+        findFileList.forEach(file -> {
+            s3Service.deleteFile(file.getUrl(), file.getFileType());
+        });
+
         fileRepository.deleteByWorkSpaceId(workSpaceId);
     }
 }
