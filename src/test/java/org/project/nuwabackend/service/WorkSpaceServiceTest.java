@@ -131,6 +131,7 @@ class WorkSpaceServiceTest {
 
         //then
         assertThat(workSpaceId).isEqualTo(workSpace.getId());
+        assertThat(workSpace.getCount()).isEqualTo(1);
     }
 
     @Test
@@ -173,6 +174,7 @@ class WorkSpaceServiceTest {
 
         //then
         assertThat(workSpaceMemberId).isEqualTo(workSpaceMember.getId());
+        assertThat(workSpace.getCount()).isEqualTo(1);
     }
 
     @Test
