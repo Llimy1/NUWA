@@ -205,6 +205,7 @@ class WorkSpaceServiceTest {
                 .status(workSpaceMember.getStatus())
                 .phoneNumber(member.getPhoneNumber())
                 .email(member.getEmail())
+                .isDelete(workSpaceMember.getIsDelete())
                 .build();
         //when
         IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
