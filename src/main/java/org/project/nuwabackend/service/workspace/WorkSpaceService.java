@@ -68,9 +68,6 @@ public class WorkSpaceService {
         String workSpaceMemberJob = workSpaceRequestDto.workSpaceMemberJob();
         String workSpaceMemberImage = workSpaceRequestDto.workSpaceMemberImage();
 
-        // 워크스페이스 멤버 중복 확인 -> 제거
-//        duplicateWorkSpaceMemberName(workSpaceMemberName);
-
         // 워크스페이스 이름 중복
         duplicateWorkSpaceName(workSpaceName);
 
@@ -107,12 +104,13 @@ public class WorkSpaceService {
 
         // 재참가 로직
         Optional<WorkSpaceMember> optionalWorkSpaceMember =
-                workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId);
+                workSpaceMemberRepository.findByDeleteMemberEmailAndWorkSpaceId(email, workSpaceId);
 
         if (optionalWorkSpaceMember.isPresent()) {
             WorkSpaceMember workSpaceMember = optionalWorkSpaceMember.get();
-
+            System.out.println(workSpaceMember.getIsDelete());
             workSpaceMember.reJoinWorkSpaceMember();
+            System.out.println(workSpaceMember.getIsDelete());
 
             return workSpaceMember.getId();
         }

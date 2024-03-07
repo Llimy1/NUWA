@@ -24,6 +24,14 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "WHERE m.email = :email AND w.id = :workSpaceId AND wm.isDelete = false ")
     Optional<WorkSpaceMember> findByMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
 
+    // 이메일과 워크스페이스 ID로 워크스페이스 멤버 찾기 -> 재참가에 사용
+    @Query("SELECT wm " +
+            "FROM WorkSpaceMember wm " +
+            "JOIN wm.member m " +
+            "JOIN wm.workSpace w " +
+            "WHERE m.email = :email AND w.id = :workSpaceId AND wm.isDelete = true ")
+    Optional<WorkSpaceMember> findByDeleteMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
+
     List<WorkSpaceMember> findByMember(Member findMember);
 
     @Query("SELECT wsm.workSpace FROM WorkSpaceMember wsm WHERE wsm.member = :member")
