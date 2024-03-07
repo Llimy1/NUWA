@@ -84,6 +84,8 @@ public class WorkSpaceService {
 
         workSpaceMemberRepository.save(createWorkSpaceMember);
 
+        saveWorkSpace.increaseWorkSpaceMemberCount();
+
         return saveWorkSpace.getId();
     }
 
@@ -115,6 +117,8 @@ public class WorkSpaceService {
                 findWorkSpace);
 
         WorkSpaceMember saveWorkSpaceMember = workSpaceMemberRepository.save(workSpaceMember);
+
+        findWorkSpace.increaseWorkSpaceMemberCount();
 
         return saveWorkSpaceMember.getId();
     }
@@ -167,7 +171,9 @@ public class WorkSpaceService {
                         .workspaceId(workSpace.getId())
                         .workSpaceName(workSpace.getName())
                         .workSpaceImage(workSpace.getImage())
-                        .workSpaceIntroduce(workSpace.getIntroduce()).build())
+                        .workSpaceIntroduce(workSpace.getIntroduce())
+                        .workSpaceMemberCount(workSpace.getCount())
+                        .build())
                 .collect(Collectors.toList());
 
     }
@@ -310,4 +316,9 @@ public class WorkSpaceService {
 
         workSpaceMember.updateWorkSpaceMemberStatus(workSpaceMemberStatus);
     }
+
+    // 참가한 워크스페이스 멤버 나가기
+    // 생성한 워크스페이스 멤버 나가기
+    // 워크스페이스 삭제
+
 }

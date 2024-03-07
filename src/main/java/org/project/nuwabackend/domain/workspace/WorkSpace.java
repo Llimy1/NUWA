@@ -32,11 +32,15 @@ public class WorkSpace extends BaseTimeJpa {
     @Column(name = "workspace_introduce")
     private String introduce;
 
+    @Column(name = "workspace_member_count")
+    private Integer count;
+
     @Builder
     private WorkSpace(String name, String image, String introduce) {
         this.name = name;
         this.image = image;
         this.introduce = introduce;
+        this.count = 0;
     }
 
     // 워크스페이스 생성
@@ -52,5 +56,15 @@ public class WorkSpace extends BaseTimeJpa {
     public void updateWorkSpace(String name, String image) {
         this.name = name;
         this.image = image;
+    }
+
+    // 워크스페이스 멤버 카운트 증가
+    public void increaseWorkSpaceMemberCount() {
+        this.count++;
+    }
+
+    // 워크스페이스 멤버 카운트 감소
+    public void decreaseWorkSpaceMemberCount() {
+        this.count--;
     }
 }

@@ -13,7 +13,8 @@ import java.util.List;
 public record WorkSpaceInfoResponse(Long workspaceId,
                                     String workSpaceName,
                                     String workSpaceImage,
-                                    String workSpaceIntroduce) {
+                                    String workSpaceIntroduce,
+                                    Integer workSpaceMemberCount) {
 
 
 
