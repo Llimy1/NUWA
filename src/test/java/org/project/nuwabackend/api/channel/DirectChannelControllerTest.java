@@ -268,14 +268,18 @@ class DirectChannelControllerTest {
         String createMemberName = "create";
         Long joinMemberId = 2L;
         String joinMemberName = "join";
+        Boolean isCreateMemberDelete = false;
+        Boolean isJoinMemberDelete = false;
 
         DirectChannelInfoResponseDto directChannelInfoResponseDto = DirectChannelInfoResponseDto.builder()
                 .channelId(channelId)
                 .channelName(channelName)
                 .createMemberId(createMemberId)
                 .createMemberName(createMemberName)
+                .isCreateDelete(isCreateMemberDelete)
                 .joinMemberId(joinMemberId)
                 .joinMemberName(joinMemberName)
+                .isJoinDelete(isJoinMemberDelete)
                 .build();
         given(directChannelService.directChannelInfo(any(), anyString()))
                 .willReturn(directChannelInfoResponseDto);

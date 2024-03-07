@@ -43,7 +43,6 @@ public class WorkSpaceDeleteService {
         WorkSpace workSpace = workSpaceMember.getWorkSpace();
 
         if (workSpace.getCount().equals(1)) {
-            // TODO: 해당 워크스페이스에 존재하는 모든 데이터 삭제
             directMessageQueryService.deleteDirectMessageWorkSpaceId(workSpaceId);
             chatMessageQueryService.deleteChatMessageWorkSpaceId(workSpaceId);
             fileService.deleteFileWorkSpaceId(workSpaceId);

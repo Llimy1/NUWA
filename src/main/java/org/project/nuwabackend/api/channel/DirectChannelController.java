@@ -138,9 +138,4 @@ public class DirectChannelController {
 
         return ResponseEntity.status(OK).body(deleteDirectChannelMemberInfo);
     }
-
-    // 채널 삭제하기
-
-
-
 }
