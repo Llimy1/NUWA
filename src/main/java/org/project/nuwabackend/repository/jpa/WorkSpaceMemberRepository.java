@@ -4,6 +4,7 @@ import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
@@ -20,16 +21,16 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "FROM WorkSpaceMember wm " +
             "JOIN wm.member m " +
             "JOIN wm.workSpace w " +
-            "WHERE m.email = :email AND w.id = :workSpaceId")
+            "WHERE m.email = :email AND w.id = :workSpaceId AND wm.isDelete = false ")
     Optional<WorkSpaceMember> findByMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
 
-    // 이메일로 워크스페이스 멤버 찾기
+    // 이메일과 워크스페이스 ID로 워크스페이스 멤버 찾기 -> 재참가에 사용
     @Query("SELECT wm " +
             "FROM WorkSpaceMember wm " +
             "JOIN wm.member m " +
             "JOIN wm.workSpace w " +
-            "WHERE m.email = :email")
-    Optional<WorkSpaceMember> findByMemberEmail(@Param("email") String email);
+            "WHERE m.email = :email AND w.id = :workSpaceId AND wm.isDelete = true ")
+    Optional<WorkSpaceMember> findByDeleteMemberEmailAndWorkSpaceId(@Param("email") String email, @Param("workSpaceId") Long workSpaceId);
 
     List<WorkSpaceMember> findByMember(Member findMember);
 
@@ -41,15 +42,20 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "FROM WorkSpaceMember wm " +
             "JOIN wm.member m " +
             "JOIN FETCH wm.workSpace w " +
-            "WHERE m.email = :email ")
+            "WHERE m.email = :email AND wm.isDelete = false")
     List<WorkSpaceMember> findByWorkSpaceList(@Param("email") String email);
 
-    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace = :workSpace")
+    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace = :workSpace AND wsm.isDelete = false ")
     List<WorkSpaceMember> findByWorkSpace(@Param("workSpace") WorkSpace workSpace);
 
     //Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(WorkSpace workSpace, Member member);
 
-    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace.id = :workspaceId AND wsm.member.email = :email")
-    Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(@Param("workspaceId") Long workspaceId,
-                                                              @Param("email") String email);
+//    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace.id = :workspaceId AND wsm.member.email = :email")
+//    Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(@Param("workspaceId") Long workspaceId,
+//                                                              @Param("email") String email);
+
+    @Query("DELETE FROM WorkSpaceMember wm WHERE wm.workSpace.id = :workSpaceId")
+    @Modifying(clearAutomatically = true)
+    void deleteByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
+
 }

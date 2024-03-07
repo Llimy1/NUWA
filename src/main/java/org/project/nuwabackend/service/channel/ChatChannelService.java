@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.CREATE_CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
@@ -82,5 +83,22 @@ public class ChatChannelService {
                         .name(chat.getName())
                         .roomId(chat.getRoomId())
                         .build());
+    }
+
+    // 워크스페이스 id에 해당되는 모든 채팅 채널 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteChatChannelList(Long workSpaceId) {
+        chatChannelRepository.deleteChatByWorkSpaceId(workSpaceId);
+    }
+
+    // 채팅 채널 삭제 -> 생성한 인원만 가능
+    // TODO: test code
+    @Transactional
+    public void deleteChatChannel(Long workSpaceId, String email, String roomId) {
+        Chat findChatChannel = chatChannelRepository.findByRoomIdAndEmailAndWorkSpaceId(roomId, email ,workSpaceId)
+                .orElseThrow(() -> new NotFoundException(CREATE_CHANNEL_NOT_FOUND));
+
+        chatChannelRepository.delete(findChatChannel);
     }
 }

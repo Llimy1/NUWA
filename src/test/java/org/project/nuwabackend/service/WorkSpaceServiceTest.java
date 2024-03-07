@@ -131,6 +131,7 @@ class WorkSpaceServiceTest {
 
         //then
         assertThat(workSpaceId).isEqualTo(workSpace.getId());
+        assertThat(workSpace.getCount()).isEqualTo(1);
     }
 
     @Test
@@ -173,6 +174,7 @@ class WorkSpaceServiceTest {
 
         //then
         assertThat(workSpaceMemberId).isEqualTo(workSpaceMember.getId());
+        assertThat(workSpace.getCount()).isEqualTo(1);
     }
 
     @Test
@@ -200,8 +202,10 @@ class WorkSpaceServiceTest {
                 .name(workSpaceMember.getName())
                 .image(workSpaceMember.getImage())
                 .job(workSpaceMember.getJob())
+                .status(workSpaceMember.getStatus())
                 .phoneNumber(member.getPhoneNumber())
                 .email(member.getEmail())
+                .isDelete(workSpaceMember.getIsDelete())
                 .build();
         //when
         IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
@@ -314,9 +318,9 @@ class WorkSpaceServiceTest {
         Long otherId = 2L;
         List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtoList = new ArrayList<>();
         directList.forEach(direct -> {
-                given(directMessageQueryService.countManyMessageSenderId(anyString(), anyString()))
+                given(directMessageQueryService.countManyMessageSenderId(anyString(), anyString(), any()))
                         .willReturn(count);
-                given(directMessageQueryService.neSenderId(anyString(), anyString()))
+                given(directMessageQueryService.neSenderId(anyString(), anyString(), any()))
                         .willReturn(otherId);
                 given(workSpaceMemberRepository.findById(any()))
                         .willReturn(Optional.of(other));

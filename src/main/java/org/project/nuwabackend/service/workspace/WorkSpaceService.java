@@ -22,22 +22,27 @@ import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.project.nuwabackend.service.notification.NotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
-import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
+import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_BEFORE_QUIT;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
+import static org.project.nuwabackend.type.NotificationType.NOTICE;
 import static org.project.nuwabackend.type.WorkSpaceMemberType.CREATED;
+import static org.project.nuwabackend.type.WorkSpaceMemberType.JOIN;
 
 @Slf4j
 @Service
@@ -51,6 +56,8 @@ public class WorkSpaceService {
     private final WorkSpaceRepository workSpaceRepository;
     private final MemberRepository memberRepository;
 
+    private final NotificationService notificationService;
+
     @Transactional
     public Long createWorkSpace(String email, WorkSpaceRequestDto workSpaceRequestDto) {
         log.info("워크스페이스 생성 서비스");
@@ -60,9 +67,6 @@ public class WorkSpaceService {
         String workSpaceMemberName = workSpaceRequestDto.workSpaceMemberName();
         String workSpaceMemberJob = workSpaceRequestDto.workSpaceMemberJob();
         String workSpaceMemberImage = workSpaceRequestDto.workSpaceMemberImage();
-
-        // 워크스페이스 멤버 중복 확인 -> 제거
-//        duplicateWorkSpaceMemberName(workSpaceMemberName);
 
         // 워크스페이스 이름 중복
         duplicateWorkSpaceName(workSpaceName);
@@ -84,6 +88,8 @@ public class WorkSpaceService {
 
         workSpaceMemberRepository.save(createWorkSpaceMember);
 
+        saveWorkSpace.increaseWorkSpaceMemberCount();
+
         return saveWorkSpace.getId();
     }
 
@@ -95,6 +101,19 @@ public class WorkSpaceService {
         int index = email.indexOf("@");
         String emailSub = email.substring(0, index);
         String workSpaceMemberImage = workSpaceMemberRequestDto.workSpaceMemberImage();
+
+        // 재참가 로직
+        Optional<WorkSpaceMember> optionalWorkSpaceMember =
+                workSpaceMemberRepository.findByDeleteMemberEmailAndWorkSpaceId(email, workSpaceId);
+
+        if (optionalWorkSpaceMember.isPresent()) {
+            WorkSpaceMember workSpaceMember = optionalWorkSpaceMember.get();
+            System.out.println(workSpaceMember.getIsDelete());
+            workSpaceMember.reJoinWorkSpaceMember();
+            System.out.println(workSpaceMember.getIsDelete());
+
+            return workSpaceMember.getId();
+        }
 
         // 멤버 이메일 중복 확인
         duplicateWorkSpaceMemberEmail(email, workSpaceId);
@@ -110,11 +129,13 @@ public class WorkSpaceService {
         WorkSpaceMember workSpaceMember = WorkSpaceMember.joinWorkSpaceMember(
                 emailSub,
                 workSpaceMemberImage,
-                WorkSpaceMemberType.JOIN,
+                JOIN,
                 findMember,
                 findWorkSpace);
 
         WorkSpaceMember saveWorkSpaceMember = workSpaceMemberRepository.save(workSpaceMember);
+
+        findWorkSpace.increaseWorkSpaceMemberCount();
 
         return saveWorkSpaceMember.getId();
     }
@@ -167,7 +188,9 @@ public class WorkSpaceService {
                         .workspaceId(workSpace.getId())
                         .workSpaceName(workSpace.getName())
                         .workSpaceImage(workSpace.getImage())
-                        .workSpaceIntroduce(workSpace.getIntroduce()).build())
+                        .workSpaceIntroduce(workSpace.getIntroduce())
+                        .workSpaceMemberCount(workSpace.getCount())
+                        .build())
                 .collect(Collectors.toList());
 
     }
@@ -215,8 +238,10 @@ public class WorkSpaceService {
                 .name(findWorkSpaceMember.getName())
                 .job(findWorkSpaceMember.getJob())
                 .image(findWorkSpaceMember.getImage())
+                .status(findWorkSpaceMember.getStatus())
                 .phoneNumber(phoneNumber)
                 .email(email)
+                .isDelete(findWorkSpaceMember.getIsDelete())
                 .build();
     }
 
@@ -268,10 +293,10 @@ public class WorkSpaceService {
         // 채팅방 순회하면서 채팅방 별로 내가 보낸 채팅 개수 가져오기
         directChannelList.forEach(direct -> {
 
-            Long count = directMessageQueryService.countManyMessageSenderId(direct.getRoomId(), email);
+            Long count = directMessageQueryService.countManyMessageSenderId(direct.getRoomId(), email, workSpaceId);
 
             // 내 아이디로 상대방 id 가져오기
-            Long otherId = directMessageQueryService.neSenderId(direct.getRoomId(), email);
+            Long otherId = directMessageQueryService.neSenderId(direct.getRoomId(), email, workSpaceId);
 
             // 값이 없다면 빈 리스트로 반환
             if (otherId != null) {
@@ -308,5 +333,63 @@ public class WorkSpaceService {
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
         workSpaceMember.updateWorkSpaceMemberStatus(workSpaceMemberStatus);
+    }
+
+    // 워크스페이스 권한 넘기기
+    // TODO: test code
+    // TODO: 권한 넘어간 알림 보내기
+    @Transactional
+    public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId, String email, Long workSpaceId) {
+
+        WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(workSpaceMemberId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+
+        String workSpaceMemberName = joinWorkSpaceMember.getName();
+        if (joinWorkSpaceMember.getWorkSpaceMemberType().equals(JOIN)) {
+            joinWorkSpaceMember.updateCreateWorkSpaceMemberType();
+            createWorkSpaceMember.updateJoinWorkSpaceMemberType();
+
+            notificationService.send(workSpaceMemberName + "님이 워크스페이스 소유주로 변경되었습니다.",
+                    createWorkSpaceUrl(workSpaceId), NOTICE, joinWorkSpaceMember);
+        } else {
+            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+        }
+    }
+
+    // 워크스페이스 멤버 나가기
+    // TODO: test code
+    @Transactional
+    public void quitWorkSpaceMember(String email, Long workSpaceId) {
+        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        if (workSpaceMember.getWorkSpaceMemberType().equals(CREATED))
+            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+
+        workSpaceMember.deleteWorkSpaceMember();
+
+        WorkSpace workSpace = workSpaceMember.getWorkSpace();
+        workSpace.decreaseWorkSpaceMemberCount();
+    }
+
+    // 워크스페이스 id에 해당하는 멤버 전부 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteWorkSpaceMember(Long workSpaceId) {
+        workSpaceMemberRepository.deleteByWorkSpaceId(workSpaceId);
+    }
+
+    // TODO: test code
+    @Transactional
+    public void deleteWorkSpace(Long workSpaceId) {
+        workSpaceRepository.deleteById(workSpaceId);
+    }
+
+    private String createWorkSpaceUrl(Long workSpaceId) {
+        return "http://localhost:3000/workspace/" + workSpaceId;
     }
 }

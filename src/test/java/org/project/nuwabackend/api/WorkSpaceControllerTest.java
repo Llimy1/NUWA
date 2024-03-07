@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.api.workspace.WorkSpaceController;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
 import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
@@ -192,19 +193,22 @@ class WorkSpaceControllerTest {
         String name = "홍길동";
         String job = "백엔드";
         String image = "N";
+        String status = "rest";
         String email = "abcd@gmail.com";
         String phoneNumber = "01000000000";
 
         IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
                 IndividualWorkSpaceMemberInfoResponseDto.builder()
-                .id(id)
-                .name(name)
-                .job(job)
-                .image(image)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .workSpaceMemberType(WorkSpaceMemberType.CREATED)
-                .build();
+                        .id(id)
+                        .name(name)
+                        .job(job)
+                        .image(image)
+                        .status(status)
+                        .email(email)
+                        .phoneNumber(phoneNumber)
+                        .workSpaceMemberType(WorkSpaceMemberType.CREATED)
+                        .build();
+
         given(workSpaceService.individualWorkSpaceMemberInfo(any(), any()))
                 .willReturn(individualWorkSpaceMemberInfoResponseDto);
 

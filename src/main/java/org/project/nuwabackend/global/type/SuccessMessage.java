@@ -30,6 +30,7 @@ public enum SuccessMessage {
     FILE_INFO_RETURN_SUCCESS("파일 정보 조회에 성공 했습니다."),
     SEARCH_FILE_INFO_RETURN_SUCCESS("파일 검색에 성공 했습니다."),
     TOP_SEVEN_FILE_INFO_RETURN_SUCCESS("최근 생성된 7개 파일을 가져오는데 성공 했습니다."),
+    DELETE_FILE_SUCCESS("파일 삭제에 성공 했습니다."),
     CREATE_WORK_SPACE_SUCCESS("워크스페이스 생성에 성공 했습니다."),
     READ_MY_WORK_SPACE_SUCCESS("워크스페이스 조회 성공 했습니다."),
     CREATE_INVITATION_LINK_SUCCESS("초대링크 생성에 성공 했습니다."),
@@ -43,7 +44,14 @@ public enum SuccessMessage {
     WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS("워크스페이스 멤버 정보 편집에 성공 했습니다."),
     NOTIFICATION_LIST_RETURN_SUCCESS("알림 정보 조회에 성공 했습니다."),
     FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS("즐겨 찾는 팀원 정보 조회에 성공 했습니다."),
-    WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS("워크스페이스 멤버 상태 편집에 성공 했습니다.");
+    WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS("워크스페이스 멤버 상태 편집에 성공 했습니다."),
+    WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS("워크스페이스 멤버 권한 변경에 성공 했습니다."),
+    WORK_SPACE_MEMBER_QUIT_SUCCESS("워크스페이스 멤버 나가기에 성공 했습니다."),
+    DELETE_WORK_SPACE_SUCCESS("워크스페이스 삭제에 성공 했습니다."),
+    DELETE_FILE_AND_DIRECT_MESSAGE_SUCCESS("파일 삭제 및 연관된 다이렉트 채팅 메세지 삭제에 성공 했습니다."),
+    DELETE_FILE_AND_CHAT_MESSAGE_SUCCESS("파일 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
+    DELETE_CHAT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("채팅 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
+    DELETE_DIRECT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("다이렉트 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다.");
 
     private final String message;
 

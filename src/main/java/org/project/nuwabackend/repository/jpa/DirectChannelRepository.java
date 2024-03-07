@@ -4,6 +4,7 @@ import org.project.nuwabackend.domain.channel.Direct;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.parameters.P;
@@ -18,21 +19,23 @@ public interface DirectChannelRepository extends JpaRepository<Direct, Long> {
             "FROM Direct d " +
             "JOIN d.createMember cm " +
             "JOIN d.joinMember jm " +
-            "WHERE cm.id = :workSpaceMemberId OR jm.id = :workSpaceMemberId")
+            "WHERE cm.id = :workSpaceMemberId AND d.isCreateMemberDelete = false " +
+            "OR jm.id = :workSpaceMemberId AND d.isJoinMemberDelete = false ")
     Slice<Direct> findDirectChannelByCreateMemberIdOrJoinMemberId(@Param("workSpaceMemberId") Long workSpaceMemberId, Pageable pageable);
 
     @Query("SELECT d " +
             "FROM Direct d " +
             "JOIN d.createMember cm " +
             "JOIN d.joinMember jm " +
-            "WHERE cm.id = :workSpaceMemberId OR jm.id = :workSpaceMemberId")
+            "WHERE cm.id = :workSpaceMemberId AND d.isCreateMemberDelete = false " +
+            "OR jm.id = :workSpaceMemberId AND d.isJoinMemberDelete = false ")
     List<Direct> findDirectChannelListByCreateMemberIdOrJoinMemberId(@Param("workSpaceMemberId") Long workSpaceMemberId);
 
     @Query("SELECT d " +
             "FROM Direct d " +
             "JOIN d.createMember cm " +
             "JOIN d.joinMember jm " +
-            "WHERE (cm.id = :workSpaceMemberId OR jm.id = :workSpaceMemberId) " +
+            "WHERE (cm.id = :workSpaceMemberId AND d.isCreateMemberDelete OR jm.id = :workSpaceMemberId AND d.isJoinMemberDelete = false) " +
             "AND (cm.name LIKE %:workSpaceMemberName% OR jm.name LIKE %:workSpaceMemberName%)")
     List<Direct> findSearchDirectChannelByCreateMemberIdOrJoinMemberId(@Param("workSpaceMemberId") Long workSpaceMemberId, @Param("workSpaceMemberName") String workSpaceMemberName);
 
@@ -46,4 +49,16 @@ public interface DirectChannelRepository extends JpaRepository<Direct, Long> {
 
     Optional<Direct> findByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId);
 
+    Optional<Direct> findByRoomId(String roomId);
+
+    @Query("DELETE FROM Direct d WHERE d.workSpace.id = :workSpaceId")
+    @Modifying(clearAutomatically = true)
+    void deleteDirectByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
+
+    @Query("SELECT d " +
+            "FROM Direct d " +
+            "JOIN d.workSpace w " +
+            "JOIN d.createMember cm " +
+            "WHERE w.id = :workSpaceId AND d.roomId = :roomId")
+    Optional<Direct> findByWorkSpaceIdAndRoomIdAndEmail(@Param("workSpaceId") Long workSpaceId, @Param("roomId") String roomId);
 }

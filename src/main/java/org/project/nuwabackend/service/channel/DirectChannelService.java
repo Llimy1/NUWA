@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
@@ -62,11 +63,16 @@ public class DirectChannelService {
         WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(joinMemberId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
-        // 이미 채팅방이 존재를 하면 roomId를 예외로 반환
-        directChannelRepository.findByCreateMemberIdOrJoinMemberId(createMemberId, joinMemberId)
-                .ifPresent(direct -> {
-                    throw new IllegalArgumentException(direct.getRoomId());
-                });
+        // 이미 채팅방이 존재하면 해당 Room Id 반환
+        Optional<Direct> optionalDirect = directChannelRepository.findByCreateMemberIdOrJoinMemberId(createMemberId, joinMemberId);
+        if (optionalDirect.isPresent()) {
+            Direct direct = optionalDirect.get();
+
+            if (direct.getIsCreateMemberDelete()) direct.restoreCreateMember();
+            else if (direct.getIsJoinMemberDelete()) direct.restoreJoinMember();
+
+            return direct.getRoomId();
+        }
 
         // 워크스페이스 존재하고 멤버도 전부 존재하면 채널 저장
         Direct direct = Direct.createDirectChannel(workSpace, createWorkSpaceMember, joinWorkSpaceMember);
@@ -87,8 +93,10 @@ public class DirectChannelService {
                 .channelName(direct.getName())
                 .createMemberId(direct.getCreateMember().getId())
                 .createMemberName(direct.getCreateMember().getName())
+                .isCreateDelete(direct.getIsCreateMemberDelete())
                 .joinMemberId(direct.getJoinMember().getId())
                 .joinMemberName(direct.getJoinMember().getName())
+                .isJoinDelete(direct.getIsJoinMemberDelete())
                 .build();
     }
 
@@ -106,6 +114,7 @@ public class DirectChannelService {
                 .map(direct -> DirectChannelListResponseDto.builder()
                         .roomId(direct.getRoomId())
                         .name(direct.getName())
+                        .workSpaceId(workSpaceId)
                         .createMemberId(direct.getCreateMember().getId())
                         .joinMemberId(direct.getJoinMember().getId())
                         .createMemberName(direct.getCreateMember().getName())
@@ -131,7 +140,7 @@ public class DirectChannelService {
         // 리스트를 순회하면서 해당 roomId에 맞는 마지막 채팅과 시간 가져오기
         // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
         List<DirectChannelResponseDto> directChannelResponseDtoList =
-                directChannelResponseDtoList(directChannelList, email)
+                directChannelResponseDtoList(directChannelList, email, workSpaceId)
                         .stream()
                         .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
                                         Comparator.nullsLast(Comparator.naturalOrder())).reversed())
@@ -156,7 +165,7 @@ public class DirectChannelService {
         // 리스트를 순회하면서 해당 roomId에 맞는 마지막 채팅과 시간 가져오기
         // 해당 DTO에 맵핑된 생성 시간으로 재정렬하여 최근 메세지 순으로 채팅방 정렬
         List<DirectChannelResponseDto> searchDirectChannelResponseDtoList =
-                directChannelResponseDtoList(searchDirectChannelList, email)
+                directChannelResponseDtoList(searchDirectChannelList, email, workSpaceId)
                         .stream()
                         .sorted(Comparator.comparing(DirectChannelResponseDto::getMessageCreatedAt,
                                         Comparator.nullsLast(Comparator.naturalOrder())).reversed())
@@ -174,13 +183,13 @@ public class DirectChannelService {
     }
 
     // 채팅 정보 넣기
-    private List<DirectChannelResponseDto> directChannelResponseDtoList(List<Direct> directList, String email) {
+    private List<DirectChannelResponseDto> directChannelResponseDtoList(List<Direct> directList, String email, Long workSpaceId) {
         List<DirectChannelResponseDto> directChannelResponseDtoList = new ArrayList<>();
 
         directList.forEach(direct -> {
             PageRequest pageRequest = PageRequest.of(0, 1);
 
-            Long unReadCount = directMessageQueryService.countUnReadMessage(direct.getRoomId(), email);
+            Long unReadCount = directMessageQueryService.countUnReadMessage(direct.getRoomId(), email, workSpaceId);
 
             DirectChannelResponseDto directChannelResponseDto = DirectChannelResponseDto.builder()
                     .roomId(direct.getRoomId())
@@ -209,5 +218,42 @@ public class DirectChannelService {
         });
 
         return directChannelResponseDtoList;
+    }
+
+    // 워크스페이스 id에 해당되는 모든 다이렉트 채널 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteDirectChannelList(Long workSpaceId) {
+        directChannelRepository.deleteDirectByWorkSpaceId(workSpaceId);
+    }
+
+    // TODO: test code
+    // 채널 삭제 -> 나에게만 삭제 / 서로 삭제시 -> 완전 삭제
+    @Transactional
+    public Boolean deleteChannelMember(Long workSpaceId, String email, String roomId) {
+        Direct findDirectChannel = directChannelRepository.findByWorkSpaceIdAndRoomIdAndEmail(workSpaceId, roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        WorkSpaceMember createMember = findDirectChannel.getCreateMember();
+        Long createMemberId = createMember.getId();
+        WorkSpaceMember joinMember = findDirectChannel.getJoinMember();
+        Long joinMemberId = joinMember.getId();
+
+        // 나에게만 삭제
+        if (findWorkSpaceMemberId.equals(createMemberId)) findDirectChannel.deleteCreateMember();
+        else if (joinMemberId.equals(findWorkSpaceMemberId)) findDirectChannel.deleteJoinMember();
+
+        boolean flag = false;
+        // 양쪽 전부 삭제시 완전 삭제
+        if (findDirectChannel.getIsCreateMemberDelete() && findDirectChannel.getIsJoinMemberDelete()) {
+            directChannelRepository.delete(findDirectChannel);
+            flag = true;
+        }
+
+        return flag;
     }
 }

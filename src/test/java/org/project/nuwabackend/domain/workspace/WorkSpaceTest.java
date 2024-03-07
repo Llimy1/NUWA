@@ -31,8 +31,8 @@ class WorkSpaceTest {
     }
 
     @Test
-    @DisplayName("[Domain] Update WorkSpace")
-    void updateWorkSpace() {
+    @DisplayName("[Domain] Update WorkSpace Test")
+    void updateWorkSpaceTest() {
         //given
         String updateWorkSpaceName = "newWorkSpaceName";
         String updateWorkSpaceImage = "newWorkSpaceImage";
@@ -45,5 +45,33 @@ class WorkSpaceTest {
         //then
         assertThat(workSpace.getName()).isEqualTo(updateWorkSpaceName);
         assertThat(workSpace.getImage()).isEqualTo(updateWorkSpaceImage);
+    }
+
+    @Test
+    @DisplayName("[Domain] Increase WorkSpace Member Count Test")
+    void increaseWorkSpaceMemberCountTest() {
+        //given
+        WorkSpace workSpace = WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
+
+        //when
+        workSpace.increaseWorkSpaceMemberCount();
+
+        //then
+        assertThat(workSpace.getCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("[Domain] Decrease WorkSpace Member Count Test")
+    void decreaseWorkSpaceMemberCountTest() {
+        //given
+        WorkSpace workSpace = WorkSpace.createWorkSpace(workSpaceName, workSpaceImage, workSpaceIntroduce);
+        workSpace.increaseWorkSpaceMemberCount();
+        workSpace.increaseWorkSpaceMemberCount();
+
+        //when
+        workSpace.decreaseWorkSpaceMemberCount();
+
+        //then
+        assertThat(workSpace.getCount()).isEqualTo(1);
     }
 }

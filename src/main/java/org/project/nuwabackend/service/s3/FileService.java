@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.FILE_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
@@ -105,6 +106,39 @@ public class FileService {
     public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
         log.info("최근 생성 시간 순 7개 파일 조회");
         return fileQueryService.topSevenFileOrderByCreatedAt(workSpaceId);
+    }
+
+    // 워크스페이스 id로 해당된 모든 파일 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteFileWorkSpaceId(Long workSpaceId) {
+        log.info("모든 파일 삭제");
+        List<File> findFileList = fileRepository.findByWorkSpaceId(workSpaceId);
+
+        findFileList.forEach(file -> {
+            s3Service.deleteFile(file.getUrl(), file.getFileType());
+        });
+
+        fileRepository.deleteByWorkSpaceId(workSpaceId);
+    }
+
+    // 파일 ID로 파일 삭제
+    // TODO: test code
+    @Transactional
+    public String deleteFile(Long fileId) {
+        log.info("파일 삭제");
+        File file = fileRepository.findById(fileId)
+                .orElseThrow(() -> new NotFoundException(FILE_NOT_FOUND));
+        s3Service.deleteFile(file.getUrl(), file.getFileType());
+        fileRepository.delete(file);
+
+        return file.getUrl();
+    }
+
+    // TODO: test code
+    // WorkSPaceId와 RoomId에 해당되는 파일 전부 삭제
+    public void deleteFileByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
+        fileRepository.deleteByWorkSpaceIdAndChannelRoomId(workSpaceId, roomId);
     }
 
     // 파일 원본 이름
