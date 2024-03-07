@@ -22,7 +22,6 @@ import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,12 +31,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
-import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
+import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_BEFORE_QUIT;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_FOUND;
 import static org.project.nuwabackend.type.WorkSpaceMemberType.CREATED;
+import static org.project.nuwabackend.type.WorkSpaceMemberType.JOIN;
 
 @Slf4j
 @Service
@@ -112,7 +114,7 @@ public class WorkSpaceService {
         WorkSpaceMember workSpaceMember = WorkSpaceMember.joinWorkSpaceMember(
                 emailSub,
                 workSpaceMemberImage,
-                WorkSpaceMemberType.JOIN,
+                JOIN,
                 findMember,
                 findWorkSpace);
 
@@ -224,6 +226,7 @@ public class WorkSpaceService {
                 .status(findWorkSpaceMember.getStatus())
                 .phoneNumber(phoneNumber)
                 .email(email)
+                .isDelete(findWorkSpaceMember.getIsDelete())
                 .build();
     }
 
@@ -317,8 +320,47 @@ public class WorkSpaceService {
         workSpaceMember.updateWorkSpaceMemberStatus(workSpaceMemberStatus);
     }
 
-    // 참가한 워크스페이스 멤버 나가기
-    // 생성한 워크스페이스 멤버 나가기
-    // 워크스페이스 삭제
+    // 워크스페이스 권한 넘기기
+    // TODO: test code
+    // TODO: 권한 넘어간 알림 보내기
+    @Transactional
+    public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId) {
+        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(workSpaceMemberId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
+        if (workSpaceMember.getWorkSpaceMemberType().equals(JOIN)) {
+            workSpaceMember.updateCreateWorkSpaceMemberType();
+        } else {
+            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+        }
+    }
+
+    // 워크스페이스 멤버 나가기
+    // TODO: test code
+    @Transactional
+    public void quitWorkSpaceMember(String email, Long workSpaceId) {
+        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        if (workSpaceMember.getIsDelete().equals(true))
+            throw new IllegalArgumentException(WORK_SPACE_MEMBER_BEFORE_QUIT.getMessage());
+
+        workSpaceMember.deleteWorkSpaceMember();
+
+        WorkSpace workSpace = workSpaceMember.getWorkSpace();
+        workSpace.decreaseWorkSpaceMemberCount();
+    }
+
+    // 워크스페이스 id에 해당하는 멤버 전부 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteWorkSpaceMember(Long workSpaceId) {
+        workSpaceMemberRepository.deleteByWorkSpaceId(workSpaceId);
+    }
+
+    // TODO: test code
+    @Transactional
+    public void deleteWorkSpace(Long workSpaceId) {
+        workSpaceRepository.deleteById(workSpaceId);
+    }
 }

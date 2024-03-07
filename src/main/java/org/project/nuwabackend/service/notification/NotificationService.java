@@ -129,4 +129,9 @@ public class NotificationService {
     public Slice<NotificationListResponseDto> notificationList(String email, Long workSpaceId, Pageable pageable) {
         return notificationQueryService.notificationListResponseDtoSlice(email, workSpaceId, false, pageable);
     }
+
+    // 워크스페이스 ID로 해당 알림 전체 삭제
+    public void deleteNotificationWorkSpaceId(Long workSpaceId) {
+        notificationRepository.deleteByWorkSpaceId(workSpaceId);
+    }
 }

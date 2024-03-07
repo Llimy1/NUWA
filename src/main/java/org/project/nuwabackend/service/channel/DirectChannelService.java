@@ -210,4 +210,11 @@ public class DirectChannelService {
 
         return directChannelResponseDtoList;
     }
+
+    // 워크스페이스 id에 해당되는 모든 다이렉트 채널 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteDirectChannelList(Long workSpaceId) {
+        directChannelRepository.deleteDirectByWorkSpaceId(workSpaceId);
+    }
 }

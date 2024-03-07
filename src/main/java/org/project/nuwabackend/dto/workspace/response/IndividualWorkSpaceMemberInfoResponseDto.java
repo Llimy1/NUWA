@@ -11,6 +11,7 @@ public record IndividualWorkSpaceMemberInfoResponseDto(Long id,
                                                        String status,
                                                        String email,
                                                        String phoneNumber,
-                                                       WorkSpaceMemberType workSpaceMemberType) {
+                                                       WorkSpaceMemberType workSpaceMemberType,
+                                                       Boolean isDelete) {
 
 }

@@ -54,6 +54,4 @@ public class DirectChannelRedisService implements ChannelRedisService {
         List<DirectChannelRedis> connectList = directChannelRedisRepository.findByDirectRoomId(directChannelRoomId);
         return connectList.size() == 1;
     }
-
-
 }

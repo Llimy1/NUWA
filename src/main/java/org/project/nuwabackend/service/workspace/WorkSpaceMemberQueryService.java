@@ -1,9 +1,7 @@
 package org.project.nuwabackend.service.workspace;
 
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,8 @@ public class WorkSpaceMemberQueryService {
                 .from(chat)
                 .where(
                         channelIdEq(channelId),
-                        emailNotIn(emailList))
+                        emailNotIn(emailList),
+                        createMemberIsDeleteEq())
                 .fetchOne();
 //
         List<WorkSpaceMember> joinMemberList = jpaQueryFactory.select(chatJoinMember.joinMember)
@@ -39,7 +38,8 @@ public class WorkSpaceMemberQueryService {
                 .join(chatJoinMember.chatChannel, chat)
                 .where(
                         channelIdEq(channelId),
-                        emailNotIn(emailList))
+                        emailNotIn(emailList),
+                        joinMemberIsDeleteEq())
                 .fetch();
 
         if (createMember != null) {
@@ -55,5 +55,13 @@ public class WorkSpaceMemberQueryService {
 
     private BooleanExpression channelIdEq(Long channelId) {
         return chat.id.eq(channelId);
+    }
+
+    private BooleanExpression createMemberIsDeleteEq() {
+        return chat.createMember.isDelete.eq(false);
+    }
+
+    private BooleanExpression joinMemberIsDeleteEq() {
+        return chatJoinMember.joinMember.isDelete.eq(false);
     }
 }

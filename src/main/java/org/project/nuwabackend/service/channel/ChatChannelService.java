@@ -83,4 +83,11 @@ public class ChatChannelService {
                         .roomId(chat.getRoomId())
                         .build());
     }
+
+    // 워크스페이스 id에 해당되는 모든 채팅 채널 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteChatChannelList(Long workSpaceId) {
+        chatChannelRepository.deleteChatByWorkSpaceId(workSpaceId);
+    }
 }

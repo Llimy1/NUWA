@@ -205,4 +205,11 @@ public class FileService {
                         .build())
                 .toList();
     }
+
+    // 워크스페이스 id로 해당된 모든 파일 삭제
+    // TODO: test code
+    @Transactional
+    public void deleteFileWorkSpaceId(Long workSpaceId) {
+        fileRepository.deleteByWorkSpaceId(workSpaceId);
+    }
 }

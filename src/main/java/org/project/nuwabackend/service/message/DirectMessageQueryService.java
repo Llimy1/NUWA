@@ -84,4 +84,12 @@ public class DirectMessageQueryService {
 //        }
         return directMessage != null ? directMessage.getSenderId() : null;
     }
+
+    // 워크스페이스 ID로 관련 다이렉트 채팅 메세지 전부 삭제
+    // TODO: test code
+    public void deleteDirectMessageWorkSpaceId(Long workSpaceId) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
+
+        mongoTemplate.remove(query, DirectMessage.class);
+    }
 }
