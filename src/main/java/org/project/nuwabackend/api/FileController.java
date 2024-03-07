@@ -16,7 +16,9 @@ import org.project.nuwabackend.type.FileType;
 import org.project.nuwabackend.type.FileUploadType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_FILE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_UPLOAD_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.FILE_URL_RETURN_SUCCESS;
@@ -113,5 +116,18 @@ public class FileController {
                 globalService.successResponse(TOP_SEVEN_FILE_INFO_RETURN_SUCCESS.getMessage(),
                         topSevenFileInfoResponseDtoList);
         return ResponseEntity.status(OK).body(topSevenFileInfoSuccessResponse);
+    }
+
+    // 파일 삭제
+    // TODO: test code
+    @DeleteMapping("/file/{fileId}")
+    public ResponseEntity<Object> deleteFile(@PathVariable(value = "fileId") Long fileId) {
+        log.info("파일 삭제");
+        fileService.deleteFile(fileId);
+
+        GlobalSuccessResponseDto<Object> deleteFileSuccessResponse =
+                globalService.successResponse(DELETE_FILE_SUCCESS.getMessage(), null);
+
+        return ResponseEntity.status(OK).body(deleteFileSuccessResponse);
     }
 }

@@ -8,6 +8,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
+import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.type.MessageType.FILE;
 
 @Slf4j
 @Service
@@ -99,6 +101,15 @@ public class DirectMessageQueryService {
     public void deleteDirectMessageWorkSpaceId(Long workSpaceId) {
         Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
 
+        mongoTemplate.remove(query, DirectMessage.class);
+    }
+
+    // 파일 URL과 MessageType이 File인거를 찾아서 삭제
+    // TODO: test code
+    public void deleteDirectMessageByFile(Long workSpaceId, String fileUrl) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
+                .and("direct_content").is(fileUrl)
+                .and("message_type").is(FILE));
         mongoTemplate.remove(query, DirectMessage.class);
     }
 }

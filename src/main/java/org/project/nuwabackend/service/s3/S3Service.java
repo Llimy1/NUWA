@@ -88,8 +88,6 @@ public class S3Service {
 
         String getFileUrl = createFileUrl(filePath, fileType, decode);
 
-        System.out.println(getFileUrl);
-
         boolean exist = amazonS3.doesObjectExist(bucket, getFileUrl);
         if (exist) {
             DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucket, getFileUrl);

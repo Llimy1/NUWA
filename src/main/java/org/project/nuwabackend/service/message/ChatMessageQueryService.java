@@ -3,10 +3,13 @@ package org.project.nuwabackend.service.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.mongo.ChatMessage;
+import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import static org.project.nuwabackend.type.MessageType.FILE;
 
 @Slf4j
 @Service
@@ -19,6 +22,16 @@ public class ChatMessageQueryService {
     // TODO: test code
     public void deleteChatMessageWorkSpaceId(Long workSpaceId) {
         Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
+
+        mongoTemplate.remove(query, ChatMessage.class);
+    }
+
+    // 파일 URL과 MessageType이 File인거를 찾아서 삭제
+    // TODO: test code
+    public void deleteChatMessageByFile(Long workSpaceId, String fileUrl) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
+                .and("chat_content").is(fileUrl)
+                .and("message_type").is(FILE));
 
         mongoTemplate.remove(query, ChatMessage.class);
     }
