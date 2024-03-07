@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
@@ -103,6 +104,18 @@ public class WorkSpaceService {
         int index = email.indexOf("@");
         String emailSub = email.substring(0, index);
         String workSpaceMemberImage = workSpaceMemberRequestDto.workSpaceMemberImage();
+
+        // 재참가 로직
+        Optional<WorkSpaceMember> optionalWorkSpaceMember =
+                workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId);
+
+        if (optionalWorkSpaceMember.isPresent()) {
+            WorkSpaceMember workSpaceMember = optionalWorkSpaceMember.get();
+
+            workSpaceMember.reJoinWorkSpaceMember();
+
+            return workSpaceMember.getId();
+        }
 
         // 멤버 이메일 중복 확인
         duplicateWorkSpaceMemberEmail(email, workSpaceId);
