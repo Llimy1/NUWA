@@ -28,6 +28,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -109,7 +110,7 @@ public class FileService {
     }
 
     // 워크스페이스 id로 해당된 모든 파일 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteFileWorkSpaceId(Long workSpaceId) {
         log.info("모든 파일 삭제");
@@ -123,19 +124,22 @@ public class FileService {
     }
 
     // 파일 ID로 파일 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
-    public String deleteFile(Long fileId) {
+    public Map<String, String> deleteFile(Long fileId) {
         log.info("파일 삭제");
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new NotFoundException(FILE_NOT_FOUND));
         s3Service.deleteFile(file.getUrl(), file.getFileType());
         fileRepository.delete(file);
 
-        return file.getUrl();
+        Map<String, String> deleteMap = new HashMap<>();
+        deleteMap.put(file.getFileType().getValue(), file.getUrl());
+
+        return deleteMap;
     }
 
-    // TODO: test code
+    // TODO: integrated test code
     // WorkSPaceId와 RoomId에 해당되는 파일 전부 삭제
     public void deleteFileByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
         fileRepository.deleteByWorkSpaceIdAndChannelRoomId(workSpaceId, roomId);
@@ -234,6 +238,7 @@ public class FileService {
         }
         return fileRepository.saveAll(fileList).stream().map(file -> FileUploadResponseDto.builder()
                         .fileId(file.getId())
+                        .fileUrl(file.getUrl())
                         .fileUploadType(file.getFileUploadType())
                         .fileType(file.getFileType())
                         .build())

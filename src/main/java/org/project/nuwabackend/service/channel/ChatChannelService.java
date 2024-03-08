@@ -86,14 +86,14 @@ public class ChatChannelService {
     }
 
     // 워크스페이스 id에 해당되는 모든 채팅 채널 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteChatChannelList(Long workSpaceId) {
         chatChannelRepository.deleteChatByWorkSpaceId(workSpaceId);
     }
 
     // 채팅 채널 삭제 -> 생성한 인원만 가능
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteChatChannel(Long workSpaceId, String email, String roomId) {
         Chat findChatChannel = chatChannelRepository.findByRoomIdAndEmailAndWorkSpaceId(roomId, email ,workSpaceId)

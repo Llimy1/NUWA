@@ -19,7 +19,7 @@ public class ChatMessageQueryService {
     private final MongoTemplate mongoTemplate;
 
     // 워크스페이스 ID로 관련 채팅 채널 메세지 전부 삭제
-    // TODO: test code
+    // TODO: integrated test code
     public void deleteChatMessageWorkSpaceId(Long workSpaceId) {
         Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
 
@@ -27,7 +27,7 @@ public class ChatMessageQueryService {
     }
 
     // 파일 URL과 MessageType이 File인거를 찾아서 삭제
-    // TODO: test code
+    // TODO: integrated test code
     public void deleteChatMessageByFile(Long workSpaceId, String fileUrl) {
         Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
                 .and("chat_content").is(fileUrl)
@@ -37,7 +37,7 @@ public class ChatMessageQueryService {
     }
 
     // WorkSpace ID와 Room ID에 해당되는 채팅 전부 삭제
-    // TODO: test code
+    // TODO: integrated test code
     public void deleteWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
         Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
                 .and("chat_room_id").is(roomId));

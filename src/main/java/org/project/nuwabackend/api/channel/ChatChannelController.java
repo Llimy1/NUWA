@@ -34,7 +34,6 @@ import static org.springframework.http.HttpStatus.OK;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
-// TODO: test code 추후 로직 작성 후
 public class ChatChannelController {
 
     private final ChatChannelService chatChannelService;

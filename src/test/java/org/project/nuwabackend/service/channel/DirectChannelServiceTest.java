@@ -173,6 +173,7 @@ class DirectChannelServiceTest {
                 direct -> DirectChannelListResponseDto.builder()
                         .roomId(direct.getRoomId())
                         .name(direct.getName())
+                        .workSpaceId(workSpaceId)
                         .createMemberId(direct.getCreateMember().getId())
                         .joinMemberId(direct.getJoinMember().getId())
                         .createMemberName(direct.getCreateMember().getName())
@@ -189,7 +190,7 @@ class DirectChannelServiceTest {
                 directChannelService.directChannelSlice(email, workSpaceId, pageRequest);
         //then
         assertThat(directChannelListResponseList).isNotNull();
-        assertThat(directChannelListResponseList).containsAll(directSliceMap);
+        assertThat(directChannelListResponseList.getContent()).containsAll(directSliceMap.getContent());
     }
 
     @Test

@@ -195,7 +195,6 @@ public class WorkSpaceController {
     }
 
     // 워크스페이스 권한 변경
-    // TODO: test code
     @PatchMapping("/workspace/{workSpaceMemberId}/relocate")
     public ResponseEntity<Object> relocateCreateWorkSpaceMemberType(@PathVariable(value = "workSpaceMemberId") Long workSpaceMemberId,
                                                                     @MemberEmail String email,
@@ -210,7 +209,6 @@ public class WorkSpaceController {
     }
 
     // 워크스페이스 나가기
-    // TODO : test code
     @PatchMapping("/workspace/{workSpaceId}/quit")
     public ResponseEntity<Object> quitWorkSpaceMember(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                       @MemberEmail String email) {
