@@ -108,9 +108,9 @@ public class WorkSpaceService {
 
         if (optionalWorkSpaceMember.isPresent()) {
             WorkSpaceMember workSpaceMember = optionalWorkSpaceMember.get();
-            System.out.println(workSpaceMember.getIsDelete());
             workSpaceMember.reJoinWorkSpaceMember();
-            System.out.println(workSpaceMember.getIsDelete());
+            WorkSpace findWorkSpace = workSpaceMember.getWorkSpace();
+            findWorkSpace.increaseWorkSpaceMemberCount();
 
             return workSpaceMember.getId();
         }

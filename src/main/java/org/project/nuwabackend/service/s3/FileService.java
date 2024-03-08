@@ -28,6 +28,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -125,14 +126,17 @@ public class FileService {
     // 파일 ID로 파일 삭제
     // TODO: test code
     @Transactional
-    public String deleteFile(Long fileId) {
+    public Map<String, String> deleteFile(Long fileId) {
         log.info("파일 삭제");
         File file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new NotFoundException(FILE_NOT_FOUND));
         s3Service.deleteFile(file.getUrl(), file.getFileType());
         fileRepository.delete(file);
 
-        return file.getUrl();
+        Map<String, String> deleteMap = new HashMap<>();
+        deleteMap.put(file.getFileType().getValue(), file.getUrl());
+
+        return deleteMap;
     }
 
     // TODO: test code
