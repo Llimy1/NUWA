@@ -131,7 +131,7 @@ public class NotificationService {
     }
 
     // 워크스페이스 ID로 해당 알림 전체 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteNotificationWorkSpaceId(Long workSpaceId) {
         notificationRepository.deleteByWorkSpaceId(workSpaceId);

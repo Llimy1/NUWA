@@ -2,11 +2,13 @@ package org.project.nuwabackend.service.message;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.domain.mongo.DirectMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
 import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
+import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.notification.NotificationService;
@@ -21,7 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.type.MessageType.ENTER;
+import static org.project.nuwabackend.type.MessageType.TEXT;
 
 @Slf4j
 @Service
@@ -30,11 +35,12 @@ import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER
 public class DirectMessageService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
-    private final DirectChannelRedisService directChannelRedisService;
+    private final DirectChannelRepository directChannelRepository;
     private final DirectMessageRepository directMessageRepository;
-    private final JwtUtil jwtUtil;
 
+    private final DirectChannelRedisService directChannelRedisService;
     private final NotificationService notificationService;
+    private final JwtUtil jwtUtil;
     private static final String PREFIX_URL = "http://localhost:3000/";
 
     // 메세지 저장
@@ -77,6 +83,32 @@ public class DirectMessageService {
                         .messageType(directMessage.getMessageType())
                         .createdAt(directMessage.getCreatedAt())
                         .build());
+    }
+
+    // 입장 메세지
+    @Transactional
+    public DirectMessageResponseDto enterMessage(String accessToken, String roomId) {
+        log.info("입장 메세지");
+        String email = jwtUtil.getEmail(accessToken);
+
+        Direct direct = directChannelRepository.findByRoomId(roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        Long workSpaceId = direct.getWorkSpace().getId();
+
+        // 메세지 보낸 사람
+        WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        return DirectMessageResponseDto.builder()
+                .workSpaceId(workSpaceId)
+                .roomId(roomId)
+                .senderId(sender.getId())
+                .senderName(sender.getName())
+                .content("입장했습니다.")
+                .readCount(0L)
+                .messageType(ENTER)
+                .build();
     }
 
     // 메세지 보내기

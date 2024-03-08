@@ -34,7 +34,7 @@ public class WorkSpaceDeleteService {
     private final FileService fileService;
 
     // 워크스페이스 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteWorkSpace(String email, Long workSpaceId) {
         WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)

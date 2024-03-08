@@ -221,13 +221,13 @@ public class DirectChannelService {
     }
 
     // 워크스페이스 id에 해당되는 모든 다이렉트 채널 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteDirectChannelList(Long workSpaceId) {
         directChannelRepository.deleteDirectByWorkSpaceId(workSpaceId);
     }
 
-    // TODO: test code
+    // TODO: integrated test code
     // 채널 삭제 -> 나에게만 삭제 / 서로 삭제시 -> 완전 삭제
     @Transactional
     public Boolean deleteChannelMember(Long workSpaceId, String email, String roomId) {

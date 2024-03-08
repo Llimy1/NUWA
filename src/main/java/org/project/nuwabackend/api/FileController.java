@@ -119,7 +119,7 @@ public class FileController {
     }
 
     // 파일 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @DeleteMapping("/file/{fileId}")
     public ResponseEntity<Object> deleteFile(@PathVariable(value = "fileId") Long fileId) {
         log.info("파일 삭제");

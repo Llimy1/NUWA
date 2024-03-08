@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.domain.multimedia.File;
 import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
@@ -69,7 +70,7 @@ class FileControllerTest {
     void uploadFileTest() throws Exception {
         //given
         Long fileId = 1L;
-
+        String fileUrl = "fileUrl";
         MockMultipartFile multipartFile =
                 new MockMultipartFile("fileList", "test.jpg", IMAGE_JPEG_VALUE, "test".getBytes());
         MockMultipartFile multipartJson =
@@ -77,6 +78,7 @@ class FileControllerTest {
 
         List<FileUploadResponseDto> fileUploadResponseDtoList = List.of(FileUploadResponseDto.builder()
                 .fileId(fileId)
+                        .fileUrl(fileUrl)
                 .fileUploadType(FileUploadType.IMAGE)
                         .fileType(FileType.CHAT)
                 .build());

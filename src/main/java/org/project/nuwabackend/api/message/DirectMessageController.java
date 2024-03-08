@@ -36,6 +36,13 @@ public class DirectMessageController {
 
     private static final String DIRECT_DESTINATION = "/sub/direct/";
 
+    // 입장 메세지
+    @MessageMapping("/direct/enter")
+    public void directEnter(@Header("Authorization") String accessToken, String roomId) {
+        DirectMessageResponseDto directMessageResponseDto = directMessageService.enterMessage(accessToken, roomId);
+        template.convertAndSend(DIRECT_DESTINATION + roomId, directMessageResponseDto);
+    }
+
     // 메세지 보낼 때
     @MessageMapping("/direct/send")
     public void directSend(@Header("Authorization") String accessToken, DirectMessageRequestDto directMessageRequestDto) {

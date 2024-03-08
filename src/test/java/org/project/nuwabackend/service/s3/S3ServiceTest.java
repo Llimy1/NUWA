@@ -1,6 +1,7 @@
 package org.project.nuwabackend.service.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.domain.channel.Direct;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
 import org.project.nuwabackend.type.FilePathType;
 import org.project.nuwabackend.type.FileType;
@@ -33,8 +35,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.project.nuwabackend.type.FilePathType.FILE_PATH;
 import static org.project.nuwabackend.type.FilePathType.IMAGE_PATH;
+import static org.project.nuwabackend.type.FileType.DIRECT;
 
 @DisplayName("[Service] S3 Service Test")
 @ExtendWith(MockitoExtension.class)
@@ -84,6 +88,22 @@ class S3ServiceTest {
            assertThat(imageUrlMap.containsKey(key)).isTrue();
            assertThat(value).isEqualTo(imageUrlMap.get(key));
         });
+    }
+
+    @Test
+    @DisplayName("[Service] S3 Delete File Test")
+    void deleteFileTest() {
+        //given
+        String uploadFileName = originFileName + "_" + LocalDateTime.now() + fileExtension;
+        String expectedUrl = "https://test-bucket.s3.amazonaws.com/image/direct/" + uploadFileName;
+        given(amazonS3.doesObjectExist(any(), any()))
+                .willReturn(true);
+
+        //when
+        s3Service.deleteFile(expectedUrl, DIRECT);
+
+        //then
+        verify(amazonS3).deleteObject(any(DeleteObjectRequest.class));
     }
 
     @Test

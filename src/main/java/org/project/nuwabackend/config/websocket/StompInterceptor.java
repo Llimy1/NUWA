@@ -7,9 +7,7 @@ import org.project.nuwabackend.global.exception.JwtException;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.channel.ChatChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelRedisService;
-import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
-import org.project.nuwabackend.service.message.DirectMessageService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -91,6 +89,7 @@ public class StompInterceptor implements ChannelInterceptor {
 
         // 다이렉트 메세지 전부 읽음 처리
         directMessageQueryService.updateReadCountZero(directChannelRoomId, email);
+
     }
 
     private void connectToChatChannel(StompHeaderAccessor accessor, String email) {

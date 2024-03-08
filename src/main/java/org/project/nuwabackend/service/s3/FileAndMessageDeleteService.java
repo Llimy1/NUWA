@@ -19,7 +19,7 @@ public class FileAndMessageDeleteService {
     private final FileService fileService;
 
     // 파일과 다이렉트 메세지 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteFileAndDirectMessage(Long workSpaceId, Long fileId) {
 

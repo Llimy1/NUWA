@@ -28,7 +28,6 @@ public class DirectChannelRedisService implements ChannelRedisService {
         log.info("다이렉트 채널 입장 정보 저장");
         DirectChannelRedis directChannelInfo =
                 DirectChannelRedis.createDirectChannelRedis(channelRoomId, email);
-
         directChannelRedisRepository.save(directChannelInfo);
     }
 

@@ -26,7 +26,7 @@ public class ChannelAndMessageDeleteController {
     private final ChannelAndMessageDeleteService channelAndMessageDeleteService;
     private final GlobalService globalService;
 
-    // TODO: test code
+    // TODO: integrated test code
     @DeleteMapping("/channel/chat/{workSpaceId}/message")
     public ResponseEntity<Object> deleteChatChannelAndMessage(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                               @MemberEmail String email,
@@ -40,7 +40,7 @@ public class ChannelAndMessageDeleteController {
         return ResponseEntity.status(OK).body(deleteChatChannelAndMessageSuccessResponse);
     }
 
-    // TODO: test code
+    // TODO: integrated test code
     @DeleteMapping("/channel/direct/{workSpaceId}/message")
     public ResponseEntity<Object> deleteDirectChannelAndMessage(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                                 @MemberEmail String email,

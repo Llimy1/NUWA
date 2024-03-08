@@ -78,7 +78,6 @@ public class S3Service {
     }
 
     // 파일 삭제
-    // TODO: test code
     public void deleteFile(String fileUrl, FileType fileType) {
         int lastIndex = fileUrl.lastIndexOf("/") + 1;
         String fileName = fileUrl.substring(lastIndex);

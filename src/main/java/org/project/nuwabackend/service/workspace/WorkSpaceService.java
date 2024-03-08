@@ -336,8 +336,6 @@ public class WorkSpaceService {
     }
 
     // 워크스페이스 권한 넘기기
-    // TODO: test code
-    // TODO: 권한 넘어간 알림 보내기
     @Transactional
     public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId, String email, Long workSpaceId) {
 
@@ -361,7 +359,6 @@ public class WorkSpaceService {
     }
 
     // 워크스페이스 멤버 나가기
-    // TODO: test code
     @Transactional
     public void quitWorkSpaceMember(String email, Long workSpaceId) {
         WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -377,13 +374,13 @@ public class WorkSpaceService {
     }
 
     // 워크스페이스 id에 해당하는 멤버 전부 삭제
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteWorkSpaceMember(Long workSpaceId) {
         workSpaceMemberRepository.deleteByWorkSpaceId(workSpaceId);
     }
 
-    // TODO: test code
+    // TODO: integrated test code
     @Transactional
     public void deleteWorkSpace(Long workSpaceId) {
         workSpaceRepository.deleteById(workSpaceId);

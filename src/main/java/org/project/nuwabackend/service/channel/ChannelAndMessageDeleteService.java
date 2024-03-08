@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+// TODO: integrated test code
 public class ChannelAndMessageDeleteService {
 
     private final DirectMessageQueryService directMessageQueryService;
@@ -19,7 +20,6 @@ public class ChannelAndMessageDeleteService {
     private final ChatChannelService chatChannelService;
     private final FileService fileService;
 
-    // TODO: test code
     @Transactional
     public void deleteChatChannelAndChatMessage(Long workSpaceId, String email, String roomId) {
         chatChannelService.deleteChatChannel(workSpaceId, email, roomId);
@@ -27,7 +27,6 @@ public class ChannelAndMessageDeleteService {
         fileService.deleteFileByWorkSpaceIdAndRoomId(workSpaceId, roomId);
     }
 
-    // TODO: test code
     @Transactional
     public void deleteDirectChannelAndDirectMessage(Long workSpaceId, String email, String roomId) {
         Boolean flag = directChannelService.deleteChannelMember(workSpaceId, email, roomId);
