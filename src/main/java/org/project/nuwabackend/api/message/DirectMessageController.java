@@ -68,7 +68,7 @@ public class DirectMessageController {
     public void directUpdate(@Header("Authorization") String accessToken, MessageUpdateRequestDto messageUpdateRequestDto) {
         String roomId = messageUpdateRequestDto.roomId();
         MessageUpdateResponseDto messageUpdateResponseDto =
-                directMessageQueryService.updateMessage(accessToken, messageUpdateRequestDto);
+                directMessageQueryService.updateDirectMessage(accessToken, messageUpdateRequestDto);
 
         template.convertAndSend(
                 DIRECT_DESTINATION + roomId,
@@ -80,7 +80,7 @@ public class DirectMessageController {
     public void directDelete(@Header("Authorization") String accessToken, MessageDeleteRequestDto messageDeleteRequestDto) {
         String roomId = messageDeleteRequestDto.roomId();
         MessageDeleteResponseDto messageDeleteResponseDto =
-                directMessageQueryService.deleteMessage(accessToken, messageDeleteRequestDto);
+                directMessageQueryService.deleteDirectMessage(accessToken, messageDeleteRequestDto);
 
         template.convertAndSend(
                 DIRECT_DESTINATION + roomId,

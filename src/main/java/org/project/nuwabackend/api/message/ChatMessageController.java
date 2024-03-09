@@ -3,11 +3,16 @@ package org.project.nuwabackend.api.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.message.request.ChatMessageRequestDto;
+import org.project.nuwabackend.dto.message.request.MessageDeleteRequestDto;
+import org.project.nuwabackend.dto.message.request.MessageUpdateRequestDto;
 import org.project.nuwabackend.dto.message.response.ChatMessageListResponseDto;
 import org.project.nuwabackend.dto.message.response.ChatMessageResponseDto;
+import org.project.nuwabackend.dto.message.response.MessageDeleteResponseDto;
+import org.project.nuwabackend.dto.message.response.MessageUpdateResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
+import org.project.nuwabackend.service.message.ChatMessageQueryService;
 import org.project.nuwabackend.service.message.ChatMessageService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -30,21 +35,48 @@ public class ChatMessageController {
 
     private final SimpMessagingTemplate template;
     private final ChatMessageService chatMessageService;
+    private final ChatMessageQueryService chatMessageQueryService;
+
     private final GlobalService globalService;
 
-    private static final String DIRECT_DESTINATION = "/sub/chat/";
+    private static final String CHAT_DESTINATION = "/sub/chat/";
 
     // 메세지 보낼 때
     @MessageMapping("/chat/send")
-    public void directSend(@Header("Authorization") String accessToken, ChatMessageRequestDto chatMessageRequestDto) {
+    public void chatSend(@Header("Authorization") String accessToken, ChatMessageRequestDto chatMessageRequestDto) {
         String roomId = chatMessageRequestDto.roomId();
-        ChatMessageResponseDto chatMessageResponseDto =
+        ChatMessageResponseDto chatMessageResponse =
                 chatMessageService.sendMessage(accessToken, chatMessageRequestDto);
-        template.convertAndSend(
-                DIRECT_DESTINATION + roomId,
-                chatMessageResponseDto);
+        ChatMessageResponseDto chatMessageResponseDto =
+                chatMessageService.saveChatMessage(chatMessageResponse);
 
-        chatMessageService.saveChatMessage(chatMessageResponseDto);
+        template.convertAndSend(
+                CHAT_DESTINATION + roomId,
+                chatMessageResponseDto);
+    }
+
+    // 메세지 수정
+    @MessageMapping("/chat/update")
+    public void chatUpdate(@Header("Authorization") String accessToken, MessageUpdateRequestDto messageUpdateRequestDto) {
+        String roomId = messageUpdateRequestDto.roomId();
+        MessageUpdateResponseDto messageUpdateResponseDto =
+                chatMessageQueryService.updateChatMessage(accessToken, messageUpdateRequestDto);
+
+        template.convertAndSend(
+                CHAT_DESTINATION + roomId,
+                messageUpdateResponseDto);
+    }
+
+    // 메세지 삭제
+    @MessageMapping("/chat/delete")
+    public void chatDelete(@Header("Authorization") String accessToken, MessageDeleteRequestDto messageDeleteRequestDto) {
+        String roomId = messageDeleteRequestDto.roomId();
+        MessageDeleteResponseDto messageDeleteResponseDto =
+                chatMessageQueryService.deleteChatMessage(accessToken, messageDeleteRequestDto);
+
+        template.convertAndSend(
+                CHAT_DESTINATION + roomId,
+                messageDeleteResponseDto);
     }
 
     // 채팅 메세지 리스트 반환

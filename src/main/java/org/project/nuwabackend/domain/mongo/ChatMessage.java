@@ -35,6 +35,12 @@ public class ChatMessage {
     @Field(name = "chat_content")
     private String content;
 
+    @Field(name = "is_edited")
+    private Boolean isEdited;
+
+    @Field(name = "is_deleted")
+    private Boolean isDeleted;
+
     @Field(name = "message_type")
     private MessageType messageType;
 
@@ -42,12 +48,14 @@ public class ChatMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, MessageType messageType, LocalDateTime createdAt) {
+    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
+        this.isEdited = isEdited;
+        this.isDeleted = isDeleted;
         this.messageType = messageType;
         this.createdAt = createdAt;
     }
@@ -71,6 +79,8 @@ public class ChatMessage {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .isEdited(false)
+                .isDeleted(false)
                 .messageType(messageType)
                 .createdAt(createdAt)
                 .build();

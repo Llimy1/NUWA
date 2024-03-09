@@ -20,8 +20,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import java.security.PublicKey;
-
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.type.MessageType.DELETE;
@@ -108,7 +106,7 @@ public class DirectMessageQueryService {
 
     // 메세지 수정
     // TODO: test code
-    public MessageUpdateResponseDto updateMessage(String accessToken, MessageUpdateRequestDto messageUpdateRequestDto) {
+    public MessageUpdateResponseDto updateDirectMessage(String accessToken, MessageUpdateRequestDto messageUpdateRequestDto) {
         String email = jwtUtil.getEmail(accessToken);
         String id = messageUpdateRequestDto.id();
         String roomId = messageUpdateRequestDto.roomId();
@@ -141,7 +139,8 @@ public class DirectMessageQueryService {
     }
 
     // 메세지 삭제
-    public MessageDeleteResponseDto deleteMessage(String accessToken, MessageDeleteRequestDto messageDeleteRequestDto) {
+    // TODO: test code
+    public MessageDeleteResponseDto deleteDirectMessage(String accessToken, MessageDeleteRequestDto messageDeleteRequestDto) {
         String email = jwtUtil.getEmail(accessToken);
         String id = messageDeleteRequestDto.id();
         String roomId = messageDeleteRequestDto.roomId();

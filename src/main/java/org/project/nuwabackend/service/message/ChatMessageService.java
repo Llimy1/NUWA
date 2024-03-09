@@ -7,6 +7,7 @@ import org.project.nuwabackend.domain.channel.Chat;
 import org.project.nuwabackend.domain.channel.ChatJoinMember;
 import org.project.nuwabackend.domain.mongo.ChatMessage;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
 import org.project.nuwabackend.dto.message.request.ChatMessageRequestDto;
 import org.project.nuwabackend.dto.message.response.ChatMessageListResponseDto;
 import org.project.nuwabackend.dto.message.response.ChatMessageResponseDto;
@@ -102,20 +103,24 @@ public class ChatMessageService {
     }
 
     // 채팅 저장
-    public void saveChatMessage(ChatMessageResponseDto chatMessageResponseDto) {
+    public ChatMessageResponseDto saveChatMessage(ChatMessageResponseDto chatMessageResponseDto) {
         log.info("채팅 메세지 저장");
-        Long workSpaceId = chatMessageResponseDto.workSpaceId();
-        String roomId = chatMessageResponseDto.roomId();
-        Long senderId = chatMessageResponseDto.senderId();
-        String senderName = chatMessageResponseDto.senderName();
-        String content = chatMessageResponseDto.content();
-        MessageType messageType = chatMessageResponseDto.messageType();
-        LocalDateTime createdAt = chatMessageResponseDto.createdAt();
+        Long workSpaceId = chatMessageResponseDto.getWorkSpaceId();
+        String roomId = chatMessageResponseDto.getMessageId();
+        Long senderId = chatMessageResponseDto.getSenderId();
+        String senderName = chatMessageResponseDto.getSenderName();
+        String content = chatMessageResponseDto.getContent();
+        MessageType messageType = chatMessageResponseDto.getMessageType();
+        LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
                 ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, messageType, createdAt);
 
-        chatMessageRepository.save(chatMessage);
+        ChatMessage saveChatMessage = chatMessageRepository.save(chatMessage);
+        chatMessageResponseDto.setMessageId(saveChatMessage.getId());
+        chatMessageResponseDto.setIsEdited(saveChatMessage.getIsEdited());
+        chatMessageResponseDto.setIsDeleted(saveChatMessage.getIsDeleted());
+        return chatMessageResponseDto;
     }
 
     // 저장된 메세지 가져오기 (Slice)
@@ -124,11 +129,14 @@ public class ChatMessageService {
         log.info("채팅 메세지 조회");
         return chatMessageRepository.findChatMessageByRoomIdOrderByCreatedAtDesc(chatChannelRoomId, pageable)
                 .map(chatMessage -> ChatMessageListResponseDto.builder()
+                        .messageId(chatMessage.getId())
                         .workSpaceId(chatMessage.getWorkSpaceId())
                         .roomId(chatMessage.getRoomId())
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .isEdited(chatMessage.getIsEdited())
+                        .isDeleted(chatMessage.getIsDeleted())
                         .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());
