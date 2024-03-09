@@ -38,6 +38,12 @@ public class DirectMessage {
     @Field(name = "direct_read_count")
     private Long readCount;
 
+    @Field(name = "is_edited")
+    private Boolean isEdited;
+
+    @Field(name = "is_deleted")
+    private Boolean isDeleted;
+
     @Field(name = "message_type")
     private MessageType messageType;
 
@@ -45,13 +51,15 @@ public class DirectMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, MessageType messageType, LocalDateTime createdAt) {
+    public DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
         this.readCount = readCount;
+        this.isEdited = isEdited;
+        this.isDeleted = isDeleted;
         this.messageType = messageType;
         this.createdAt = createdAt;
     }
@@ -76,6 +84,8 @@ public class DirectMessage {
                 .senderName(senderName)
                 .content(content)
                 .readCount(readCount)
+                .isEdited(false)
+                .isDeleted(false)
                 .messageType(messageType)
                 .createdAt(createdAt)
                 .build();

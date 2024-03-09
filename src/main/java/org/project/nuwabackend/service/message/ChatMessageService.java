@@ -85,7 +85,7 @@ public class ChatMessageService {
             log.info("알림 전송");
             notificationService.send(
                     content,
-                    createChatUrl(roomId),
+                    createChatUrl(workSpaceId, roomId),
                     NotificationType.CHAT,
                     chatMember
                     );
@@ -134,7 +134,7 @@ public class ChatMessageService {
                         .build());
     }
 
-    private String createChatUrl(String chatChannelRoomId) {
-        return PREFIX_URL + chatChannelRoomId;
+    private String createChatUrl(Long workSpaceId, String chatChannelRoomId) {
+        return PREFIX_URL + workSpaceId + "/" + chatChannelRoomId;
     }
 }
