@@ -6,6 +6,9 @@
 </div>
 </br>
 
+## <div align="center">[NUWA 실시간 협업툴로 이동하기]()<div>
+<br>
+
 ## 👏 Introduce
 * **프로젝트 명** : NUWA 실시간 협업툴
 
@@ -39,21 +42,18 @@
 <br>
 
 ## 👍 Achieved
-### Nuwa 프로젝트 블로그
-https://classruntime.tistory.com/category/Project/Nuwa
-
 ### 트러블 슈팅 및 이슈사항
-https://classruntime.tistory.com/entry/Nuwa-Proejct-RDS-Connect-Fail
-https://classruntime.tistory.com/entry/Nuwa-Project-Connection-refused
-https://classruntime.tistory.com/entry/Nuwa-Project-Failed-to-validate-connection
-https://classruntime.tistory.com/entry/Nuwa-Project-AWS-S3-Issue
-https://classruntime.tistory.com/entry/Nuwa-Project-CustomPage-Annotation-issue
-https://classruntime.tistory.com/entry/Nuwa-Project-MongoDB-%ED%95%B4%ED%82%B9-issue
-https://classruntime.tistory.com/entry/Nuwa-Project-S3-Delete-File-issue
-https://classruntime.tistory.com/entry/Nuwa-Project-EC2-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EB%B6%80%EC%A1%B1-%ED%98%84%EC%83%81
+- [RDS Connect Fail](https://classruntime.tistory.com/entry/Nuwa-Proejct-RDS-Connect-Fail)
+- [Connect refused](https://classruntime.tistory.com/entry/Nuwa-Project-Connection-refused)
+- [Failed to validate connection](https://classruntime.tistory.com/entry/Nuwa-Project-Failed-to-validate-connection)
+- [AWS S3](https://classruntime.tistory.com/entry/Nuwa-Project-AWS-S3-Issue)
+- [Custom Annotation](https://classruntime.tistory.com/entry/Nuwa-Project-CustomPage-Annotation-issue)
+- [MongoDB 해킹](https://classruntime.tistory.com/entry/Nuwa-Project-MongoDB-%ED%95%B4%ED%82%B9-issue)
+- [AWS S3 파일 삭제](https://classruntime.tistory.com/entry/Nuwa-Project-S3-Delete-File-issue)
+- [EC2 메모리 부족 현상](https://classruntime.tistory.com/entry/Nuwa-Project-EC2-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EB%B6%80%EC%A1%B1-%ED%98%84%EC%83%81)
 <br>
 
 
 
-### 📌 ERD
+### ERD
   ![ERD]()
