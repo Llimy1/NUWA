@@ -2,38 +2,26 @@
 <h1 align="center">Nuwa</h1>
 </br>
 <div  align="center">
-  <img width="100%" src="">
+  <img width="100%" src="https://github.com/NU-WA-Project/BE/assets/122381580/3f341328-e0a1-4c70-9644-0315b9d566ec">
 </div>
-<h3 align="center">프로젝트 한줄 소개 제목</h3>
-
-
-<div align="center">
-  프로젝트 한줄 소개
-</div>
-
 </br>
 
+## 👏 Introduce
+* **프로젝트 명** : NUWA 실시간 협업툴
 
-</br>
+* **진행 기간** : 2024.02 ~ 2024.03
 
-</br>
+* **작업 인원** : 프론트엔트 5명 백엔드 2명
 
-## 🚩 Introduce
-* **프로젝트 명** : 
-* **진행 기간** :
-* **작업 인원** :
-* **주요 기능** :
-  * **기능 설명1**
-  * **기능 설명2**
-  * **기능 설명3**
+* **주요 기능** : 
+  * 워크스페이스를 생성하고 초대링크 생성 및 이메일로 전송합니다.
+  * 1:1 채팅, 그룹 채팅, 음성 채팅(구현 중)이 실시간으로 가능하고 SSE를 통해 알림이 전송됩니다.
+  * 채팅 별 이미지, 파일 업로드가 가능합니다.
+  * 메세지의 마지막 시간에 따라 채팅방 조회가 가능하고 내가 보낸 메세지 수가 많은 인원을 대쉬보드에서 보여줍니다.
+  * 캔버스, 캘린더(구현 중) 등 다양한 기능을 제공합니다.
 </br>
 
 ## ⚙️ Skills
-
-<div  align="center">
-  <img width="100%" src="">
-</div>
-
 ### Tools
 | Git | Github | Notion |
 | :---: | :---: | :---: |
@@ -50,11 +38,22 @@
 
 <br>
 
-## 📑 Docs
+## 👍 Achieved
+### Nuwa 프로젝트 블로그
+https://classruntime.tistory.com/category/Project/Nuwa
 
-### [📌 화면 정의서]()
+### 트러블 슈팅 및 이슈사항
+https://classruntime.tistory.com/entry/Nuwa-Proejct-RDS-Connect-Fail
+https://classruntime.tistory.com/entry/Nuwa-Project-Connection-refused
+https://classruntime.tistory.com/entry/Nuwa-Project-Failed-to-validate-connection
+https://classruntime.tistory.com/entry/Nuwa-Project-AWS-S3-Issue
+https://classruntime.tistory.com/entry/Nuwa-Project-CustomPage-Annotation-issue
+https://classruntime.tistory.com/entry/Nuwa-Project-MongoDB-%ED%95%B4%ED%82%B9-issue
+https://classruntime.tistory.com/entry/Nuwa-Project-S3-Delete-File-issue
+https://classruntime.tistory.com/entry/Nuwa-Project-EC2-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EB%B6%80%EC%A1%B1-%ED%98%84%EC%83%81
+<br>
 
-### [📌 API 명세서]()
+
 
 ### 📌 ERD
   ![ERD]()
