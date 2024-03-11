@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.project.nuwabackend.domain.base.BaseTimeJpa;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
+import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -39,14 +40,19 @@ public abstract class Channel extends BaseTimeJpa {
     @Column(name = "room_name")
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "create_chat_member_id")
+    private WorkSpaceMember createMember;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "workspace_id")
     private WorkSpace workSpace;
 
-    protected Channel(String name, WorkSpace workSpace) {
+    protected Channel(String name, WorkSpace workSpace, WorkSpaceMember workSpaceMember) {
         this.roomId = UUID.randomUUID().toString();
         this.name = name;
         this.workSpace = workSpace;
+        this.createMember = workSpaceMember;
     }
 
     @Override

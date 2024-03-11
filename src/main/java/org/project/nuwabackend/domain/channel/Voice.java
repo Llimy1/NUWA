@@ -18,14 +18,9 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 @DiscriminatorValue("voice")
 public class Voice extends Channel {
 
-    @ManyToOne
-    @JoinColumn(name = "create_voice_member_id")
-    private WorkSpaceMember createMember;
-
     @Builder
     private Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
-        super(name, workSpace);
-        this.createMember = createMember;
+        super(name, workSpace, createMember);
     }
 
     public static Voice createVoiceChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
