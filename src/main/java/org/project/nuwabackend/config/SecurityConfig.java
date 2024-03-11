@@ -50,16 +50,10 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
-                        .requestMatchers("**").permitAll()
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/actuator/prometheus").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .requestMatchers("/notification/**").permitAll()
-                        .requestMatchers("/socket/**").permitAll()
-                        .requestMatchers("/pub/**").permitAll()
-                        .requestMatchers("/sub/**").permitAll())
-
+                        .requestMatchers("/api/signup/**").permitAll()
+                        .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/check/**").permitAll()
+                        .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e ->
                         e.accessDeniedHandler(customAccessDeniedHandler)
