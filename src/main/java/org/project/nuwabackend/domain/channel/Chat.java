@@ -17,14 +17,9 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 @DiscriminatorValue("chat")
 public class Chat extends Channel{
 
-    @ManyToOne
-    @JoinColumn(name = "create_chat_member_id")
-    private WorkSpaceMember createMember;
-
     @Builder
     private Chat(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
-        super(name, workSpace);
-        this.createMember = createMember;
+        super(name, workSpace, createMember);
     }
 
     // 채팅 채널 생성

@@ -19,10 +19,6 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 @DiscriminatorValue("direct")
 public class Direct extends Channel {
 
-    @ManyToOne
-    @JoinColumn(name = "create_direct_member_id")
-    private WorkSpaceMember createMember;
-
     @Column(name = "is_create_member_delete")
     private Boolean isCreateMemberDelete;
 
@@ -34,12 +30,11 @@ public class Direct extends Channel {
     private Boolean isJoinMemberDelete;
 
     @Builder
-    private Direct(String name, WorkSpace workSpace, WorkSpaceMember createMember, WorkSpaceMember joinMember) {
-        super(name, workSpace);
-        this.createMember = createMember;
+    private Direct(String name, WorkSpace workSpace, WorkSpaceMember createMember, WorkSpaceMember joinMember, Boolean isCreateMemberDelete, Boolean isJoinMemberDelete) {
+        super(name, workSpace, createMember);
         this.joinMember = joinMember;
-        this.isCreateMemberDelete = false;
-        this.isJoinMemberDelete = false;
+        this.isCreateMemberDelete = isCreateMemberDelete;
+        this.isJoinMemberDelete = isJoinMemberDelete;
     }
 
     // 다이렉트 채널 생성
@@ -48,7 +43,9 @@ public class Direct extends Channel {
                 .name(null)
                 .workSpace(workSpace)
                 .createMember(createMember)
+                .isCreateMemberDelete(false)
                 .joinMember(joinMember)
+                .isJoinMemberDelete(false)
                 .build();
     }
 
