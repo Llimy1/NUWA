@@ -6,7 +6,7 @@
 </div>
 </br>
 
-## <div align="center">[NUWA 실시간 협업툴로 이동하기]()<div>
+## <div align="center">[NUWA 실시간 협업툴로 이동하기(배포 전)]()<div>
 <br>
 
 ## 👏 Introduce
@@ -56,4 +56,6 @@
 
 
 ### ERD
-  ![ERD]()
+  ![ERD](https://github.com/NU-WA-Project/BE/assets/122381580/d2b8d02f-ab7e-4d21-90bd-911a03856f1a)
+### Backend Architecture
+  ![Backend Architecture](https://github.com/NU-WA-Project/BE/assets/122381580/f3b4da19-093e-4819-88d1-cffd82a0d006)
