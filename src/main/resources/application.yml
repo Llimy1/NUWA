@@ -33,6 +33,8 @@ spring:
       mail:
         smtp:
           auth: true
+          starttls:
+            enable: true
 
 logging:
   level:
