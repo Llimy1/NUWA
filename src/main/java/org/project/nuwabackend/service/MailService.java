@@ -34,10 +34,12 @@ public class MailService {
 
     @Value("${spring.mail.username}")
     private String from;
-    String nuwalogo = "src/main/resources/nuwalogo.png";
-    String instagram = "src/main/resources/instagram.png";
-    String facebook = "src/main/resources/facebook.png";
-    String kakaotalk = "src/main/resources/kakaotalk.png";
+
+    // S3에 호스팅된 이미지 url
+    String nuwaLogoUrl = "https://nuwabucket.s3.ap-northeast-2.amazonaws.com/mail/nuwalogo.png";
+    String instagramUrl = "https://nuwabucket.s3.ap-northeast-2.amazonaws.com/mail/instagram.png";
+    String facebookUrl = "https://nuwabucket.s3.ap-northeast-2.amazonaws.com/mail/facebook.png";
+    String kakaotalkUrl = "https://nuwabucket.s3.ap-northeast-2.amazonaws.com/mail/kakaotalk.png";
 
 
 
@@ -52,7 +54,7 @@ public class MailService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.MEMBER_ID_NOT_FOUND));
 
         messageHelper.setFrom(from);  // 보낸 사람
-        messageHelper.setTo("vvvv4449@gmail.com");  // 받는 사람 관리자 메일주소
+        messageHelper.setTo(from);  // 받는 사람 관리자 메일주소
         messageHelper.setSubject("도입문의 " + mailDto.name());  // 제목
 
         // 내용
@@ -60,11 +62,11 @@ public class MailService {
 
         messageHelper.setText(htmlContent, true);
 
-        // 이미지 파일 추가
-        addInlineImage("nuwalogo", nuwalogo, messageHelper);
-        addInlineImage("instagram", instagram, messageHelper);
-        addInlineImage("facebook", facebook, messageHelper);
-        addInlineImage("kakaotalk", kakaotalk, messageHelper);
+//        // 이미지 파일 추가
+//        addInlineImage("nuwalogo", nuwalogo, messageHelper);
+//        addInlineImage("instagram", instagram, messageHelper);
+//        addInlineImage("facebook", facebook, messageHelper);
+//        addInlineImage("kakaotalk", kakaotalk, messageHelper);
 
         mailSender.send(message);
         Inquire inquire = new Inquire(InquireType.INTRODUCTION, findMember);
@@ -79,7 +81,7 @@ public class MailService {
                 "      <table class=\"conTop\" style=\"width: 100%;\">\n" +
                 "        <tr>\n" +
                 "          <td style=\"padding-bottom: 32px;\">\n" +
-                "            <h1><a href=\"#\"><img src=\"cid:nuwalogo\" alt=\"Nowa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
+                "            <h1><a href=\"#\"><img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
                 "          </td>\n" +
                 "        </tr>\n" +
                 "        <tr>\n" +
@@ -110,12 +112,12 @@ public class MailService {
                 "      <table class=\"conBtm\" style=\"width: 100%;\">\n" +
                 "        <tr>\n" +
                 "          <td>\n" +
-                "            <h1><a href=\"#\"><img src=\"cid:nuwalogo\" alt=\"Nowa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
+                "            <h1><a href=\"#\"><img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
                 "          </td>\n" +
                 "          <td class=\"sns\" style=\"text-align: right;\">\n" +
-                "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"cid:instagram\" alt=\"Instagram\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
-                "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"cid:facebook\" alt=\"Facebook\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
-                "            <a href=\"#\"><img src=\"cid:kakaotalk\" alt=\"Kakaotalk\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"" + instagramUrl + "\" alt=\"Instagram\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"" + facebookUrl + "\" alt=\"Facebook\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                "            <a href=\"#\"><img src=\"" + kakaotalkUrl + "\" alt=\"Kakaotalk\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
                 "          </td>\n" +
                 "        </tr>\n" +
                 "        <tr>\n" +
@@ -153,7 +155,7 @@ public class MailService {
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
 
         messageHelper.setFrom(from);  // 보낸 사람
-        messageHelper.setTo("vvvv4449@gmail.com");  // 받는 사람 관리자 메일주소
+        messageHelper.setTo(from);  // 받는 사람 관리자 메일주소
         messageHelper.setSubject("서비스문의 " + mailDto.subject());  // 제목
 
         // 파일첨부
@@ -170,11 +172,11 @@ public class MailService {
         String htmlContent = buildHtmlContent(mailDto,multipartFileList);
         messageHelper.setText(htmlContent, true);
 
-        // 이미지 파일 추가
-        addInlineImage("nuwalogo", nuwalogo, messageHelper);
-        addInlineImage("instagram", instagram, messageHelper);
-        addInlineImage("facebook", facebook, messageHelper);
-        addInlineImage("kakaotalk", kakaotalk, messageHelper);
+//        // 이미지 파일 추가
+//        addInlineImage("nuwalogo", nuwalogo, messageHelper);
+//        addInlineImage("instagram", instagram, messageHelper);
+//        addInlineImage("facebook", facebook, messageHelper);
+//        addInlineImage("kakaotalk", kakaotalk, messageHelper);
 
         mailSender.send(message);
         Inquire inquire = new Inquire(InquireType.SERVICE, findMember);
@@ -188,7 +190,7 @@ public class MailService {
         StringBuilder msgg = new StringBuilder();
 
             msgg.append("<body><table style=\"margin: 0 auto; padding: 0 12px; max-width: 450px; width: 100%; box-sizing: border-box; font-family: 'pretendard';\">")
-                .append("<tr><td style=\"text-align: center;\"><img src=\"cid:nuwalogo\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\"></td></tr>")
+                .append("<tr><td style=\"text-align: center;\"><img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\"></td></tr>")
                 .append("<tr><td style=\"color: #242424; letter-spacing: -0.028rem; padding-bottom: 32px;\">")
                 .append("<p style=\"font-weight: 600; font-size: 22px; margin: 0; padding-bottom: 12px; border-bottom: 1px solid #00000010;\">관리자님!<br>서비스가 계속해서 성장할 수 있도록 회원님들의 문의사항을 적극 반영할 수 있도록 노력해야 합니다 🙌</p>")
                 .append("</td></tr>")
@@ -200,16 +202,16 @@ public class MailService {
                 .append("</td></tr>");
 
             msgg.append("<br>")
-                .append("<img src=\"cid:nuwalogo\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\">")
+                .append("<img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\">")
                 .append("</td></tr>")
 
                 .append("<tr><td style=\"padding-top: 12px; text-align: center;\">")
                 .append("<a href=\"#\" style=\"border-radius: 50px; padding: 12px 0; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158FF 0%, rgba(81, 88, 255, 0.80) 100%);\">NUWA 열기</a>")
                 .append("</td></tr>")
                 .append("<tr><td style=\"padding-top: 16px; text-align: center;\">")
-                .append("<img src=\"cid:instagram\" alt=\"Instagram\" style=\"vertical-align: middle;\">")
-                .append("<img src=\"cid:facebook\" alt=\"Facebook\" style=\"vertical-align: middle; margin-left: 10px;\">")
-                .append("<img src=\"cid:kakaotalk\" alt=\"Kakaotalk\" style=\"vertical-align: middle; margin-left: 10px;\">")
+                .append("<img src=\"" + instagramUrl + "\" alt=\"Instagram\" style=\"vertical-align: middle;\">")
+                .append("<img src=\"" + facebookUrl + "\" alt=\"Facebook\" style=\"vertical-align: middle; margin-left: 10px;\">")
+                .append("<img src=\"" + kakaotalkUrl + "\" alt=\"Kakaotalk\" style=\"vertical-align: middle; margin-left: 10px;\">")
                 .append("</td></tr>")
                 .append("<tr><td style=\"font-size: 12px; color: #afafaf; padding-top: 16px; text-align: center;\">")
                 .append("블로그 | 구독취소 | 정책 | 고객지원센터 | NUWA커뮤니티")
