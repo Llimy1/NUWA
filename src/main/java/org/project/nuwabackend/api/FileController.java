@@ -16,7 +16,6 @@ import org.project.nuwabackend.type.FileType;
 import org.project.nuwabackend.type.FileUploadType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

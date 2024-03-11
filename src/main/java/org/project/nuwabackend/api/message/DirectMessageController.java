@@ -3,14 +3,20 @@ package org.project.nuwabackend.api.message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.message.request.DirectMessageRequestDto;
+import org.project.nuwabackend.dto.message.request.MessageDeleteRequestDto;
+import org.project.nuwabackend.dto.message.request.MessageUpdateRequestDto;
 import org.project.nuwabackend.dto.message.response.DirectMessageResponseDto;
+import org.project.nuwabackend.dto.message.response.MessageDeleteResponseDto;
+import org.project.nuwabackend.dto.message.response.MessageUpdateResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
+import org.project.nuwabackend.service.message.DirectMessageQueryService;
 import org.project.nuwabackend.service.message.DirectMessageService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -32,13 +38,15 @@ public class DirectMessageController {
 
     private final SimpMessagingTemplate template;
     private final DirectMessageService directMessageService;
+    private final DirectMessageQueryService directMessageQueryService;
+
     private final GlobalService globalService;
 
     private static final String DIRECT_DESTINATION = "/sub/direct/";
 
     // 입장 메세지
-    @MessageMapping("/direct/enter")
-    public void directEnter(@Header("Authorization") String accessToken, String roomId) {
+    @MessageMapping("/direct/enter/{roomId}")
+    public void directEnter(@Header("Authorization") String accessToken, @DestinationVariable(value = "roomId") String roomId) {
         DirectMessageResponseDto directMessageResponseDto = directMessageService.enterMessage(accessToken, roomId);
         template.convertAndSend(DIRECT_DESTINATION + roomId, directMessageResponseDto);
     }
@@ -49,18 +57,43 @@ public class DirectMessageController {
         String roomId = directMessageRequestDto.roomId();
         DirectMessageResponseDto directMessageResponse =
                 directMessageService.sendMessage(accessToken, directMessageRequestDto);
+
+        DirectMessageResponseDto directMessageResponseDto = directMessageService.saveDirectMessage(directMessageResponse);
         template.convertAndSend(
                 DIRECT_DESTINATION + roomId,
-                directMessageResponse);
+                directMessageResponseDto);
+    }
 
-        directMessageService.saveDirectMessage(directMessageResponse);
+    // 메세지 수정
+    @MessageMapping("/direct/update")
+    public void directUpdate(@Header("Authorization") String accessToken, MessageUpdateRequestDto messageUpdateRequestDto) {
+        String roomId = messageUpdateRequestDto.roomId();
+        MessageUpdateResponseDto messageUpdateResponseDto =
+                directMessageQueryService.updateDirectMessage(accessToken, messageUpdateRequestDto);
+
+        template.convertAndSend(
+                DIRECT_DESTINATION + roomId,
+                messageUpdateResponseDto);
+    }
+
+    // 메세지 삭제
+    @MessageMapping("/direct/delete")
+    public void directDelete(@Header("Authorization") String accessToken, MessageDeleteRequestDto messageDeleteRequestDto) {
+        String roomId = messageDeleteRequestDto.roomId();
+        MessageDeleteResponseDto messageDeleteResponseDto =
+                directMessageQueryService.deleteDirectMessage(accessToken, messageDeleteRequestDto);
+
+        template.convertAndSend(
+                DIRECT_DESTINATION + roomId,
+                messageDeleteResponseDto);
     }
 
     @PostMapping("/test/direct/message")
-    public void testDirectSend(@RequestHeader("Authorization") String accessToken, @RequestBody DirectMessageRequestDto directMessageRequestDto) {
+    public ResponseEntity<Object> testDirectSend(@RequestHeader("Authorization") String accessToken, @RequestBody DirectMessageRequestDto directMessageRequestDto) {
         DirectMessageResponseDto directMessageResponseDto =
                 directMessageService.sendMessage(accessToken, directMessageRequestDto);
-        directMessageService.saveDirectMessage(directMessageResponseDto);
+        DirectMessageResponseDto directMessageResponseDto1 = directMessageService.saveDirectMessage(directMessageResponseDto);
+        return ResponseEntity.ok(directMessageResponseDto1);
     }
 
     // 채팅 메세지 리스트 반환

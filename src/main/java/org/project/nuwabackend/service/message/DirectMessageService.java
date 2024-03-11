@@ -45,16 +45,16 @@ public class DirectMessageService {
 
     // 메세지 저장
     @Transactional
-    public void saveDirectMessage(DirectMessageResponseDto directMessageResponseDto) {
+    public DirectMessageResponseDto saveDirectMessage(DirectMessageResponseDto directMessageResponseDto) {
         log.info("메세지 저장");
-        Long workSpaceId = directMessageResponseDto.workSpaceId();
-        String directChannelRoomId = directMessageResponseDto.roomId();
-        Long senderId = directMessageResponseDto.senderId();
-        String senderName = directMessageResponseDto.senderName();
-        String directContent = directMessageResponseDto.content();
-        Long readCount = directMessageResponseDto.readCount();
-        MessageType messageType = directMessageResponseDto.messageType();
-        LocalDateTime createdAt = directMessageResponseDto.createdAt();
+        Long workSpaceId = directMessageResponseDto.getWorkSpaceId();
+        String directChannelRoomId = directMessageResponseDto.getRoomId();
+        Long senderId = directMessageResponseDto.getSenderId();
+        String senderName = directMessageResponseDto.getSenderName();
+        String directContent = directMessageResponseDto.getContent();
+        Long readCount = directMessageResponseDto.getReadCount();
+        MessageType messageType = directMessageResponseDto.getMessageType();
+        LocalDateTime createdAt = directMessageResponseDto.getCreatedAt();
 
         DirectMessage directMessage = DirectMessage.createDirectMessage(
                 workSpaceId,
@@ -66,7 +66,12 @@ public class DirectMessageService {
                 messageType,
                 createdAt);
 
-        directMessageRepository.save(directMessage);
+        DirectMessage saveDirectMessage = directMessageRepository.save(directMessage);
+        directMessageResponseDto.setMessageId(saveDirectMessage.getId());
+        directMessageResponseDto.setIsEdited(saveDirectMessage.getIsEdited());
+        directMessageResponseDto.setIsDeleted(saveDirectMessage.getIsDeleted());
+
+        return directMessageResponseDto;
     }
 
     // 저장된 메세지 가져오기 (Slice)
@@ -74,12 +79,15 @@ public class DirectMessageService {
         log.info("저장된 메세지 가져오기");
         return directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAtDesc(directChannelRoomId, pageable)
                 .map(directMessage -> DirectMessageResponseDto.builder()
+                        .messageId(directMessage.getId())
                         .workSpaceId(directMessage.getWorkSpaceId())
                         .roomId(directMessage.getRoomId())
                         .senderId(directMessage.getSenderId())
                         .senderName(directMessage.getSenderName())
                         .content(directMessage.getContent())
                         .readCount(directMessage.getReadCount())
+                        .isEdited(directMessage.getIsEdited())
+                        .isDeleted(directMessage.getIsDeleted())
                         .messageType(directMessage.getMessageType())
                         .createdAt(directMessage.getCreatedAt())
                         .build());
@@ -105,7 +113,7 @@ public class DirectMessageService {
                 .roomId(roomId)
                 .senderId(sender.getId())
                 .senderName(sender.getName())
-                .content("입장했습니다.")
+                .content(sender.getName() + "님이 입장했습니다.")
                 .readCount(0L)
                 .messageType(ENTER)
                 .build();
