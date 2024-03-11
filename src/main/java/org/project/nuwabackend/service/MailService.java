@@ -54,7 +54,7 @@ public class MailService {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.MEMBER_ID_NOT_FOUND));
 
         messageHelper.setFrom(from);  // 보낸 사람
-        messageHelper.setTo("vvvv4449@gmail.com");  // 받는 사람 관리자 메일주소
+        messageHelper.setTo(from);  // 받는 사람 관리자 메일주소
         messageHelper.setSubject("도입문의 " + mailDto.name());  // 제목
 
         // 내용
@@ -155,7 +155,7 @@ public class MailService {
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
 
         messageHelper.setFrom(from);  // 보낸 사람
-        messageHelper.setTo("vvvv4449@gmail.com");  // 받는 사람 관리자 메일주소
+        messageHelper.setTo(from);  // 받는 사람 관리자 메일주소
         messageHelper.setSubject("서비스문의 " + mailDto.subject());  // 제목
 
         // 파일첨부
