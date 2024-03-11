@@ -65,5 +65,10 @@ public class Notification extends BaseTimeJpa {
                 .receiver(receiver)
                 .build();
     }
+
+    // 읽음으로 변경
+    public void updateReadNotification() {
+        this.isRead = true;
+    }
 }
 

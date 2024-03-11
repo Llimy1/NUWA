@@ -7,6 +7,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.notification.response.NotificationListResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
+import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.notification.EmitterRepository;
 import org.project.nuwabackend.repository.jpa.notification.NotificationRepository;
@@ -20,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.NOTIFICATION_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
@@ -136,4 +138,14 @@ public class NotificationService {
     public void deleteNotificationWorkSpaceId(Long workSpaceId) {
         notificationRepository.deleteByWorkSpaceId(workSpaceId);
     }
+
+    // 알림 읽음으로 변경
+    @Transactional
+    public void updateReadNotification(Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NotFoundException(NOTIFICATION_NOT_FOUND));
+
+        notification.updateReadNotification();
+    }
+
 }

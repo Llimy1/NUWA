@@ -43,6 +43,7 @@ public enum SuccessMessage {
     WORK_SPACE_INFO_UPDATE_SUCCESS("워크스페이스 정보 편집에 성공 했습니다."),
     WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS("워크스페이스 멤버 정보 편집에 성공 했습니다."),
     NOTIFICATION_LIST_RETURN_SUCCESS("알림 정보 조회에 성공 했습니다."),
+    NOTIFICATION_READ_SUCCESS("알림 읽기에 성공 했습니다"),
     FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS("즐겨 찾는 팀원 정보 조회에 성공 했습니다."),
     WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS("워크스페이스 멤버 상태 편집에 성공 했습니다."),
     WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS("워크스페이스 멤버 권한 변경에 성공 했습니다."),
