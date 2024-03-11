@@ -113,7 +113,7 @@ public class DirectMessageService {
                 .roomId(roomId)
                 .senderId(sender.getId())
                 .senderName(sender.getName())
-                .content("입장했습니다.")
+                .content(sender.getName() + "님이 입장했습니다.")
                 .readCount(0L)
                 .messageType(ENTER)
                 .build();

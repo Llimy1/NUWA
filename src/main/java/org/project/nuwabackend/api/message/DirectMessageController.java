@@ -16,6 +16,7 @@ import org.project.nuwabackend.service.message.DirectMessageService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -44,8 +45,8 @@ public class DirectMessageController {
     private static final String DIRECT_DESTINATION = "/sub/direct/";
 
     // 입장 메세지
-    @MessageMapping("/direct/enter")
-    public void directEnter(@Header("Authorization") String accessToken, String roomId) {
+    @MessageMapping("/direct/enter/{roomId}")
+    public void directEnter(@Header("Authorization") String accessToken, @DestinationVariable(value = "roomId") String roomId) {
         DirectMessageResponseDto directMessageResponseDto = directMessageService.enterMessage(accessToken, roomId);
         template.convertAndSend(DIRECT_DESTINATION + roomId, directMessageResponseDto);
     }
