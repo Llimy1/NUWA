@@ -55,6 +55,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/check/**").permitAll()
                         .requestMatchers("/socket").permitAll()
+                        .requestMatchers("/pub/**").permitAll()
+                        .requestMatchers("/sub/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e ->
