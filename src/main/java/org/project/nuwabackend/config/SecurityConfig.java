@@ -10,6 +10,7 @@ import org.project.nuwabackend.config.jwt.JwtExceptionFilter;
 import org.project.nuwabackend.service.auth.CustomOAuth2UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -53,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/signup/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/check/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/socket").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e ->
