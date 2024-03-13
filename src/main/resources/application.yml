@@ -37,8 +37,8 @@ spring:
             enable: true
 
 logging:
-  level:
-    org.hibernate.sql: debug
+#  level:
+#    org.hibernate.sql: debug
   com:
     amazonaws:
       util:
