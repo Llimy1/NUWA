@@ -38,8 +38,11 @@ spring:
             enable: true
 
 logging:
-#  level:
+  level:
 #    org.hibernate.sql: debug
+    com.zaxxer.hikari.HikariConfig: DEBUG
+    com.zaxxer.hikari: TRACE
+
   com:
     amazonaws:
       util:
