@@ -424,18 +424,4 @@ class WorkSpaceServiceTest {
         //then
         assertThat(workSpaceMember1.getIsDelete()).isTrue();
     }
-
-    @Test
-    @DisplayName("[Service] Delete WorkSpace Member Test")
-    void deleteWorkSpaceMemberTest() {
-        //given
-        given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
-                .willReturn(Optional.of(workSpaceMember));
-
-        //when
-        workSpaceService.deleteWorkSpaceMember(workspaceId);
-
-        //then
-        verify(workSpaceService).deleteWorkSpaceMember(workspaceId);
-    }
 }

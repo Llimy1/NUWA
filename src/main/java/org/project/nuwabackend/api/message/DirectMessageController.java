@@ -96,6 +96,12 @@ public class DirectMessageController {
         return ResponseEntity.ok(directMessageResponseDto1);
     }
 
+    @PostMapping("/test/direct/message/delete")
+    public ResponseEntity<Object> testDirectDelete(@RequestHeader("Authorization") String accessToken, @RequestBody MessageDeleteRequestDto messageDeleteRequestDto) {
+        MessageDeleteResponseDto messageDeleteResponseDto = directMessageQueryService.deleteDirectMessage(accessToken, messageDeleteRequestDto);
+        return ResponseEntity.ok(messageDeleteResponseDto);
+    }
+
     // 채팅 메세지 리스트 반환
     @GetMapping("/api/message/direct/{directChannelRoomId}")
     public ResponseEntity<Object> directMessageSliceOrderByCreatedDate(

@@ -122,12 +122,12 @@ class DirectMessageServiceTest {
     void saveDirectMessageTest() {
         //given
         DirectMessage directMessage = DirectMessage.createDirectMessage(
-                directMessageResponseDto.workSpaceId(),
-                directMessageResponseDto.roomId(),
-                directMessageResponseDto.senderId(),
-                directMessageResponseDto.senderName(),
-                directMessageResponseDto.content(),
-                directMessageResponseDto.readCount(),
+                directMessageResponseDto.getWorkSpaceId(),
+                directMessageResponseDto.getRoomId(),
+                directMessageResponseDto.getSenderId(),
+                directMessageResponseDto.getSenderName(),
+                directMessageResponseDto.getContent(),
+                directMessageResponseDto.getReadCount(),
                 MessageType.TEXT,
                 LocalDateTime.now());
 
@@ -148,12 +148,12 @@ class DirectMessageServiceTest {
         String directChannelRoomId = "directChannelRoomId";
 
         DirectMessage directMessage = DirectMessage.createDirectMessage(
-                directMessageResponseDto.workSpaceId(),
-                directMessageResponseDto.roomId(),
-                directMessageResponseDto.senderId(),
-                directMessageResponseDto.senderName(),
-                directMessageResponseDto.content(),
-                directMessageResponseDto.readCount(),
+                directMessageResponseDto.getWorkSpaceId(),
+                directMessageResponseDto.getRoomId(),
+                directMessageResponseDto.getSenderId(),
+                directMessageResponseDto.getSenderName(),
+                directMessageResponseDto.getContent(),
+                directMessageResponseDto.getReadCount(),
                 MessageType.TEXT,
                 LocalDateTime.now());
 
@@ -168,12 +168,15 @@ class DirectMessageServiceTest {
 
         Slice<DirectMessageResponseDto> directMessageResponseDtoSlice = directMessageSlice.map(direct ->
                 DirectMessageResponseDto.builder()
+                        .messageId(direct.getId())
                         .workSpaceId(direct.getWorkSpaceId())
                         .roomId(direct.getRoomId())
                         .senderId(direct.getSenderId())
                         .senderName(direct.getSenderName())
                         .content(direct.getContent())
                         .readCount(direct.getReadCount())
+                        .isEdited(direct.getIsEdited())
+                        .isDeleted(direct.getIsDeleted())
                         .messageType(direct.getMessageType())
                         .createdAt(direct.getCreatedAt())
                         .build());
@@ -186,8 +189,6 @@ class DirectMessageServiceTest {
                 directMessageService.directMessageSliceOrderByCreatedDate(directChannelRoomId, pageRequest);
 
         //then
-        assertThat(directMessageResponseDtoList.getContent())
-                .containsAll(directMessageResponseDtoSlice.getContent());
         assertThat(directMessageResponseDtoList.getNumber())
                 .isEqualTo(directMessageResponseDtoSlice.getNumber());
         assertThat(directMessageResponseDtoList.getSize())

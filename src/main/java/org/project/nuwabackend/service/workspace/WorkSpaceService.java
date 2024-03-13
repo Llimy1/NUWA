@@ -352,7 +352,7 @@ public class WorkSpaceService {
             createWorkSpaceMember.updateJoinWorkSpaceMemberType();
 
             notificationService.send(workSpaceMemberName + "님이 워크스페이스 소유주로 변경되었습니다.",
-                    createWorkSpaceUrl(workSpaceId), NOTICE, joinWorkSpaceMember);
+                    createWorkSpaceUrl(workSpaceId), NOTICE, createWorkSpaceMember, joinWorkSpaceMember);
         } else {
             throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
         }
