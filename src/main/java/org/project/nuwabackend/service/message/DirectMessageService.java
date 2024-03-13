@@ -41,7 +41,7 @@ public class DirectMessageService {
     private final DirectChannelRedisService directChannelRedisService;
     private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
-    private static final String PREFIX_URL = "http://localhost:3000/";
+    private static final String PREFIX_URL = "/direct-chat/";
 
     // 메세지 저장
     @Transactional
@@ -170,7 +170,6 @@ public class DirectMessageService {
                 .build();
     }
 
-    // TODO: 프론트 주소 확인해서 url 생성 해야함
     private String createDirectUrl(String directChannelRoomId) {
         return PREFIX_URL + directChannelRoomId;
     }

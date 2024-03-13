@@ -49,7 +49,7 @@ public class ChatMessageService {
     private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
 
-    private static final String PREFIX_URL = "http://localhost:3000/";
+    private static final String PREFIX_URL = "/group-chat/";
 
     @Transactional
     public ChatMessageResponseDto sendMessage(String accessToken, ChatMessageRequestDto chatMessageRequestDto) {
@@ -86,7 +86,7 @@ public class ChatMessageService {
             log.info("알림 전송");
             notificationService.send(
                     content,
-                    createChatUrl(workSpaceId, roomId),
+                    createChatUrl(roomId),
                     NotificationType.CHAT,
                     findWorkSpaceMember,
                     chatMember
@@ -143,7 +143,7 @@ public class ChatMessageService {
                         .build());
     }
 
-    private String createChatUrl(Long workSpaceId, String chatChannelRoomId) {
-        return PREFIX_URL + workSpaceId + "/" + chatChannelRoomId;
+    private String createChatUrl(String chatChannelRoomId) {
+        return PREFIX_URL + chatChannelRoomId;
     }
 }
