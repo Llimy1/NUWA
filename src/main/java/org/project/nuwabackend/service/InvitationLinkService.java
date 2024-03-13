@@ -13,6 +13,8 @@ import org.project.nuwabackend.repository.redis.InvitationLinkRedisRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.UUID;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.REDIS_TOKEN_NOT_FOUND_INFO;
@@ -52,7 +54,12 @@ public class InvitationLinkService {
     }
 
     private String constructInvitationLink(String token) {
-        return "http://localhost:8080/api/invite?token=" + token;
+        // 토큰을 Base64로 인코딩
+        String encodedToken = Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
+        log.info("인코딩" +encodedToken);
+
+        // 인코딩된 토큰을 사용하여 URL 구성
+        return "http://localhost:3000/api/invite/" + encodedToken;
     }
 
 
