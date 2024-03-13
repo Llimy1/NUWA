@@ -83,16 +83,16 @@ public class NotificationService {
     // 알림 전송
     // TODO: test code
     @Transactional
-    public void send(String content, String url, NotificationType notificationType, WorkSpaceMember receiver) {
+    public void send(String content, String url, NotificationType notificationType, WorkSpaceMember sender, WorkSpaceMember receiver) {
         log.info("sse 알림 전송");
         Notification notification =
-                Notification.createNotification(content, url, notificationType, receiver);
+                Notification.createNotification(content, url, notificationType, sender, receiver);
 
-        String workSpaceMemberId = String.valueOf(receiver.getId());
+        String receiverId = String.valueOf(receiver.getId());
         // 알림 저장
         notificationRepository.save(notification);
         // 워크스페이스에 들어온 유저 SseEmitter 모두 가져오기
-        Map<String, SseEmitter> emitterMap = emitterRepository.findAllStartWithById(workSpaceMemberId);
+        Map<String, SseEmitter> emitterMap = emitterRepository.findAllStartWithById(receiverId);
         emitterMap.forEach(
                 (key, emitter) -> {
                     // 데이터 캐시 저장 (유실된 데이터 처리)
@@ -105,8 +105,10 @@ public class NotificationService {
                                     .notificationContent(notification.getContent())
                                     .notificationUrl(notification.getUrl())
                                     .notificationType(notification.getType())
-                                    .notificationWorkSpaceMemberId(notification.getReceiver().getId())
-                                    .notificationWorkSpaceMemberName(notification.getReceiver().getName())
+                                    .notificationSenderId(notification.getSender().getId())
+                                    .notificationSenderName(notification.getSender().getName())
+                                    .notificationReceiverId(notification.getReceiver().getId())
+                                    .notificationReceiverName(notification.getReceiver().getName())
                                     .createdAt(notification.getCreatedAt())
                                     .build());
                 }

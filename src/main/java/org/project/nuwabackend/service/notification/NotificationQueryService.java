@@ -56,8 +56,10 @@ public class NotificationQueryService {
                 notification.url.as("notificationUrl"),
                 notification.isRead.as("isRead"),
                 notification.type.as("notificationType"),
-                notification.receiver.id.as("notificationWorkSpaceMemberId"),
-                notification.receiver.name.as("notificationWorkSpaceMemberName"),
+                notification.sender.id.as("notificationSenderId"),
+                notification.sender.name.as("notificationSenderName"),
+                notification.receiver.id.as("notificationReceiverId"),
+                notification.receiver.name.as("notificationReceiverName"),
                 notification.createdAt.as("createdAt"));
     }
 

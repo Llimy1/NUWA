@@ -43,25 +43,31 @@ public class Notification extends BaseTimeJpa {
     private NotificationType type;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "sender_id")
+    private WorkSpaceMember sender;
+
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "receiver_id")
     private WorkSpaceMember receiver;
 
     @Builder
-    private Notification(String content, String url, Boolean isRead, NotificationType type, WorkSpaceMember receiver) {
+    private Notification(String content, String url, Boolean isRead, NotificationType type, WorkSpaceMember sender, WorkSpaceMember receiver) {
         this.content = content;
         this.url = url;
         this.isRead = isRead;
         this.type = type;
+        this.sender = sender;
         this.receiver = receiver;
     }
 
     // 알림 생성
-    public static Notification createNotification(String content, String url, NotificationType notificationType, WorkSpaceMember receiver) {
+    public static Notification createNotification(String content, String url, NotificationType notificationType, WorkSpaceMember sender, WorkSpaceMember receiver) {
         return Notification.builder()
                 .content(content)
                 .url(url)
                 .isRead(false)
                 .type(notificationType)
+                .sender(sender)
                 .receiver(receiver)
                 .build();
     }
