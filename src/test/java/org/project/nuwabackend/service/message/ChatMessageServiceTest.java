@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -95,11 +96,14 @@ class ChatMessageServiceTest {
         String content = "chatMessage";
 
         chatMessageResponseDto = ChatMessageResponseDto.builder()
+                .messageId("messageId")
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .isEdited(false)
+                .isDeleted(false)
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -108,12 +112,12 @@ class ChatMessageServiceTest {
     @DisplayName("[Service] Save Chat Message Test")
     void saveChatMessageTest() {
         //given
-        Long workSpaceId = chatMessageResponseDto.workSpaceId();
-        String roomId = chatMessageResponseDto.roomId();
-        Long senderId = chatMessageResponseDto.senderId();
-        String senderName = chatMessageResponseDto.senderName();
-        String content = chatMessageResponseDto.content();
-        LocalDateTime createdAt = chatMessageResponseDto.createdAt();
+        Long workSpaceId = chatMessageResponseDto.getWorkSpaceId();
+        String roomId = chatMessageResponseDto.getRoomId();
+        Long senderId = chatMessageResponseDto.getSenderId();
+        String senderName = chatMessageResponseDto.getSenderName();
+        String content = chatMessageResponseDto.getContent();
+        LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
                 ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, MessageType.TEXT, createdAt);
@@ -132,12 +136,12 @@ class ChatMessageServiceTest {
     @DisplayName("[Service] Chat Message Slice Sort By Date")
     void chatMessageSliceSortByDate() {
         //given
-        Long workSpaceId = chatMessageResponseDto.workSpaceId();
-        String roomId = chatMessageResponseDto.roomId();
-        Long senderId = chatMessageResponseDto.senderId();
-        String senderName = chatMessageResponseDto.senderName();
-        String content = chatMessageResponseDto.content();
-        LocalDateTime createdAt = chatMessageResponseDto.createdAt();
+        Long workSpaceId = chatMessageResponseDto.getWorkSpaceId();
+        String roomId = chatMessageResponseDto.getRoomId();
+        Long senderId = chatMessageResponseDto.getSenderId();
+        String senderName = chatMessageResponseDto.getSenderName();
+        String content = chatMessageResponseDto.getContent();
+        LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
                 ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, MessageType.TEXT, createdAt);
@@ -151,11 +155,14 @@ class ChatMessageServiceTest {
 
         Slice<ChatMessageListResponseDto> chatMessageListResponseDtoSlice =
                 chatMessageSlice.map(chat -> ChatMessageListResponseDto.builder()
+                        .messageId(chatMessage.getId())
                         .workSpaceId(chatMessage.getWorkSpaceId())
                         .roomId(chatMessage.getRoomId())
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .isEdited(chatMessage.getIsEdited())
+                        .isDeleted(chatMessage.getIsDeleted())
                         .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());

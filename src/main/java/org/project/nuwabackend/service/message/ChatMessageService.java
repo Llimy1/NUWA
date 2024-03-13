@@ -88,6 +88,7 @@ public class ChatMessageService {
                     content,
                     createChatUrl(workSpaceId, roomId),
                     NotificationType.CHAT,
+                    findWorkSpaceMember,
                     chatMember
                     );
         });

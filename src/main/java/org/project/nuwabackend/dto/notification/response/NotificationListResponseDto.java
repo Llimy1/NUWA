@@ -12,8 +12,10 @@ public record NotificationListResponseDto(Long notificationId,
                                           String notificationUrl,
                                           Boolean isRead,
                                           NotificationType notificationType,
-                                          Long notificationWorkSpaceMemberId,
-                                          String notificationWorkSpaceMemberName,
+                                          Long notificationSenderId,
+                                          String notificationSenderName,
+                                          Long notificationReceiverId,
+                                          String notificationReceiverName,
                                           @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
                                           LocalDateTime createdAt) {
 }

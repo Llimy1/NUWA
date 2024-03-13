@@ -25,6 +25,7 @@ public class FileAndMessageController {
     private final GlobalService globalService;
 
     // TODO : test code
+    // TODO: 수정 해야함
     @DeleteMapping("/file/{workSpaceId}/channel")
     public ResponseEntity<Object> deleteFileAndMessage(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                        @RequestParam(value = "fileId") Long fileId) {

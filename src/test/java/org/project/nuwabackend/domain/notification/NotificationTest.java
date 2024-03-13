@@ -50,7 +50,7 @@ class NotificationTest {
     @DisplayName("[Domain] Create Notification Test")
     void createNotificationTest() {
         //given
-        Notification notification = Notification.createNotification(content, url, NotificationType.DIRECT, workSpaceMember);
+        Notification notification = Notification.createNotification(content, url, NotificationType.DIRECT, workSpaceMember, workSpaceMember);
 
         //when
         //then

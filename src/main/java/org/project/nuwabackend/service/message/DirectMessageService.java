@@ -154,6 +154,7 @@ public class DirectMessageService {
                     directChannelContent,
                     createDirectUrl(directChannelRoomId),
                     NotificationType.DIRECT,
+                    sender,
                     receiver);
         }
 
