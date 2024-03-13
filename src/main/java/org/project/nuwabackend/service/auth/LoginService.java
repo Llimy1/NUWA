@@ -27,7 +27,7 @@ public class LoginService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
 
-    @Transactional(readOnly = true)
+    @Transactional
     public GeneratedTokenDto login(LoginRequestDto loginRequestDto) {
         log.info("Login Service 호출");
         String email = loginRequestDto.email();
