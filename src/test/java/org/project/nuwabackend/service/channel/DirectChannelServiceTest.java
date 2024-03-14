@@ -199,12 +199,13 @@ class DirectChannelServiceTest {
         //given
         String roomId1 = "roomId1";
         String content1 = "content1";
+        List<String> rawString = new ArrayList<>(List.of("rawString"));
         Long readCount = 0L;
 
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
 
-        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, MessageType.TEXT, LocalDateTime.now());
+        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, rawString, readCount, MessageType.TEXT, LocalDateTime.now());
 
         ReflectionTestUtils.setField(directMessage1, "id", UUID.randomUUID().toString());
         ReflectionTestUtils.setField(directMessage1, "createdAt", LocalDateTime.now());
@@ -251,7 +252,8 @@ class DirectChannelServiceTest {
             if (directMessageSlice.hasContent()) {
                 DirectMessage directMessage = directMessageSlice.getContent().get(0);
 
-                directChannelResponseDto.setLastMessage(directMessage.getContent());
+
+                directChannelResponseDto.setLastMessage(directMessage.getRawString().get(0));
                 directChannelResponseDto.setMessageCreatedAt(directMessage.getCreatedAt());
             }
             directChannelResponseDtoList.add(directChannelResponseDto);
@@ -283,13 +285,14 @@ class DirectChannelServiceTest {
         //given
         String roomId1 = "roomId1";
         String content1 = "content1";
+        List<String> rawString = new ArrayList<>(List.of("rawString"));
         String workSpaceMemberName = "senderNickName";
         Long readCount = 0L;
 
         given(workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(anyString(), any()))
                 .willReturn(Optional.of(senderWorkSpaceMember));
 
-        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, readCount, MessageType.TEXT, LocalDateTime.now());
+        DirectMessage directMessage1 = DirectMessage.createDirectMessage(workSpaceId, roomId1, sender.getId(), sender.getNickname(), content1, rawString, readCount, MessageType.TEXT, LocalDateTime.now());
 
         ReflectionTestUtils.setField(directMessage1, "id", UUID.randomUUID().toString());
         ReflectionTestUtils.setField(directMessage1, "createdAt", LocalDateTime.now());
@@ -337,7 +340,7 @@ class DirectChannelServiceTest {
             if (directMessageSlice.hasContent()) {
                 DirectMessage directMessage = directMessageSlice.getContent().get(0);
 
-                directChannelResponseDto.setLastMessage(directMessage.getContent());
+                directChannelResponseDto.setLastMessage(directMessage.getRawString().get(0));
                 directChannelResponseDto.setMessageCreatedAt(directMessage.getCreatedAt());
             }
             directChannelResponseDtoList.add(directChannelResponseDto);

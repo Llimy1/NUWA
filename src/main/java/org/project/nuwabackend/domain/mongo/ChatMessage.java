@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Document("chat")
@@ -35,6 +36,9 @@ public class ChatMessage {
     @Field(name = "chat_content")
     private String content;
 
+    @Field(name = "raw_string")
+    private List<String> rawString;
+
     @Field(name = "is_edited")
     private Boolean isEdited;
 
@@ -48,12 +52,13 @@ public class ChatMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
+        this.rawString = rawString;
         this.isEdited = isEdited;
         this.isDeleted = isDeleted;
         this.messageType = messageType;
@@ -72,13 +77,14 @@ public class ChatMessage {
         return Objects.hash(id);
     }
 
-    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, MessageType messageType, LocalDateTime createdAt) {
+    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, MessageType messageType, LocalDateTime createdAt) {
         return ChatMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .rawString(rawString)
                 .isEdited(false)
                 .isDeleted(false)
                 .messageType(messageType)

@@ -18,6 +18,7 @@ public class ChatMessageResponseDto {
         private Long senderId;
         private String senderName;
         private String content;
+        private List<String> rawString;
         @Setter
         private Boolean isEdited;
         @Setter
@@ -27,13 +28,14 @@ public class ChatMessageResponseDto {
         private LocalDateTime createdAt;
 
         @Builder
-        public ChatMessageResponseDto(String messageId, Long workSpaceId, String roomId, Long senderId, String senderName, String content, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+        public ChatMessageResponseDto(String messageId, Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
                 this.messageId = messageId;
                 this.workSpaceId = workSpaceId;
                 this.roomId = roomId;
                 this.senderId = senderId;
                 this.senderName = senderName;
                 this.content = content;
+                this.rawString = rawString;
                 this.isEdited = isEdited;
                 this.isDeleted = isDeleted;
                 this.messageType = messageType;

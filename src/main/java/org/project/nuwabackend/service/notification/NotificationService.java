@@ -90,7 +90,7 @@ public class NotificationService {
 
         String receiverId = String.valueOf(receiver.getId());
         // 알림 저장
-        notificationRepository.save(notification);
+        Notification saveNotification = notificationRepository.save(notification);
         // 워크스페이스에 들어온 유저 SseEmitter 모두 가져오기
         Map<String, SseEmitter> emitterMap = emitterRepository.findAllStartWithById(receiverId);
         emitterMap.forEach(
@@ -100,16 +100,16 @@ public class NotificationService {
                     // 데이터 전송
                     sendToClient(emitter, key,
                             NotificationResponseDto.builder()
-                                    .workSpaceId(notification.getReceiver().getWorkSpace().getId())
-                                    .notificationId(notification.getId())
-                                    .notificationContent(notification.getContent())
-                                    .notificationUrl(notification.getUrl())
-                                    .notificationType(notification.getType())
-                                    .notificationSenderId(notification.getSender().getId())
-                                    .notificationSenderName(notification.getSender().getName())
-                                    .notificationReceiverId(notification.getReceiver().getId())
-                                    .notificationReceiverName(notification.getReceiver().getName())
-                                    .createdAt(notification.getCreatedAt())
+                                    .workSpaceId(saveNotification.getReceiver().getWorkSpace().getId())
+                                    .notificationId(saveNotification.getId())
+                                    .notificationContent(saveNotification.getContent())
+                                    .notificationUrl(saveNotification.getUrl())
+                                    .notificationType(saveNotification.getType())
+                                    .notificationSenderId(saveNotification.getSender().getId())
+                                    .notificationSenderName(saveNotification.getSender().getName())
+                                    .notificationReceiverId(saveNotification.getReceiver().getId())
+                                    .notificationReceiverName(saveNotification.getReceiver().getName())
+                                    .createdAt(saveNotification.getCreatedAt())
                                     .build());
                 }
         );

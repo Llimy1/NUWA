@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Document("direct")
@@ -35,6 +36,9 @@ public class DirectMessage {
     @Field(name = "direct_content")
     private String content;
 
+    @Field(name = "raw_string")
+    private List<String> rawString;
+
     @Field(name = "direct_read_count")
     private Long readCount;
 
@@ -51,12 +55,13 @@ public class DirectMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    public DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+    public DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
         this.content = content;
+        this.rawString = rawString;
         this.readCount = readCount;
         this.isEdited = isEdited;
         this.isDeleted = isDeleted;
@@ -76,13 +81,14 @@ public class DirectMessage {
         return Objects.hash(id);
     }
 
-    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, MessageType messageType, LocalDateTime createdAt) {
+    public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Long readCount, MessageType messageType, LocalDateTime createdAt) {
         return DirectMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .rawString(rawString)
                 .readCount(readCount)
                 .isEdited(false)
                 .isDeleted(false)

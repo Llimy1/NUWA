@@ -15,6 +15,7 @@ import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.mongo.DirectMessageRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
+import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -29,6 +30,9 @@ import java.util.Optional;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.type.MessageType.FILE;
+import static org.project.nuwabackend.type.MessageType.IMAGE;
+import static org.project.nuwabackend.type.MessageType.TEXT;
 
 @Slf4j
 @Service
@@ -207,10 +211,22 @@ public class DirectChannelService {
                     directMessageRepository.findDirectMessageByRoomIdOrderByCreatedAtDesc(direct.getRoomId(), pageRequest);
 
             if (directMessageByRoomIdOrderByCreatedAt.hasContent()) {
+                String rawString;
+
                 DirectMessage directMessage =
                         directMessageByRoomIdOrderByCreatedAt.getContent().get(0);
 
-                directChannelResponseDto.setLastMessage(directMessage.getContent());
+                if (directMessage.getMessageType().equals(IMAGE)) {
+                    rawString = "사진";
+                } else if (directMessage.getMessageType().equals(FILE)) {
+                    rawString = "파일";
+                } else if (directMessage.getMessageType().equals(TEXT)){
+                    rawString = directMessage.getRawString().get(0);
+                } else {
+                    rawString = "";
+                }
+
+                directChannelResponseDto.setLastMessage(rawString);
                 directChannelResponseDto.setMessageCreatedAt(directMessage.getCreatedAt());
             }
 

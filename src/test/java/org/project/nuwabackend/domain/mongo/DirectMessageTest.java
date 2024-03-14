@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.project.nuwabackend.type.MessageType;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,6 +19,7 @@ class DirectMessageTest {
     Long senderId = 1L;
     String senderName = "senderName";
     String content = "content";
+    List<String> rawString = new ArrayList<>(List.of("string"));
     Long readCount = 1L;
     LocalDateTime now = LocalDateTime.now();
 
@@ -26,7 +29,7 @@ class DirectMessageTest {
     void createDirectMessageTest() {
         //given
         //when
-        DirectMessage directMessage = DirectMessage.createDirectMessage(workSpaceId, roomId, senderId, senderName, content, readCount, MessageType.TEXT, now);
+        DirectMessage directMessage = DirectMessage.createDirectMessage(workSpaceId, roomId, senderId, senderName, content, rawString, readCount, MessageType.TEXT, now);
 
         //then
         assertThat(directMessage.getWorkSpaceId()).isEqualTo(workSpaceId);

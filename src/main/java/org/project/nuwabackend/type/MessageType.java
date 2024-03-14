@@ -1,5 +1,5 @@
 package org.project.nuwabackend.type;
 
 public enum MessageType {
-    TEXT, FILE, ENTER, UPDATE, DELETE
+    TEXT, FILE, IMAGE, ENTER, UPDATE, DELETE
 }
