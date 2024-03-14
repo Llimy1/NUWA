@@ -2,6 +2,7 @@ package org.project.nuwabackend.dto.notification.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
+import lombok.ToString;
 import org.project.nuwabackend.type.NotificationType;
 
 import java.time.LocalDateTime;

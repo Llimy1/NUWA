@@ -1,25 +1,35 @@
 package org.project.nuwabackend.service.notification;
 
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.notification.Notification;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
+import org.project.nuwabackend.dto.notification.request.NotificationIdListRequestDto;
+import org.project.nuwabackend.dto.notification.response.NotificationGroupResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationListResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.notification.EmitterRepository;
 import org.project.nuwabackend.repository.jpa.notification.NotificationRepository;
 import org.project.nuwabackend.type.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.NOTIFICATION_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
@@ -134,6 +144,50 @@ public class NotificationService {
         return notificationQueryService.notificationListResponseDtoSlice(email, workSpaceId, false, pageable);
     }
 
+    // 알림 그룹화 최근 시간 순으로 전송
+    public Slice<NotificationGroupResponseDto> notificationV2(String email, Long workSpaceId, Pageable pageable) {
+        // 알림 리스트 가져오기
+        List<NotificationListResponseDto> notificationListResponseDtoList =
+                notificationQueryService.notificationV2(email, workSpaceId, false);
+
+        // 그룹화 (최근 시간순으로 변경 후 -> senderId, type, senderName으로 그룹화)
+        Map<String, List<NotificationListResponseDto>> groupedNotifications = notificationListResponseDtoList.stream()
+                .sorted(Comparator.comparing(NotificationListResponseDto::createdAt).reversed())
+                .collect(Collectors.groupingBy(
+                        notification -> notification.notificationSenderId() + "_" + notification.notificationType() + "_" + notification.notificationSenderName(),
+                        // 순서를 유지하기 위한 linked hash map
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        // 그룹화 된 값에서 정보 매핑 후 DTO로 반환
+        List<NotificationGroupResponseDto> notificationGroupResponseDtoList = groupedNotifications.entrySet().stream().map(entry -> {
+            List<NotificationListResponseDto> groupedList = entry.getValue();
+            List<Long> notificationIdList =
+                    groupedList.stream().map(NotificationListResponseDto::notificationId).toList();
+            Long contentCount = (long) groupedList.size();
+            String[] keyParts = entry.getKey().split("_");
+            Long senderId = Long.parseLong(keyParts[0]);
+            NotificationType notificationType = NotificationType.valueOf(keyParts[1]);
+            String senderName = keyParts[2];
+            String notificationUrl = groupedList.get(0).notificationUrl();
+            LocalDateTime createdAt = groupedList.get(0).createdAt();
+
+            return NotificationGroupResponseDto.builder()
+                    .notificationIdList(notificationIdList)
+                    .contentCount(contentCount)
+                    .senderId(senderId)
+                    .senderName(senderName)
+                    .notificationUrl(notificationUrl)
+                    .notificationType(notificationType)
+                    .createdAt(createdAt)
+                    .build();
+        }).toList();
+
+
+        return sliceDtoResponse(notificationGroupResponseDtoList, pageable);
+    }
+
     // 워크스페이스 ID로 해당 알림 전체 삭제
     // TODO: integrated test code
     @Transactional
@@ -148,6 +202,21 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException(NOTIFICATION_NOT_FOUND));
 
         notification.updateReadNotification();
+    }
+
+    // 알림 읽음으로 변경 v2
+    @Transactional
+    public void updateReadNotificationList(NotificationIdListRequestDto notificationIdListRequestDto) {
+        List<Long> notificationIdList = notificationIdListRequestDto.notificationIdList();
+        notificationRepository.updateIsReadByNotificationIdList(notificationIdList);
+    }
+
+    // Slice(페이징)
+    private Slice<NotificationGroupResponseDto> sliceDtoResponse(List<NotificationGroupResponseDto> notificationGroupResponseDtoList, Pageable pageable) {
+        boolean hasNext = notificationGroupResponseDtoList.size() > pageable.getPageSize();
+        List<NotificationGroupResponseDto> notificationContent = hasNext ? notificationGroupResponseDtoList.subList(0, pageable.getPageSize()) : notificationGroupResponseDtoList;
+
+        return new SliceImpl<>(notificationContent, pageable, hasNext);
     }
 
 }

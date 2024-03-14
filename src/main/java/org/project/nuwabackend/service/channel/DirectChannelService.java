@@ -179,6 +179,7 @@ public class DirectChannelService {
         return sliceDtoResponse(searchDirectChannelResponseDtoList, pageable);
     }
 
+    // Slice(페이징)
     private Slice<DirectChannelResponseDto> sliceDtoResponse(List<DirectChannelResponseDto> directChannelResponseDtoList, Pageable pageable) {
         boolean hasNext = directChannelResponseDtoList.size() > pageable.getPageSize();
         List<DirectChannelResponseDto> directContent = hasNext ? directChannelResponseDtoList.subList(0, pageable.getPageSize()) : directChannelResponseDtoList;

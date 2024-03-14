@@ -12,6 +12,7 @@ import org.project.nuwabackend.dto.message.response.MessageUpdateResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
+import org.project.nuwabackend.service.s3.FileService;
 import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -19,9 +20,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.type.MessageType.DELETE;
 import static org.project.nuwabackend.type.MessageType.FILE;
+import static org.project.nuwabackend.type.MessageType.IMAGE;
 import static org.project.nuwabackend.type.MessageType.UPDATE;
 
 @Slf4j
@@ -31,6 +35,7 @@ public class ChatMessageQueryService {
 
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final MongoTemplate mongoTemplate;
+    private final FileService fileService;
     private final JwtUtil jwtUtil;
 
     // 워크스페이스 ID로 관련 채팅 채널 메세지 전부 삭제
@@ -116,7 +121,17 @@ public class ChatMessageQueryService {
                 .and("chat_room_id").is(roomId)
                 .and("chat_sender_id").is(senderId));
 
-        Update update = new Update().set("chat_content", content).set("is_deleted", isDeleted);
+        ChatMessage chatMessage = mongoTemplate.findOne(query, ChatMessage.class);
+
+        if (chatMessage != null && (chatMessage.getMessageType().equals(IMAGE) || chatMessage.getMessageType().equals(FILE))) {
+            List<String> rawString = chatMessage.getRawString();
+
+            List<Long> idList = fileService.fileIdList(rawString);
+
+            idList.forEach(fileService::deleteFile);
+        }
+
+        Update update = new Update().set("chat_content", content).set("is_deleted", isDeleted).set("raw_string", content);
         mongoTemplate.updateMulti(query, update, ChatMessage.class);
 
         return MessageDeleteResponseDto.builder()

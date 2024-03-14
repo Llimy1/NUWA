@@ -1,5 +1,6 @@
 package org.project.nuwabackend.service.notification;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -47,6 +48,18 @@ public class NotificationQueryService {
         List<NotificationListResponseDto> notificationContent = hasNext ? notificationListResponseDtoList.subList(0, pageable.getPageSize()) : notificationListResponseDtoList;
 
         return new SliceImpl<>(notificationContent, pageable, hasNext);
+    }
+
+    public List<NotificationListResponseDto> notificationV2(String email, Long workSpaceId, Boolean isRead) {
+        return jpaQueryFactory.select(notificationListResponseDto())
+                        .from(notification)
+                        .join(notification.receiver, workSpaceMember)
+                        .where(
+                                memberEmailEq(email),
+                                workSpaceIdEq(workSpaceId),
+                                isReadEq(isRead)
+                        )
+                        .fetch();
     }
 
     private ConstructorExpression<NotificationListResponseDto> notificationListResponseDto() {
