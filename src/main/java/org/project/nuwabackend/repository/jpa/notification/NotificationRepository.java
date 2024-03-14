@@ -7,9 +7,15 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
+
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     @Query("DELETE FROM Notification n WHERE n.receiver.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)
     void deleteByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
+
+    @Query("UPDATE Notification n SET n.isRead = true WHERE n.id IN :notificationIdList ")
+    @Modifying(clearAutomatically = true)
+    void updateIsReadByNotificationIdList(@Param("notificationIdList") List<Long> notificationIdList);
 }
