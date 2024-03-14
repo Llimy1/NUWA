@@ -29,7 +29,7 @@ public class Notification extends BaseTimeJpa {
     @Column(name = "notification_id")
     private Long id;
 
-    @Column(name = "notification_content")
+    @Column(name = "notification_content", length = 5000)
     private String content;
 
     @Column(name = "notification_url")

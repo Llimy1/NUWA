@@ -75,6 +75,7 @@ class DirectMessageServiceTest {
         String directChannelContent = "directChannelContent";
         Long readCount = 1L;
         String senderName = "senderName";
+        List<String> rawString = new ArrayList<>(List.of("rawString"));
 
 
         directMessageRequestDto = DirectMessageRequestDto.builder()
@@ -89,6 +90,7 @@ class DirectMessageServiceTest {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(directChannelContent)
+                .rawString(rawString)
                 .readCount(readCount)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -127,6 +129,7 @@ class DirectMessageServiceTest {
                 directMessageResponseDto.getSenderId(),
                 directMessageResponseDto.getSenderName(),
                 directMessageResponseDto.getContent(),
+                directMessageResponseDto.getRawString(),
                 directMessageResponseDto.getReadCount(),
                 MessageType.TEXT,
                 LocalDateTime.now());
@@ -153,6 +156,7 @@ class DirectMessageServiceTest {
                 directMessageResponseDto.getSenderId(),
                 directMessageResponseDto.getSenderName(),
                 directMessageResponseDto.getContent(),
+                directMessageResponseDto.getRawString(),
                 directMessageResponseDto.getReadCount(),
                 MessageType.TEXT,
                 LocalDateTime.now());

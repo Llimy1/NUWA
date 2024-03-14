@@ -4,8 +4,9 @@ import lombok.Builder;
 import org.project.nuwabackend.type.MessageType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
-public record DirectMessageRequestDto(Long workSpaceId, String roomId, Long receiverId, String content, MessageType messageType) {
+public record DirectMessageRequestDto(Long workSpaceId, String roomId, Long receiverId, String content, List<String> rawString, MessageType messageType) {
 
 }

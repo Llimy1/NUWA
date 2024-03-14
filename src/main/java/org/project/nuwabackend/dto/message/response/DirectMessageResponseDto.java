@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.project.nuwabackend.type.MessageType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @ToString
@@ -19,6 +20,7 @@ public class DirectMessageResponseDto {
         private Long senderId;
         private String senderName;
         private String content;
+        private List<String> rawString;
         private Long readCount;
         @Setter
         private Boolean isEdited;
@@ -29,13 +31,14 @@ public class DirectMessageResponseDto {
         private LocalDateTime createdAt;
 
         @Builder
-        public DirectMessageResponseDto(String messageId, Long workSpaceId, String roomId, Long senderId, String senderName, String content, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+        public DirectMessageResponseDto(String messageId, Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
                 this.messageId = messageId;
                 this.workSpaceId = workSpaceId;
                 this.roomId = roomId;
                 this.senderId = senderId;
                 this.senderName = senderName;
                 this.content = content;
+                this.rawString = rawString;
                 this.readCount = readCount;
                 this.isEdited = isEdited;
                 this.isDeleted = isDeleted;

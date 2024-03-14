@@ -22,10 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.type.MessageType.ENTER;
+import static org.project.nuwabackend.type.MessageType.FILE;
+import static org.project.nuwabackend.type.MessageType.IMAGE;
 import static org.project.nuwabackend.type.MessageType.TEXT;
 
 @Slf4j
@@ -52,6 +55,7 @@ public class DirectMessageService {
         Long senderId = directMessageResponseDto.getSenderId();
         String senderName = directMessageResponseDto.getSenderName();
         String directContent = directMessageResponseDto.getContent();
+        List<String> rawString = directMessageResponseDto.getRawString();
         Long readCount = directMessageResponseDto.getReadCount();
         MessageType messageType = directMessageResponseDto.getMessageType();
         LocalDateTime createdAt = directMessageResponseDto.getCreatedAt();
@@ -62,6 +66,7 @@ public class DirectMessageService {
                 senderId,
                 senderName,
                 directContent,
+                rawString,
                 readCount,
                 messageType,
                 createdAt);
@@ -85,6 +90,7 @@ public class DirectMessageService {
                         .senderId(directMessage.getSenderId())
                         .senderName(directMessage.getSenderName())
                         .content(directMessage.getContent())
+                        .rawString(directMessage.getRawString())
                         .readCount(directMessage.getReadCount())
                         .isEdited(directMessage.getIsEdited())
                         .isDeleted(directMessage.getIsDeleted())
@@ -128,8 +134,20 @@ public class DirectMessageService {
         Long workSpaceId = directMessageRequestDto.workSpaceId();
         String directChannelRoomId = directMessageRequestDto.roomId();
         String directChannelContent = directMessageRequestDto.content();
+        List<String> rawString = directMessageRequestDto.rawString();
         Long receiverId = directMessageRequestDto.receiverId();
         MessageType messageType = directMessageRequestDto.messageType();
+        String notificationContent;
+
+        if (messageType.equals(IMAGE)) {
+            notificationContent = "사진";
+        } else if (messageType.equals(FILE)) {
+            notificationContent = "파일";
+        } else if (messageType.equals(TEXT)){
+            notificationContent = rawString.get(0);
+        } else {
+            notificationContent = "";
+        }
 
         // 메세지 보낸 사람
         WorkSpaceMember sender = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
@@ -151,7 +169,7 @@ public class DirectMessageService {
         if (!readCount.equals(0L)) {
             log.info("알림 전송");
             notificationService.send(
-                    directChannelContent,
+                    notificationContent,
                     createDirectUrl(directChannelRoomId),
                     NotificationType.DIRECT,
                     sender,
@@ -164,6 +182,7 @@ public class DirectMessageService {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(directChannelContent)
+                .rawString(rawString)
                 .readCount(readCount)
                 .messageType(messageType)
                 .createdAt(LocalDateTime.now())

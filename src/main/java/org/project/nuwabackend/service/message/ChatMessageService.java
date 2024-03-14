@@ -33,6 +33,9 @@ import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
+import static org.project.nuwabackend.type.MessageType.FILE;
+import static org.project.nuwabackend.type.MessageType.IMAGE;
+import static org.project.nuwabackend.type.MessageType.TEXT;
 
 @Slf4j
 @Service
@@ -57,7 +60,19 @@ public class ChatMessageService {
         Long workSpaceId = chatMessageRequestDto.workSpaceId();
         String roomId = chatMessageRequestDto.roomId();
         String content = chatMessageRequestDto.content();
+        List<String> rawString = chatMessageRequestDto.rawString();
         MessageType messageType = chatMessageRequestDto.messageType();
+        String notificationContent;
+
+        if (messageType.equals(IMAGE)) {
+            notificationContent = "사진";
+        } else if (messageType.equals(FILE)) {
+            notificationContent = "파일";
+        } else if (messageType.equals(TEXT)){
+            notificationContent = rawString.get(0);
+        } else {
+            notificationContent = "";
+        }
 
         String email = jwtUtil.getEmail(accessToken);
 
@@ -85,7 +100,7 @@ public class ChatMessageService {
         chatMemberList.forEach(chatMember -> {
             log.info("알림 전송");
             notificationService.send(
-                    content,
+                    notificationContent,
                     createChatUrl(roomId),
                     NotificationType.CHAT,
                     findWorkSpaceMember,
@@ -98,6 +113,7 @@ public class ChatMessageService {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .rawString(rawString)
                 .messageType(messageType)
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -111,11 +127,12 @@ public class ChatMessageService {
         Long senderId = chatMessageResponseDto.getSenderId();
         String senderName = chatMessageResponseDto.getSenderName();
         String content = chatMessageResponseDto.getContent();
+        List<String> rawString = chatMessageResponseDto.getRawString();
         MessageType messageType = chatMessageResponseDto.getMessageType();
         LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, messageType, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, rawString, messageType, createdAt);
 
         ChatMessage saveChatMessage = chatMessageRepository.save(chatMessage);
         chatMessageResponseDto.setMessageId(saveChatMessage.getId());
@@ -136,6 +153,7 @@ public class ChatMessageService {
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
                         .content(chatMessage.getContent())
+                        .rawString(chatMessage.getRawString())
                         .isEdited(chatMessage.getIsEdited())
                         .isDeleted(chatMessage.getIsDeleted())
                         .messageType(chatMessage.getMessageType())

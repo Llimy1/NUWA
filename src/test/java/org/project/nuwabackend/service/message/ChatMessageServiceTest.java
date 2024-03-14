@@ -94,6 +94,7 @@ class ChatMessageServiceTest {
         Long senderId = 1L;
         String senderName = "senderName";
         String content = "chatMessage";
+        List<String> rawString = new ArrayList<>(List.of("rawString"));
 
         chatMessageResponseDto = ChatMessageResponseDto.builder()
                 .messageId("messageId")
@@ -102,6 +103,7 @@ class ChatMessageServiceTest {
                 .senderId(senderId)
                 .senderName(senderName)
                 .content(content)
+                .rawString(rawString)
                 .isEdited(false)
                 .isDeleted(false)
                 .createdAt(LocalDateTime.now())
@@ -117,10 +119,11 @@ class ChatMessageServiceTest {
         Long senderId = chatMessageResponseDto.getSenderId();
         String senderName = chatMessageResponseDto.getSenderName();
         String content = chatMessageResponseDto.getContent();
+        List<String> rawString = chatMessageResponseDto.getRawString();
         LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, MessageType.TEXT, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, rawString, MessageType.TEXT, createdAt);
 
         given(chatMessageRepository.save(any()))
                 .willReturn(chatMessage);
@@ -141,10 +144,11 @@ class ChatMessageServiceTest {
         Long senderId = chatMessageResponseDto.getSenderId();
         String senderName = chatMessageResponseDto.getSenderName();
         String content = chatMessageResponseDto.getContent();
+        List<String> rawString = chatMessageResponseDto.getRawString();
         LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, MessageType.TEXT, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, rawString, MessageType.TEXT, createdAt);
 
         List<ChatMessage> chatMessageList = new ArrayList<>(List.of(chatMessage));
 
@@ -163,6 +167,7 @@ class ChatMessageServiceTest {
                         .content(chatMessage.getContent())
                         .isEdited(chatMessage.getIsEdited())
                         .isDeleted(chatMessage.getIsDeleted())
+                        .rawString(rawString)
                         .messageType(chatMessage.getMessageType())
                         .createdAt(chatMessage.getCreatedAt())
                         .build());

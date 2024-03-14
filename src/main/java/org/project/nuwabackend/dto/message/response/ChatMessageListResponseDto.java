@@ -17,6 +17,7 @@ public record ChatMessageListResponseDto(
         Long senderId,
         String senderName,
         String content,
+        List<String> rawString,
         Long readCount,
         Boolean isEdited,
         Boolean isDeleted,
