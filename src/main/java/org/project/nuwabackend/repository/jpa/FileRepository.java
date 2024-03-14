@@ -12,6 +12,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     List<File> findByIdIn(List<Long> fileIdList);
 
+    List<File> findFileByUrlIn(List<String> fileUrlList);
+
     List<File> findByWorkSpaceId(Long workSpaceId);
 
     @Query("DELETE FROM File f WHERE f.workSpace.id = :workSpaceId AND f.channel.roomId = :roomId")

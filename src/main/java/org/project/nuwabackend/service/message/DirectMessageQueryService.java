@@ -13,6 +13,7 @@ import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
+import org.project.nuwabackend.service.s3.FileService;
 import org.project.nuwabackend.type.MessageType;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -20,10 +21,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.type.MessageType.DELETE;
 import static org.project.nuwabackend.type.MessageType.FILE;
+import static org.project.nuwabackend.type.MessageType.IMAGE;
 import static org.project.nuwabackend.type.MessageType.UPDATE;
 
 @Slf4j
@@ -34,6 +38,7 @@ public class DirectMessageQueryService {
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final DirectChannelRepository directChannelRepository;
     private final MongoTemplate mongoTemplate;
+    private final FileService fileService;
     private final JwtUtil jwtUtil;
 
     // 다이렉트 채널 읽지 않은 메세지 전부 읽음으로 변경 => 벌크 연산
@@ -160,7 +165,17 @@ public class DirectMessageQueryService {
                 .and("direct_room_id").is(roomId)
                 .and("direct_sender_id").is(senderId));
 
-        Update update = new Update().set("direct_content", content).set("is_deleted", isDeleted);
+        DirectMessage directMessage = mongoTemplate.findOne(query, DirectMessage.class);
+
+        if (directMessage != null && (directMessage.getMessageType().equals(IMAGE) || directMessage.getMessageType().equals(FILE))) {
+            List<String> rawString = directMessage.getRawString();
+
+            List<Long> idList = fileService.fileIdList(rawString);
+
+            idList.forEach(fileService::deleteFile);
+        }
+
+        Update update = new Update().set("direct_content", content).set("is_deleted", isDeleted).set("raw_string", content);
         mongoTemplate.updateMulti(query, update, DirectMessage.class);
 
         return MessageDeleteResponseDto.builder()
@@ -179,15 +194,6 @@ public class DirectMessageQueryService {
     public void deleteDirectMessageWorkSpaceId(Long workSpaceId) {
         Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
 
-        mongoTemplate.remove(query, DirectMessage.class);
-    }
-
-    // 파일 URL과 MessageType이 File인거를 찾아서 삭제
-    // TODO: test code
-    public void deleteDirectMessageByFile(Long workSpaceId, String fileUrl) {
-        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
-                .and("direct_content").is(fileUrl)
-                .and("message_type").is(FILE));
         mongoTemplate.remove(query, DirectMessage.class);
     }
 

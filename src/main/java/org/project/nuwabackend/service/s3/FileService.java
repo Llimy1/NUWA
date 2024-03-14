@@ -139,6 +139,19 @@ public class FileService {
         return deleteMap;
     }
 
+    public List<Long> fileIdList(List<String> fileUrlList) {
+        log.info("파일 ID 가져오기");
+        List<Long> fileIdList = new ArrayList<>();
+        List<File> fileByUrlIn =
+                fileRepository.findFileByUrlIn(fileUrlList);
+
+        fileByUrlIn.forEach(file -> {
+            fileIdList.add(file.getId());
+        });
+
+        return fileIdList;
+    }
+
     // TODO: integrated test code
     // WorkSPaceId와 RoomId에 해당되는 파일 전부 삭제
     public void deleteFileByWorkSpaceIdAndRoomId(Long workSpaceId, String roomId) {
