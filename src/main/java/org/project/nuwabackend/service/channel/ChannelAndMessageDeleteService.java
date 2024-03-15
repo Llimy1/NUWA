@@ -22,9 +22,9 @@ public class ChannelAndMessageDeleteService {
 
     @Transactional
     public void deleteChatChannelAndChatMessage(Long workSpaceId, String email, String roomId) {
-        chatChannelService.deleteChatChannel(workSpaceId, email, roomId);
-        chatMessageQueryService.deleteWorkSpaceIdAndRoomId(workSpaceId, roomId);
         fileService.deleteFileByWorkSpaceIdAndRoomId(workSpaceId, roomId);
+        chatMessageQueryService.deleteWorkSpaceIdAndRoomId(workSpaceId, roomId);
+        chatChannelService.deleteChatChannel(workSpaceId, email, roomId);
     }
 
     @Transactional
