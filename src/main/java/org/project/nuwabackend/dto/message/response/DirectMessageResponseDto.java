@@ -3,6 +3,7 @@ package org.project.nuwabackend.dto.message.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.project.nuwabackend.type.MessageType;

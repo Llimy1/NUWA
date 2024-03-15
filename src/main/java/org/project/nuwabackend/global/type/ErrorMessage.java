@@ -34,7 +34,13 @@ public enum ErrorMessage {
     REDIS_TOKEN_NOT_FOUND_INFO("레디스에 토큰이 존재하지 않습니다."),
     EMAIL_NOT_FOUND("이메일 전송에 실패했습니다."),
     SEARCH_FILE_NAME_NOT_FOUND("검색어를 입력하지 않았습니다."),
-    NOTIFICATION_NOT_FOUND("알림이 존재하지 않습니다.");
+    NOTIFICATION_NOT_FOUND("알림이 존재하지 않습니다."),
+    CANVAS_UPDATE_FAIL("캔버스를 생성한 인원이 아닙니다."),
+    CANVAS_DELETE_FAIL("캔버스를 생성한 인원이 아닙니다."),
+    CHAT_MESSAGE_UPDATE_FAIL("그룹 채팅 메세지 수정에 실패했습니다."),
+    CHAT_MESSAGE_DELETE_FAIL("그룹 채팅 메세지 삭제에 실패했습니다."),
+    DIRECT_MESSAGE_UPDATE_FAIL("다이렉트 채팅 수정에 실패했습니다."),
+    DIRECT_MESSAGE_DELETE_FAIL("다이렉트 채팅 삭제에 실패했습니다.");
 
     private final String message;
 

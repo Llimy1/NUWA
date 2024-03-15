@@ -1,5 +1,7 @@
 package org.project.nuwabackend.service.message;
 
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.mongo.ChatMessage;
@@ -10,6 +12,7 @@ import org.project.nuwabackend.dto.message.request.MessageUpdateRequestDto;
 import org.project.nuwabackend.dto.message.response.MessageDeleteResponseDto;
 import org.project.nuwabackend.dto.message.response.MessageUpdateResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
+import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.s3.FileService;
@@ -22,6 +25,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.CHAT_MESSAGE_DELETE_FAIL;
+import static org.project.nuwabackend.global.type.ErrorMessage.CHAT_MESSAGE_UPDATE_FAIL;
+import static org.project.nuwabackend.global.type.ErrorMessage.DIRECT_MESSAGE_DELETE_FAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.type.MessageType.DELETE;
 import static org.project.nuwabackend.type.MessageType.FILE;
@@ -87,7 +93,12 @@ public class ChatMessageQueryService {
                 .and("chat_sender_id").is(senderId));
 
         Update update = new Update().set("chat_content", content).set("is_edited", isEdited);
-        mongoTemplate.updateMulti(query, update, ChatMessage.class);
+        UpdateResult updateResult = mongoTemplate.updateMulti(query, update, ChatMessage.class);
+
+        if (updateResult.getMatchedCount() == 0) {
+            log.error("채팅 채널 메세지 수정 중 오류 = {}", CHAT_MESSAGE_UPDATE_FAIL.getMessage());
+            throw new IllegalArgumentException(CHAT_MESSAGE_UPDATE_FAIL.getMessage());
+        }
 
         return MessageUpdateResponseDto.builder()
                 .id(id)
@@ -132,7 +143,12 @@ public class ChatMessageQueryService {
         }
 
         Update update = new Update().set("chat_content", content).set("is_deleted", isDeleted).set("raw_string", content);
-        mongoTemplate.updateMulti(query, update, ChatMessage.class);
+        UpdateResult updateResult = mongoTemplate.updateMulti(query, update, ChatMessage.class);
+
+        if (updateResult.getMatchedCount() == 0) {
+            log.error("채팅 채널 메세지 삭제 중 오류 = {}", CHAT_MESSAGE_DELETE_FAIL.getMessage());
+            throw new IllegalArgumentException(CHAT_MESSAGE_DELETE_FAIL.getMessage());
+        }
 
         return MessageDeleteResponseDto.builder()
                 .id(id)

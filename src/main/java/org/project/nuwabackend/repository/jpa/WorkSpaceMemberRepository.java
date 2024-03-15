@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +52,13 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
 //    @Query("SELECT wsm FROM WorkSpaceMember wsm WHERE wsm.workSpace.id = :workspaceId AND wsm.member.email = :email")
 //    Optional<WorkSpaceMember> findByWorkSpaceIdAndMemberEmail(@Param("workspaceId") Long workspaceId,
 //                                                              @Param("email") String email);
+
+
+    // 워크스페이스 아이디로 워크스페이스에 해당되는 모든 멤버 가져오기
+    @Query("SELECT wm " +
+            "FROM WorkSpaceMember wm " +
+            "WHERE wm.workSpace.id = :workSpaceId AND wm.isDelete = false AND wm.id != :workSpaceMemberId")
+    List<WorkSpaceMember> findListByWorkSpaceIdNot(@Param("workSpaceId") Long workSpaceId, @Param("workSpaceMemberId") Long workSpaceMemberId);
 
     @Query("DELETE FROM WorkSpaceMember wm WHERE wm.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)
