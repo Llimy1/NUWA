@@ -5,11 +5,14 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.domain.channel.Chat;
+import org.project.nuwabackend.domain.channel.ChatJoinMember;
 import org.project.nuwabackend.domain.workspace.QWorkSpaceMember;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.project.nuwabackend.domain.channel.QChat.chat;
@@ -27,8 +30,9 @@ public class WorkSpaceMemberQueryService {
     private final JPAQueryFactory jpaQueryFactory;
 
     public List<WorkSpaceMember> chatCreateMemberOrJoinMemberNotInEmailAndChannelId(List<String> emailList, Long channelId) {
-        WorkSpaceMember createMember = jpaQueryFactory.select(chat.createMember)
-                .from(chat)
+        List<WorkSpaceMember> workSpaceMemberList = new ArrayList<>();
+
+        Chat chatOne = jpaQueryFactory.selectFrom(chat)
                 .join(chat.createMember.member, member)
                 .join(chat.createMember, workSpaceMember)
                 .where(
@@ -36,21 +40,25 @@ public class WorkSpaceMemberQueryService {
                         emailNotIn(emailList),
                         createMemberIsDeleteEq())
                 .fetchOne();
-//
-        List<WorkSpaceMember> joinMemberList = jpaQueryFactory.select(chatJoinMember.joinMember)
-                .from(chatJoinMember)
+
+        List<ChatJoinMember> chatJoinList = jpaQueryFactory.selectFrom(chatJoinMember)
                 .join(chatJoinMember.chatChannel, chat)
+                .join(chatJoinMember.joinMember.member, member)
                 .where(
                         channelIdEq(channelId),
                         emailNotIn(emailList),
                         joinMemberIsDeleteEq())
                 .fetch();
 
-        if (createMember != null) {
-            joinMemberList.add(createMember);
+        if (chatOne != null) {
+            workSpaceMemberList.add(chatOne.getCreateMember());
         }
 
-        return joinMemberList;
+        chatJoinList.forEach(join -> {
+            workSpaceMemberList.add(join.getJoinMember());
+        });
+
+        return workSpaceMemberList;
     }
 
     private BooleanExpression emailNotIn(List<String> emailList) {

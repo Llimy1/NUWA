@@ -57,5 +57,4 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
     @Query("DELETE FROM WorkSpaceMember wm WHERE wm.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)
     void deleteByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
-
 }
