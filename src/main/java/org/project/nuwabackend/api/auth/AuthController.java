@@ -11,14 +11,17 @@ import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.auth.LoginService;
 import org.project.nuwabackend.service.auth.TokenService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.LOGIN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.LOGOUT_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.PASSWORD_CHANGE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.REISSUE_TOKEN_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
@@ -71,5 +74,17 @@ public class AuthController {
                 globalService.successResponse(REISSUE_TOKEN_SUCCESS.getMessage()
                         , new AccessTokenResponse(newAccessToken));
         return ResponseEntity.status(OK).body(reissueSuccessResponse);
+    }
+
+    @PatchMapping("/change")
+    public ResponseEntity<Object> passwordChange(@MemberEmail String email,
+                                                 @RequestParam(value = "password") String password) {
+        log.info("비밀번호 변경 API 호출");
+        loginService.passwordChange(email, password);
+
+        GlobalSuccessResponseDto<Object> passwordChangeSuccess =
+                globalService.successResponse(PASSWORD_CHANGE_SUCCESS.getMessage()
+                        , null);
+        return ResponseEntity.status(OK).body(passwordChangeSuccess);
     }
 }

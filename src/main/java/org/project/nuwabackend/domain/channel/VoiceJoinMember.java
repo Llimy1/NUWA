@@ -26,7 +26,7 @@ public class VoiceJoinMember {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "voice_join_workspace_member_id")
+    @JoinColumn(name = "voice_join_member_id")
     private WorkSpaceMember joinMember;
 
     @ManyToOne(fetch = LAZY)
