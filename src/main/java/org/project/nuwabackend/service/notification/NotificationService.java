@@ -1,16 +1,16 @@
 package org.project.nuwabackend.service.notification;
 
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.domain.channel.Channel;
 import org.project.nuwabackend.domain.notification.Notification;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.channel.response.DirectChannelResponseDto;
 import org.project.nuwabackend.dto.notification.request.NotificationIdListRequestDto;
 import org.project.nuwabackend.dto.notification.response.NotificationGroupResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationListResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
+import org.project.nuwabackend.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.notification.EmitterRepository;
 import org.project.nuwabackend.repository.jpa.notification.NotificationRepository;
@@ -24,13 +24,13 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.NOTIFICATION_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
@@ -43,12 +43,16 @@ public class NotificationService {
     private final WorkSpaceMemberRepository workSpaceMemberRepository;
     private final NotificationRepository notificationRepository;
     private final EmitterRepository emitterRepository;
+    private final ChannelRepository channelRepository;
 
     private final NotificationQueryService notificationQueryService;
 
     // 29분
     // TODO: 확인 필요
     private static final Long DEFAULT_TIME_OUT = 1000L * 60 * 29;
+
+    private static final String DIRECT_PREFIX = "/direct-chat/";
+    private static final String CHAT_PREFIX = "/groupChat/";
 
     // SSE 연결
     @Transactional
@@ -211,12 +215,47 @@ public class NotificationService {
         notificationRepository.updateIsReadByNotificationIdList(notificationIdList);
     }
 
+    // 다이렉트 채팅방 접속 시 관련 알림 전부 읽음 처리
+    @Transactional
+    public void updateReadNotificationByDirectRoomId(String email, Long workSpaceId, String roomId) {
+        String notificationUrl = directUrl(roomId);
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        notificationRepository.updateIsReadByRoomId(notificationUrl, findWorkSpaceMemberId);
+    }
+
+    // 그룹채팅 접속 시 관련 알림 전부 읽음 처리
+    @Transactional
+    public void updateReadNotificationByChatRoomId(String email, Long workSpaceId, String roomId) {
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        Channel findChannel = channelRepository.findByRoomId(roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        Long channelId = findChannel.getId();
+        String notificationUrl = chatUrl(roomId, channelId);
+
+        notificationRepository.updateIsReadByRoomId(notificationUrl, findWorkSpaceMemberId);
+    }
+
     // Slice(페이징)
     private Slice<NotificationGroupResponseDto> sliceDtoResponse(List<NotificationGroupResponseDto> notificationGroupResponseDtoList, Pageable pageable) {
         boolean hasNext = notificationGroupResponseDtoList.size() > pageable.getPageSize();
         List<NotificationGroupResponseDto> notificationContent = hasNext ? notificationGroupResponseDtoList.subList(0, pageable.getPageSize()) : notificationGroupResponseDtoList;
 
         return new SliceImpl<>(notificationContent, pageable, hasNext);
+    }
+
+    private String directUrl(String roomId) {
+        return DIRECT_PREFIX + roomId;
+    }
+
+    private String chatUrl(String roomId, Long channelId) {
+        return CHAT_PREFIX + roomId + "/" + channelId;
     }
 
 }

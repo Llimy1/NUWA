@@ -37,6 +37,7 @@ public class ChatChannelService {
     private final ChatJoinMemberRepository chatJoinMemberRepository;
 
     // 채팅 채널 생성
+    @Transactional
     public String createChatChannel(String email, ChatChannelRequestDto chatChannelRequestDto) {
         Long workSpaceId = chatChannelRequestDto.workSpaceId();
         String chatChannelName = chatChannelRequestDto.chatChannelName();

@@ -28,7 +28,7 @@ public class ChatJoinMember {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "chat_join_workspace_id")
+    @JoinColumn(name = "chat_join_workspace_member_id")
     private WorkSpaceMember joinMember;
 
     @ManyToOne(fetch = LAZY)

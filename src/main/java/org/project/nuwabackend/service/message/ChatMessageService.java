@@ -52,7 +52,7 @@ public class ChatMessageService {
     private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
 
-    private static final String PREFIX_URL = "/group-chat/";
+    private static final String PREFIX_URL = "/groupChat/";
 
     @Transactional
     public ChatMessageResponseDto sendMessage(String accessToken, ChatMessageRequestDto chatMessageRequestDto) {
@@ -101,7 +101,7 @@ public class ChatMessageService {
             log.info("알림 전송");
             notificationService.send(
                     notificationContent,
-                    createChatUrl(roomId),
+                    createChatUrl(roomId, channelId),
                     NotificationType.CHAT,
                     findWorkSpaceMember,
                     chatMember
@@ -161,7 +161,7 @@ public class ChatMessageService {
                         .build());
     }
 
-    private String createChatUrl(String chatChannelRoomId) {
-        return PREFIX_URL + chatChannelRoomId;
+    private String createChatUrl(String chatChannelRoomId, Long channelId) {
+        return PREFIX_URL + chatChannelRoomId + "/" + channelId;
     }
 }
