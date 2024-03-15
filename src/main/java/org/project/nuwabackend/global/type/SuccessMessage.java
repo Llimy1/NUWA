@@ -25,6 +25,7 @@ public enum SuccessMessage {
     JOIN_CHAT_CHANNEL_SUCCESS("채팅 채널 참가에 성공 했습니다."),
     JOIN_VOICE_CHANNEL_SUCCESS("음성 채널 참가에 성공 했습니다."),
     CHAT_CHANNEL_LIST_RETURN_SUCCESS("채팅 채널 조회에 성공 했습니다."),
+    CHAT_CHANNEL_INFO_RETURN_SUCCESS("채팅 채널 정보 조회에 성공 했습니다."),
     FILE_UPLOAD_SUCCESS("파일 업로드에 성공 했습니다."),
     FILE_URL_RETURN_SUCCESS("파일 URL 조회에 성공 했습니다."),
     FILE_INFO_RETURN_SUCCESS("파일 정보 조회에 성공 했습니다."),

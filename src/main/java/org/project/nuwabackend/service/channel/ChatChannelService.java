@@ -8,6 +8,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.ChatChannelInfoResponseDto;
 import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.repository.jpa.ChatChannelRepository;
@@ -73,6 +74,18 @@ public class ChatChannelService {
         }
 
         chatJoinMemberRepository.saveAll(chatJoinMemberList);
+    }
+
+    // 채팅 채널 INFO
+    public ChatChannelInfoResponseDto joinChatChannelInfo(Long workSpaceId, String roomId) {
+        Chat findChat = chatChannelRepository.findByWorkSpaceIdAndRoomId(workSpaceId, roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        return ChatChannelInfoResponseDto.builder()
+                .channelId(findChat.getId())
+                .channelName(findChat.getName())
+                .build();
+
     }
 
     // 채팅방 리스트 조회

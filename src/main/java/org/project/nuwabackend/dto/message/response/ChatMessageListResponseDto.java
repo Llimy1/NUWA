@@ -16,6 +16,7 @@ public record ChatMessageListResponseDto(
         String roomId,
         Long senderId,
         String senderName,
+        String senderImage,
         String content,
         List<String> rawString,
         Long readCount,

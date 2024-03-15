@@ -97,9 +97,11 @@ public class DirectChannelService {
                 .channelName(direct.getName())
                 .createMemberId(direct.getCreateMember().getId())
                 .createMemberName(direct.getCreateMember().getName())
+                .createMemberImage(direct.getCreateMember().getImage())
                 .isCreateDelete(direct.getIsCreateMemberDelete())
                 .joinMemberId(direct.getJoinMember().getId())
                 .joinMemberName(direct.getJoinMember().getName())
+                .joinMemberImage(direct.getJoinMember().getImage())
                 .isJoinDelete(direct.getIsJoinMemberDelete())
                 .build();
     }
@@ -204,6 +206,8 @@ public class DirectChannelService {
                     .joinMemberId(direct.getJoinMember().getId())
                     .createMemberName(direct.getCreateMember().getName())
                     .joinMemberName(direct.getJoinMember().getName())
+                    .createMemberImage(direct.getCreateMember().getImage())
+                    .joinMemberImage(direct.getJoinMember().getImage())
                     .unReadCount(unReadCount)
                     .build();
 
