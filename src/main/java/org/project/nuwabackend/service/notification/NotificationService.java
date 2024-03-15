@@ -74,9 +74,17 @@ public class NotificationService {
 
         // 상황 별 emitter 삭제
         // 완료
-        saveEmitter.onCompletion(() -> emitterRepository.deleteById(emitterId));
+        saveEmitter.onCompletion(() -> {
+            emitterRepository.deleteById(emitterId);
+            emitterRepository.deleteAllStartWithId(String.valueOf(workSpaceMemberId));
+            emitterRepository.deleteAllEventCacheStartWithId(String.valueOf(workSpaceMemberId));
+        });
         // 타임아웃
-        saveEmitter.onTimeout(() -> emitterRepository.deleteById(emitterId));
+        saveEmitter.onTimeout(() -> {
+            emitterRepository.deleteById(emitterId);
+            emitterRepository.deleteAllStartWithId(String.valueOf(workSpaceMemberId));
+            emitterRepository.deleteAllEventCacheStartWithId(String.valueOf(workSpaceMemberId));
+        });
 
         // 503 에러를 방지한 더미 데이터 전송
         sendToClient(saveEmitter, emitterId, "Event Stream Created. [workSpaceMemberId =" + workSpaceMemberId +"]");

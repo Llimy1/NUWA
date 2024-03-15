@@ -10,35 +10,16 @@ else
 fi
 
 # Mongo 컨테이너 상태 확인 및 시작
-IS_REDIS_RUNNING=$(docker ps | grep mongo)
-if [ -z "$IS_REDIS_RUNNING" ]; then
+IS_MONGO_RUNNING=$(docker ps | grep mongo) # 변수명 오타 수정
+if [ -z "$IS_MONGO_RUNNING" ]; then
     echo "Starting Mongo container..."
     docker-compose up -d mongo
 else
     echo "Mongo container is already running."
 fi
 
-IS_GREEN=$(docker ps | grep green) # 현재 실행중인 App이 blue인지 확인
+IS_GREEN=$(docker ps | grep green)
 DEFAULT_CONF="/etc/nginx/nginx.conf"
-
-rollback() {
-    echo "Rollback to previous state..."
-    if [ $1 == "green" ]; then
-        sudo docker stop blue
-        sudo docker stop green
-        sudo cp /etc/nginx/nginx.blue.conf /etc/nginx/nginx.conf
-        sudo nginx -s reload
-        sudo docker-compose up -d blue
-    else
-        sudo docker stop green
-        sudo docker stop blue
-        sudo cp /etc/nginx/nginx.green.conf /etc/nginx/nginx.conf
-        sudo nginx -s reload
-        sudo docker-compose up -d green
-    fi
-    echo "Rollback completed."
-    exit 1
-}
 
 app_health_check() {
     local service=$1
@@ -50,13 +31,16 @@ app_health_check() {
     echo "Starting health check. Waiting up to 60 seconds for '$log_line' in $service logs..."
     if timeout 60 bash -c -- "while ! docker-compose logs $service | grep -q '$log_line'; do sleep 1; done"; then
         echo "$service has started successfully within 90 seconds."
+        return 0
     else
         echo "Failed to detect '$log_line' in $service logs within 90 seconds. Stopping $service..."
         docker-compose stop $service
+        return 1
     fi
 }
 
-if [ -z "$IS_GREEN" ]; then # 현재 blue가 실행중이면 green으로 전환
+# 현재 실행중인 App이 blue이면 green으로, 그렇지 않으면 blue로 전환
+if [ -z "$IS_GREEN" ]; then
     echo "### BLUE => GREEN ###"
 
     echo "1. Get green image"
@@ -73,7 +57,8 @@ if [ -z "$IS_GREEN" ]; then # 현재 blue가 실행중이면 green으로 전환
         echo "5. Blue container down"
         sudo docker stop blue
     else
-        rollback "green"
+        echo "Health check failed for green. Keeping the current state."
+        exit 1
     fi
 else
     echo "### GREEN => BLUE ###"
@@ -92,6 +77,7 @@ else
         echo "5. Green container down"
         sudo docker stop green
     else
-        rollback "blue"
+        echo "Health check failed for blue. Keeping the current state."
+        exit 1
     fi
 fi
