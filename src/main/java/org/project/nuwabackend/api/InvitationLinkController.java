@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.InvitationLinkRequest;
 import org.project.nuwabackend.dto.InvitationLinkResponse;
+import org.project.nuwabackend.dto.InviteByMailRequest;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
 import org.project.nuwabackend.global.annotation.MemberEmail;
@@ -12,6 +13,7 @@ import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.InvitationLinkService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_INVITATION_LINK_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_INVITATION_LINK_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_INQUIRY_MAIL_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Slf4j
@@ -59,6 +62,22 @@ public class InvitationLinkController {
 
         return ResponseEntity.status(CREATED).body(createWorkSpaceSuccessResponse);
     }
+
+
+    @PostMapping("/invite/link")
+    public ResponseEntity<Object> getInvitation(@MemberEmail String email, @RequestBody InviteByMailRequest inviteByMailRequest) throws Exception{
+        log.info("초대 링크 이메일 발송 API 호출");
+
+        String InvitationByMailResponse = invitationLinkService.inviteByMail(email, inviteByMailRequest);
+
+        GlobalSuccessResponseDto<Object> createWorkSpaceSuccessResponse =
+                globalService.successResponse(
+                        CREATE_INQUIRY_MAIL_SUCCESS.getMessage(),
+                        InvitationByMailResponse);
+
+        return ResponseEntity.status(CREATED).body(createWorkSpaceSuccessResponse);
+    }
+
 
 
 
