@@ -4,5 +4,5 @@ import lombok.Getter;
 
 public enum NotificationType {
 
-    DIRECT, CHAT, VOICE, NOTICE
+    DIRECT, CHAT, VOICE, NOTICE, CANVAS
 }

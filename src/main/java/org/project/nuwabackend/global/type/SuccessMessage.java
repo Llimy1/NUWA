@@ -53,7 +53,11 @@ public enum SuccessMessage {
     DELETE_WORK_SPACE_SUCCESS("워크스페이스 삭제에 성공 했습니다."),
     DELETE_FILE_AND_MESSAGE_SUCCESS("파일 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
     DELETE_CHAT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("채팅 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
-    DELETE_DIRECT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("다이렉트 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다.");
+    DELETE_DIRECT_CHANNEL_AND_CHAT_MESSAGE_SUCCESS("다이렉트 채널 삭제 및 연관된 채팅 메세지 삭제에 성공 했습니다."),
+    CANVAS_CREATE_SUCCESS("캔버스 생성에 성공 했습니다."),
+    CANVAS_LIST_RETURN_SUCCESS("캔버스 조회에 성공 했습니다."),
+    UPDATE_CANVAS_SUCCESS("캔버스 수정에 성공 했습니다."),
+    DELETE_CANVAS_SUCCESS("캔버스 삭제에 성공 했습니다.");
 
     private final String message;
 

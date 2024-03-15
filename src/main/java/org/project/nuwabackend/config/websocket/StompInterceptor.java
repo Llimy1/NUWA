@@ -38,17 +38,24 @@ public class StompInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        String email = verifyToken(getAccessToken(accessor));
-        log.info("StompHeaderAccessor = {}", accessor);
-        handleMessage(Objects.requireNonNull(accessor.getCommand()), accessor, email);
+        try {
+            String email = verifyToken(getAccessToken(accessor));
+            log.info("StompHeaderAccessor = {}", accessor);
+            handleMessage(Objects.requireNonNull(accessor.getCommand()), accessor, email);
+        } catch (Exception e) {
+            log.error("메세지 처리 중 예외 발생: {}", e.getMessage());
+        }
         return message;
     }
 
     private void handleMessage(StompCommand command, StompHeaderAccessor accessor, String email) {
-
-        switch (command) {
-            case CONNECT -> connect(accessor, email);
-            case SUBSCRIBE, SEND -> verifyToken(getAccessToken(accessor));
+        try {
+            switch (command) {
+                case CONNECT -> connect(accessor, email);
+                case SUBSCRIBE, SEND -> verifyToken(getAccessToken(accessor));
+            }
+        } catch (Exception e) {
+            log.error("STOMP 명령 처리 중 예외 발생 = {}", e.getMessage());
         }
     }
 

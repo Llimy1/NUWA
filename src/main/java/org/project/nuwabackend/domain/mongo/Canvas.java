@@ -30,24 +30,30 @@ public class Canvas {
     @Field(name = "create_member_id")
     private Long createMemberId;
 
+    @Field(name = "create_member_name")
+    private String createMemberName;
+
     @Field(name = "created_at")
     private LocalDateTime createdAt;
 
     @Builder
-    private Canvas(String title, String content, Long workSpaceId, Long createMemberId, LocalDateTime createdAt) {
+    public Canvas(String title, String content, Long workSpaceId, Long createMemberId, String createMemberName, LocalDateTime createdAt) {
         this.title = title;
         this.content = content;
         this.workSpaceId = workSpaceId;
         this.createMemberId = createMemberId;
+        this.createMemberName = createMemberName;
         this.createdAt = createdAt;
     }
 
-    public static Canvas createCanvas(String title, String content, Long workSpaceId, Long createMemberId, LocalDateTime createdAt) {
+
+    public static Canvas createCanvas(String title, String content, Long workSpaceId, Long createMemberId, String createMemberName, LocalDateTime createdAt) {
         return Canvas.builder()
                 .title(title)
                 .content(content)
                 .workSpaceId(workSpaceId)
                 .createMemberId(createMemberId)
+                .createMemberName(createMemberName)
                 .createdAt(createdAt)
                 .build();
     }

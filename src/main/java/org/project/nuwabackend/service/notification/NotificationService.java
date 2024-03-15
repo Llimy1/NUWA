@@ -242,6 +242,16 @@ public class NotificationService {
         notificationRepository.updateIsReadByRoomId(notificationUrl, findWorkSpaceMemberId);
     }
 
+    // 알림 전체 삭제 -> 전체 읽음 처리
+//    @Transactional
+//    public void updateAllReadNotificationByReceiverId(String email, Long workSpaceId) {
+//        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+//                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+//        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+//
+//
+//    }
+
     // Slice(페이징)
     private Slice<NotificationGroupResponseDto> sliceDtoResponse(List<NotificationGroupResponseDto> notificationGroupResponseDtoList, Pageable pageable) {
         boolean hasNext = notificationGroupResponseDtoList.size() > pageable.getPageSize();
