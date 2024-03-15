@@ -33,6 +33,9 @@ public class ChatMessage {
     @Field(name = "chat_sender_name")
     private String senderName;
 
+    @Field(name = "chat_sender_image")
+    private String senderImage;
+
     @Field(name = "chat_content")
     private String content;
 
@@ -52,11 +55,12 @@ public class ChatMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String senderImage, String content, List<String> rawString, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
         this.senderName = senderName;
+        this.senderImage = senderImage;
         this.content = content;
         this.rawString = rawString;
         this.isEdited = isEdited;
@@ -77,12 +81,13 @@ public class ChatMessage {
         return Objects.hash(id);
     }
 
-    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, MessageType messageType, LocalDateTime createdAt) {
+    public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String senderImage, String content, List<String> rawString, MessageType messageType, LocalDateTime createdAt) {
         return ChatMessage.builder()
                 .workSpaceId(workSpaceId)
                 .roomId(roomId)
                 .senderId(senderId)
                 .senderName(senderName)
+                .senderImage(senderImage)
                 .content(content)
                 .rawString(rawString)
                 .isEdited(false)

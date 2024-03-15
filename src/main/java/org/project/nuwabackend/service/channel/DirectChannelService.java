@@ -97,9 +97,11 @@ public class DirectChannelService {
                 .channelName(direct.getName())
                 .createMemberId(direct.getCreateMember().getId())
                 .createMemberName(direct.getCreateMember().getName())
+                .createMemberImage(direct.getCreateMember().getImage())
                 .isCreateDelete(direct.getIsCreateMemberDelete())
                 .joinMemberId(direct.getJoinMember().getId())
                 .joinMemberName(direct.getJoinMember().getName())
+                .joinMemberImage(direct.getJoinMember().getImage())
                 .isJoinDelete(direct.getIsJoinMemberDelete())
                 .build();
     }
@@ -204,6 +206,8 @@ public class DirectChannelService {
                     .joinMemberId(direct.getJoinMember().getId())
                     .createMemberName(direct.getCreateMember().getName())
                     .joinMemberName(direct.getJoinMember().getName())
+                    .createMemberImage(direct.getCreateMember().getImage())
+                    .joinMemberImage(direct.getJoinMember().getImage())
                     .unReadCount(unReadCount)
                     .build();
 
@@ -247,7 +251,7 @@ public class DirectChannelService {
     // TODO: integrated test code
     // 채널 삭제 -> 나에게만 삭제 / 서로 삭제시 -> 완전 삭제
     @Transactional
-    public Boolean deleteChannelMember(Long workSpaceId, String email, String roomId) {
+    public Direct deleteChannelMember(Long workSpaceId, String email, String roomId) {
         Direct findDirectChannel = directChannelRepository.findByWorkSpaceIdAndRoomIdAndEmail(workSpaceId, roomId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
@@ -264,13 +268,8 @@ public class DirectChannelService {
         if (findWorkSpaceMemberId.equals(createMemberId)) findDirectChannel.deleteCreateMember();
         else if (joinMemberId.equals(findWorkSpaceMemberId)) findDirectChannel.deleteJoinMember();
 
-        boolean flag = false;
-        // 양쪽 전부 삭제시 완전 삭제
-        if (findDirectChannel.getIsCreateMemberDelete() && findDirectChannel.getIsJoinMemberDelete()) {
-            directChannelRepository.delete(findDirectChannel);
-            flag = true;
-        }
+        // 양쪽 전부 삭제
+        return findDirectChannel.getIsCreateMemberDelete() && findDirectChannel.getIsJoinMemberDelete() ? findDirectChannel : null;
 
-        return flag;
     }
 }

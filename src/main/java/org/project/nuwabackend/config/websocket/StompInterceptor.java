@@ -8,6 +8,7 @@ import org.project.nuwabackend.service.auth.JwtUtil;
 import org.project.nuwabackend.service.channel.ChatChannelRedisService;
 import org.project.nuwabackend.service.channel.DirectChannelRedisService;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
+import org.project.nuwabackend.service.notification.NotificationService;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.messaging.Message;
@@ -30,6 +31,7 @@ public class StompInterceptor implements ChannelInterceptor {
     private final DirectChannelRedisService directChannelRedisService;
     private final DirectMessageQueryService directMessageQueryService;
     private final ChatChannelRedisService chatChannelRedisService;
+    private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
 
 
@@ -83,6 +85,7 @@ public class StompInterceptor implements ChannelInterceptor {
     // 다이렉트 메세지 채널 연결시
     private void connectToDirectChannel(StompHeaderAccessor accessor, String email) {
         String directChannelRoomId = getRoomId(accessor);
+        Long workSpaceId = Long.parseLong(getWorkSpaceId(accessor));
 
         // 다이렉트 채널 입장 -> Redis 정보 저장
         directChannelRedisService.saveChannelMemberInfo(directChannelRoomId, email);
@@ -90,13 +93,20 @@ public class StompInterceptor implements ChannelInterceptor {
         // 다이렉트 메세지 전부 읽음 처리
         directMessageQueryService.updateReadCountZero(directChannelRoomId, email);
 
+        // 해당 채팅방 알림 전부 읽음 처리
+        notificationService.updateReadNotificationByDirectRoomId(email, workSpaceId, directChannelRoomId);
+
     }
 
     private void connectToChatChannel(StompHeaderAccessor accessor, String email) {
         String chatChannelRoomId = getRoomId(accessor);
+        Long workSpaceId = Long.parseLong(getWorkSpaceId(accessor));
 
         // 채팅 채널 입장 -> Redis 정보 저장
         chatChannelRedisService.saveChannelMemberInfo(chatChannelRoomId, email);
+
+        // 해당 채팅방 알림 전부 읽음 처리
+        notificationService.updateReadNotificationByChatRoomId(email, workSpaceId, chatChannelRoomId);
     }
 
     // TODO: 음성 채널 연결시
@@ -110,5 +120,9 @@ public class StompInterceptor implements ChannelInterceptor {
 
     private String getRoomId(StompHeaderAccessor accessor) {
         return accessor.getFirstNativeHeader("channelRoomId");
+    }
+
+    private String getWorkSpaceId(StompHeaderAccessor accessor) {
+        return accessor.getFirstNativeHeader("workSpaceId");
     }
 }

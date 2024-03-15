@@ -21,6 +21,8 @@ public class DirectChannelResponseDto {
     private Long joinMemberId;
     private String createMemberName;
     private String joinMemberName;
+    private String createMemberImage;
+    private String joinMemberImage;
     private Long unReadCount;
 
     @Setter
@@ -30,7 +32,7 @@ public class DirectChannelResponseDto {
     private LocalDateTime messageCreatedAt;
 
     @Builder
-    public DirectChannelResponseDto(String roomId, String name, Long workSpaceId, Long createMemberId, Long joinMemberId, String createMemberName, String joinMemberName, Long unReadCount) {
+    public DirectChannelResponseDto(String roomId, String name, Long workSpaceId, Long createMemberId, Long joinMemberId, String createMemberName, String joinMemberName, String createMemberImage, String joinMemberImage, Long unReadCount, String lastMessage, LocalDateTime messageCreatedAt) {
         this.roomId = roomId;
         this.name = name;
         this.workSpaceId = workSpaceId;
@@ -38,6 +40,10 @@ public class DirectChannelResponseDto {
         this.joinMemberId = joinMemberId;
         this.createMemberName = createMemberName;
         this.joinMemberName = joinMemberName;
+        this.createMemberImage = createMemberImage;
+        this.joinMemberImage = joinMemberImage;
         this.unReadCount = unReadCount;
+        this.lastMessage = lastMessage;
+        this.messageCreatedAt = messageCreatedAt;
     }
 }

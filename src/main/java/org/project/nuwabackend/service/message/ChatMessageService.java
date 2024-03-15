@@ -52,7 +52,7 @@ public class ChatMessageService {
     private final NotificationService notificationService;
     private final JwtUtil jwtUtil;
 
-    private static final String PREFIX_URL = "/group-chat/";
+    private static final String PREFIX_URL = "/groupChat/";
 
     @Transactional
     public ChatMessageResponseDto sendMessage(String accessToken, ChatMessageRequestDto chatMessageRequestDto) {
@@ -81,6 +81,7 @@ public class ChatMessageService {
 
         Long senderId = findWorkSpaceMember.getId();
         String senderName = findWorkSpaceMember.getName();
+        String senderImage = findWorkSpaceMember.getImage();
 
         // RoomId로 해당 채널 가져오기
         Chat findChat = chatChannelRepository.findByRoomId(roomId)
@@ -101,7 +102,7 @@ public class ChatMessageService {
             log.info("알림 전송");
             notificationService.send(
                     notificationContent,
-                    createChatUrl(roomId),
+                    createChatUrl(roomId, channelId),
                     NotificationType.CHAT,
                     findWorkSpaceMember,
                     chatMember
@@ -112,6 +113,7 @@ public class ChatMessageService {
                 .workSpaceId(workSpaceId)
                 .senderId(senderId)
                 .senderName(senderName)
+                .senderImage(senderImage)
                 .content(content)
                 .rawString(rawString)
                 .messageType(messageType)
@@ -126,13 +128,14 @@ public class ChatMessageService {
         String roomId = chatMessageResponseDto.getMessageId();
         Long senderId = chatMessageResponseDto.getSenderId();
         String senderName = chatMessageResponseDto.getSenderName();
+        String senderImage = chatMessageResponseDto.getSenderImage();
         String content = chatMessageResponseDto.getContent();
         List<String> rawString = chatMessageResponseDto.getRawString();
         MessageType messageType = chatMessageResponseDto.getMessageType();
         LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, rawString, messageType, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, senderImage, rawString, messageType, createdAt);
 
         ChatMessage saveChatMessage = chatMessageRepository.save(chatMessage);
         chatMessageResponseDto.setMessageId(saveChatMessage.getId());
@@ -152,6 +155,7 @@ public class ChatMessageService {
                         .roomId(chatMessage.getRoomId())
                         .senderId(chatMessage.getSenderId())
                         .senderName(chatMessage.getSenderName())
+                        .senderImage(chatMessage.getSenderImage())
                         .content(chatMessage.getContent())
                         .rawString(chatMessage.getRawString())
                         .isEdited(chatMessage.getIsEdited())
@@ -161,7 +165,7 @@ public class ChatMessageService {
                         .build());
     }
 
-    private String createChatUrl(String chatChannelRoomId) {
-        return PREFIX_URL + chatChannelRoomId;
+    private String createChatUrl(String chatChannelRoomId, Long channelId) {
+        return PREFIX_URL + chatChannelRoomId + "/" + channelId;
     }
 }

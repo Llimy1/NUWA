@@ -2,7 +2,6 @@ package org.project.nuwabackend.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.domain.notification.Notification;
 import org.project.nuwabackend.dto.notification.request.NotificationIdListRequestDto;
 import org.project.nuwabackend.dto.notification.response.NotificationGroupResponseDto;
 import org.project.nuwabackend.dto.notification.response.NotificationListResponseDto;
@@ -11,7 +10,6 @@ import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.notification.NotificationService;
-import org.project.nuwabackend.type.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
@@ -24,9 +22,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-
-import java.util.List;
-import java.util.Map;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.NOTIFICATION_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.NOTIFICATION_READ_SUCCESS;
@@ -101,6 +96,34 @@ public class NotificationController {
     public ResponseEntity<Object> notificationReadV2(@RequestBody NotificationIdListRequestDto notificationIdListRequestDto) {
         log.info("알림 읽음 API 호출");
         notificationService.updateReadNotificationList(notificationIdListRequestDto);
+
+        GlobalSuccessResponseDto<Object> notificationReadSuccessResponse =
+                globalService.successResponse(NOTIFICATION_READ_SUCCESS.getMessage(),
+                        null);
+
+        return ResponseEntity.status(OK).body(notificationReadSuccessResponse);
+    }
+
+    @PatchMapping("/api/notification/read/v2/test/{workSpaceId}")
+    public ResponseEntity<Object> notificationReadV21(@MemberEmail String email,
+                                                     @RequestParam String roomId,
+                                                     @PathVariable Long workSpaceId) {
+        log.info("알림 읽음 API 호출");
+        notificationService.updateReadNotificationByDirectRoomId(email, workSpaceId, roomId);
+
+        GlobalSuccessResponseDto<Object> notificationReadSuccessResponse =
+                globalService.successResponse(NOTIFICATION_READ_SUCCESS.getMessage(),
+                        null);
+
+        return ResponseEntity.status(OK).body(notificationReadSuccessResponse);
+    }
+
+    @PatchMapping("/api/notification/read/v2/test2/{workSpaceId}")
+    public ResponseEntity<Object> notificationReadV212(@MemberEmail String email,
+                                                     @RequestParam String roomId,
+                                                     @PathVariable Long workSpaceId) {
+        log.info("알림 읽음 API 호출");
+        notificationService.updateReadNotificationByChatRoomId(email, workSpaceId, roomId);
 
         GlobalSuccessResponseDto<Object> notificationReadSuccessResponse =
                 globalService.successResponse(NOTIFICATION_READ_SUCCESS.getMessage(),

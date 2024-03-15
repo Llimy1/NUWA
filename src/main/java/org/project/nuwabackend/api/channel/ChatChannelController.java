@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.dto.channel.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.dto.channel.request.ChatChannelRequestDto;
+import org.project.nuwabackend.dto.channel.response.ChatChannelInfoResponseDto;
 import org.project.nuwabackend.dto.channel.response.ChatChannelListResponseDto;
 import org.project.nuwabackend.dto.channel.response.ChatChannelRoomIdResponseDto;
 import org.project.nuwabackend.global.annotation.CustomPageable;
@@ -21,8 +22,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.project.nuwabackend.global.type.SuccessMessage.CHAT_CHANNEL_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CHAT_CHANNEL_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_CHAT_CHANNEL_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_CHAT_CHANNEL_MEMBER_INFO_SUCCESS;
@@ -65,7 +68,7 @@ public class ChatChannelController {
         return ResponseEntity.status(CREATED).body(joinChatChannelSuccessResponse);
     }
 
-    // 채팅방 이름 순으로 조회
+    // 채팅방 조회
     @GetMapping("/channel/chat/{workSpaceId}")
     public ResponseEntity<Object> chatChannelList(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                              @CustomPageable Pageable pageable) {
@@ -77,6 +80,20 @@ public class ChatChannelController {
                 globalService.successResponse(CHAT_CHANNEL_LIST_RETURN_SUCCESS.getMessage(), chatChannelListResponseDto);
 
         return ResponseEntity.status(OK).body(chatChannelListReturnSuccess);
+    }
+
+    // RoomId 정보 조회
+    @GetMapping("/channel/chat/Info/{workSpaceId}")
+    public ResponseEntity<Object> chatChannelInfo(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                  @RequestParam(value = "chatChannelRoomId") String roomId) {
+        log.info("채팅 채널 정보 반환 API");
+        ChatChannelInfoResponseDto chatChannelInfoResponseDto =
+                chatChannelService.joinChatChannelInfo(workSpaceId, roomId);
+
+        GlobalSuccessResponseDto<Object> chatChannelInfoReturnSuccess =
+                globalService.successResponse(CHAT_CHANNEL_INFO_RETURN_SUCCESS.getMessage(), chatChannelInfoResponseDto);
+
+        return ResponseEntity.status(OK).body(chatChannelInfoReturnSuccess);
     }
 
     // 채팅창 나가기 (Redis 정보 삭제)

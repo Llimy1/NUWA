@@ -23,10 +23,11 @@ public class VoiceJoinMember {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "voice_join_member_id")
     private Long id;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "voice_join_workspace_id")
+    @JoinColumn(name = "voice_join_workspace_member_id")
     private WorkSpaceMember joinMember;
 
     @ManyToOne(fetch = LAZY)
