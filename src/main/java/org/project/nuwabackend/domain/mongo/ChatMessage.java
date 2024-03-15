@@ -55,7 +55,7 @@ public class ChatMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    public ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String senderImage, String content, List<String> rawString, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+    private ChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String senderImage, String content, List<String> rawString, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;

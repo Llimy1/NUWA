@@ -55,7 +55,7 @@ public class DirectMessage {
     private LocalDateTime createdAt;
 
     @Builder
-    public DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
+    private DirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Long readCount, Boolean isEdited, Boolean isDeleted, MessageType messageType, LocalDateTime createdAt) {
         this.workSpaceId = workSpaceId;
         this.roomId = roomId;
         this.senderId = senderId;
