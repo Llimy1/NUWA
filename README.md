@@ -56,6 +56,6 @@
 
 
 ### ERD
-  ![ERD](https://github.com/NU-WA-Project/BE/assets/122381580/29bda266-7277-48d2-823b-c330f9005f32)
+  ![ERD](https://github.com/NU-WA-Project/BE/assets/122381580/b925aba3-1e1f-4b96-9bcb-53ab1b1dd83d)
 ### Backend Architecture
   ![Backend Architecture](https://github.com/NU-WA-Project/BE/assets/122381580/a3620bf4-233b-4f5a-a6a4-5c9581e3968b)
