@@ -132,14 +132,17 @@ public class InvitationLinkService {
             messageHelper.addTo(toEmail);
         }
 
-        String htmlContent = buildHtmlContent(workSpace);
+        String encodedId = createNewInvitation(inviteByMailRequest.workSpaceId());
+
+
+        String htmlContent = buildHtmlContent(workSpace, encodedId);
         messageHelper.setText(htmlContent, true);
         mailSender.send(message);
 
-        return htmlContent;
+        return encodedId;
     }
 
-    private String buildHtmlContent(WorkSpace workSpace) {
+    private String buildHtmlContent(WorkSpace workSpace, String encodedId) {
         String workspaceName = workSpace.getName();
         String msg = "<table id=\"conWrap\" style=\"display: block; max-width: 450px; padding: 0 12px; margin: 0 auto; width: 100%; font-family: 'pretendard'; box-sizing: border-box;\">\n" +
                 "    <tr>\n" +
@@ -167,7 +170,7 @@ public class InvitationLinkService {
                 "                </tr>\n" +
                 "                <tr>\n" +
                 "                    <td style=\"text-align: center\">\n" +
-                "                        <a href=\"http://localhost:3000/api/invite/join/" + workSpace.getId() + "\" class=\"openNuwa\" style=\"width: 100%; display: inline-block; border-radius: 10px; padding: 10px 0px; margin-top: 30px; margin-bottom: 20px; text-align: center; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158ff 0%, rgba(81, 88, 255, 0.8) 100%)\">NUWA 열기</a>\n" +
+                "                        <a href=\"http://localhost:3000/api/invite/join/" + encodedId + "\" class=\"openNuwa\" style=\"width: 100%; display: inline-block; border-radius: 10px; padding: 10px 0px; margin-top: 30px; margin-bottom: 20px; text-align: center; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158ff 0%, rgba(81, 88, 255, 0.8) 100%)\">NUWA 열기</a>\n" +
                 "                    </td>\n" +
                 "                </tr>\n" +
                 "            </table>\n" +

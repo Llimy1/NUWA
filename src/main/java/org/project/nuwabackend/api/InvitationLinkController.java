@@ -68,12 +68,12 @@ public class InvitationLinkController {
     public ResponseEntity<Object> getInvitation(@MemberEmail String email, @RequestBody InviteByMailRequest inviteByMailRequest) throws Exception{
         log.info("초대 링크 이메일 발송 API 호출");
 
-        String workSpaceInvitationByMail = invitationLinkService.inviteByMail(email, inviteByMailRequest);
+        String InvitationByMailResponse = invitationLinkService.inviteByMail(email, inviteByMailRequest);
 
         GlobalSuccessResponseDto<Object> createWorkSpaceSuccessResponse =
                 globalService.successResponse(
                         CREATE_INQUIRY_MAIL_SUCCESS.getMessage(),
-                        workSpaceInvitationByMail);
+                        InvitationByMailResponse);
 
         return ResponseEntity.status(CREATED).body(createWorkSpaceSuccessResponse);
     }
