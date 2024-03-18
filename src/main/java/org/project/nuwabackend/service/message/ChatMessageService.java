@@ -115,6 +115,7 @@ public class ChatMessageService {
 
             chatMessageResponseDto = ChatMessageResponseDto.builder()
                     .workSpaceId(workSpaceId)
+                    .roomId(roomId)
                     .senderId(senderId)
                     .senderName(senderName)
                     .senderImage(senderImage)
