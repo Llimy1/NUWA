@@ -41,7 +41,7 @@ public abstract class Channel extends BaseTimeJpa {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "create_chat_member_id")
+    @JoinColumn(name = "create_member_id")
     private WorkSpaceMember createMember;
 
     @ManyToOne(fetch = LAZY)
