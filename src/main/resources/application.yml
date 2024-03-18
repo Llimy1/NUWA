@@ -37,11 +37,11 @@ spring:
           starttls:
             enable: true
 
-logging:
-  level:
+#logging:
+#  level:
 #    org.hibernate.sql: debug
-    com.zaxxer.hikari.HikariConfig: DEBUG
-    com.zaxxer.hikari: TRACE
+#    com.zaxxer.hikari.HikariConfig: DEBUG
+#    com.zaxxer.hikari: TRACE
 
   com:
     amazonaws:

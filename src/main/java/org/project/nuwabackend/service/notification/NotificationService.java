@@ -107,34 +107,39 @@ public class NotificationService {
     @Transactional
     public void send(String content, String url, NotificationType notificationType, WorkSpaceMember sender, WorkSpaceMember receiver) {
         log.info("sse 알림 전송");
-        Notification notification =
-                Notification.createNotification(content, url, notificationType, sender, receiver);
+        try {
+            Notification notification =
+                    Notification.createNotification(content, url, notificationType, sender, receiver);
 
-        String receiverId = String.valueOf(receiver.getId());
-        // 알림 저장
-        Notification saveNotification = notificationRepository.save(notification);
-        // 워크스페이스에 들어온 유저 SseEmitter 모두 가져오기
-        Map<String, SseEmitter> emitterMap = emitterRepository.findAllStartWithById(receiverId);
-        emitterMap.forEach(
-                (key, emitter) -> {
-                    // 데이터 캐시 저장 (유실된 데이터 처리)
-                    emitterRepository.saveEventCache(key, notification);
-                    // 데이터 전송
-                    sendToClient(emitter, key,
-                            NotificationResponseDto.builder()
-                                    .workSpaceId(saveNotification.getReceiver().getWorkSpace().getId())
-                                    .notificationId(saveNotification.getId())
-                                    .notificationContent(saveNotification.getContent())
-                                    .notificationUrl(saveNotification.getUrl())
-                                    .notificationType(saveNotification.getType())
-                                    .notificationSenderId(saveNotification.getSender().getId())
-                                    .notificationSenderName(saveNotification.getSender().getName())
-                                    .notificationReceiverId(saveNotification.getReceiver().getId())
-                                    .notificationReceiverName(saveNotification.getReceiver().getName())
-                                    .createdAt(saveNotification.getCreatedAt())
-                                    .build());
-                }
-        );
+            String receiverId = String.valueOf(receiver.getId());
+            // 알림 저장
+            Notification saveNotification = notificationRepository.save(notification);
+            // 워크스페이스에 들어온 유저 SseEmitter 모두 가져오기
+            Map<String, SseEmitter> emitterMap = emitterRepository.findAllStartWithById(receiverId);
+            emitterMap.forEach(
+                    (key, emitter) -> {
+                        // 데이터 캐시 저장 (유실된 데이터 처리)
+                        emitterRepository.saveEventCache(key, notification);
+                        // 데이터 전송
+                        sendToClient(emitter, key,
+                                NotificationResponseDto.builder()
+                                        .workSpaceId(saveNotification.getReceiver().getWorkSpace().getId())
+                                        .notificationId(saveNotification.getId())
+                                        .notificationContent(saveNotification.getContent())
+                                        .notificationUrl(saveNotification.getUrl())
+                                        .notificationType(saveNotification.getType())
+                                        .notificationSenderId(saveNotification.getSender().getId())
+                                        .notificationSenderName(saveNotification.getSender().getName())
+                                        .notificationReceiverId(saveNotification.getReceiver().getId())
+                                        .notificationReceiverName(saveNotification.getReceiver().getName())
+                                        .createdAt(saveNotification.getCreatedAt())
+                                        .build());
+                    }
+            );
+        } catch (Exception e) {
+            log.error("알림 전송 실패 = {}", e.getMessage());
+            throw new IllegalStateException("알림 전송 실패 = " + e.getMessage());
+        }
     }
 
     // 알림을 클라이언트에 전송

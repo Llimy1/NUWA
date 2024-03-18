@@ -134,7 +134,7 @@ public class ChatMessageService {
     public ChatMessageResponseDto saveChatMessage(ChatMessageResponseDto chatMessageResponseDto) {
         log.info("채팅 메세지 저장");
         Long workSpaceId = chatMessageResponseDto.getWorkSpaceId();
-        String roomId = chatMessageResponseDto.getMessageId();
+        String roomId = chatMessageResponseDto.getRoomId();
         Long senderId = chatMessageResponseDto.getSenderId();
         String senderName = chatMessageResponseDto.getSenderName();
         String senderImage = chatMessageResponseDto.getSenderImage();
@@ -144,7 +144,7 @@ public class ChatMessageService {
         LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
 
         ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, senderImage, rawString, messageType, createdAt);
+                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, senderImage, content, rawString, messageType, createdAt);
 
         ChatMessage saveChatMessage = chatMessageRepository.save(chatMessage);
         chatMessageResponseDto.setMessageId(saveChatMessage.getId());

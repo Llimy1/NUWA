@@ -167,20 +167,10 @@ public class WorkSpaceService {
                 });
     }
 
-
-
     public List<WorkSpaceInfoResponse> getWorkspacesByMemberEmail(String email) {
         // 멤버 조회
-//        Member findMember = memberRepository.findByEmail(email)
-//                .orElseThrow(() -> new NotFoundException(ErrorMessage.MEMBER_ID_NOT_FOUND));
-        // 해당 멤버가 속한 워크스페이스 멤버 조회
-        //List<WorkSpaceMember> workSpaceMembers = workSpaceMemberRepository.findByMember(findMember);
         List<WorkSpaceMember> workSpaceMembers = workSpaceMemberRepository.findByWorkSpaceList(email);
-//        for (WorkSpaceMember workSpaceMember : workSpaceMembers) {
-//            System.out.println(workSpaceMember.getWorkSpace().getName());
-//        }
-//        return null;
-////
+
         // 조회된 워크스페이스멤버로부터 워크스페이스 정보 추출
         return workSpaceMembers.stream()
                 .map(WorkSpaceMember::getWorkSpace)
@@ -192,7 +182,6 @@ public class WorkSpaceService {
                         .workSpaceMemberCount(workSpace.getCount())
                         .build())
                 .collect(Collectors.toList());
-
     }
 
     public List<WorkSpace> findWorkspacesByMemberEmail(String email) {
