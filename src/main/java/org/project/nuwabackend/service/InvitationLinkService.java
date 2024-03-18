@@ -78,7 +78,7 @@ public class InvitationLinkService {
         String encodedToken = Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
 
         // 인코딩된 토큰을 사용하여 URL 구성
-        return "http://localhost:3000/api/invite/" + encodedToken;
+        return "https://nu-wa.online/api/invite/" + encodedToken;
     }
 
 

@@ -1,10 +1,15 @@
 package org.project.nuwabackend.dto.channel.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
+
+import java.time.LocalDateTime;
 
 @Builder
 public record ChatChannelListResponseDto(Long workSpaceId,
                                          Long channelId,
                                          String roomId,
-                                         String name) {
+                                         String name,
+                                         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+                                         LocalDateTime createdAt) {
 }

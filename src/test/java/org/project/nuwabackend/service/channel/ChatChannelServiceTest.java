@@ -23,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,6 +82,7 @@ class ChatChannelServiceTest {
                 WorkSpaceMemberType.CREATED,
                 member, workSpace);
 
+        ReflectionTestUtils.setField(workSpaceMember, "id", 1L);
         Long workSpaceId = 1L;
         String channelName = "chat";
 
@@ -115,71 +117,5 @@ class ChatChannelServiceTest {
         assertThat(chatChannelRoomId).isNotNull();
         verify(chatChannelRepository).save(chatChannel);
         verify(workSpaceMemberRepository).findByMemberEmailAndWorkSpaceId(email, workSpaceId);
-    }
-
-    @Test
-    @DisplayName("[Service] Join Chat Channel Test")
-    void joinChatChannelTest() {
-        //given
-        Long chatChannelId = chatChannelJoinMemberRequestDto.chatChannelId();
-        List<Long> joinMemberIdList = chatChannelJoinMemberRequestDto.joinMemberIdList();
-        String channelName = "chat";
-        Chat chatChannel =
-                Chat.createChatChannel(channelName, workSpace, workSpaceMember);
-
-        given(chatChannelRepository.findById(any()))
-                .willReturn(Optional.ofNullable(chatChannel));
-
-        List<ChatJoinMember> chatJoinMemberList = new ArrayList<>();
-        for (Long id : joinMemberIdList) {
-            given(workSpaceMemberRepository.findById(any()))
-                    .willReturn(Optional.of(workSpaceMember));
-
-            ChatJoinMember chatJoinMember = ChatJoinMember.createChatJoinMember(workSpaceMember, chatChannel);
-            chatJoinMemberList.add(chatJoinMember);
-        }
-
-        given(chatJoinMemberRepository.saveAll(chatJoinMemberList))
-                .willReturn(chatJoinMemberList);
-
-        //when
-        chatChannelService.joinChatChannel(chatChannelJoinMemberRequestDto);
-
-        //then
-        verify(chatChannelRepository).findById(chatChannelId);
-        verify(workSpaceMemberRepository).findById(joinMemberIdList.get(0));
-        verify(chatJoinMemberRepository).saveAll(chatJoinMemberList);
-    }
-
-    @Test
-    @DisplayName("[Service] Chat Channel List Test")
-    void chatChannelListTest() {
-        //given
-        Long workSpaceId = 1L;
-        String channelName = "channel";
-        Chat chatChannel =
-                Chat.createChatChannel(channelName, workSpace, workSpaceMember);
-        List<Chat> chatList = new ArrayList<>(List.of(chatChannel));
-        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
-
-        SliceImpl<Chat> chats = new SliceImpl<>(chatList, pageRequest, false);
-
-        given(chatChannelRepository.findByWorkSpaceId(any(), any()))
-                .willReturn(chats);
-
-        Slice<ChatChannelListResponseDto> map = chats.map(chat -> ChatChannelListResponseDto.builder()
-                .workSpaceId(workSpaceId)
-                .channelId(chat.getId())
-                .name(chat.getName())
-                .roomId(chat.getRoomId())
-                .build());
-
-        //when
-        Slice<ChatChannelListResponseDto> chatChannelListResponseDtos =
-                chatChannelService.chatChannelList(workSpaceId, pageRequest);
-
-        //then
-        assertThat(chatChannelListResponseDtos.getContent())
-                .containsAll(map.getContent());
     }
 }

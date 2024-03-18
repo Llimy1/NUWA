@@ -149,7 +149,7 @@ class ChatChannelControllerTest {
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "createdAt"));
         SliceImpl<ChatChannelListResponseDto> chatChannelListResponseDtos =
                 new SliceImpl<>(list, pageRequest, false);
-        given(chatChannelService.chatChannelList(any(), any()))
+        given(chatChannelService.chatChannelList(any(), any(), any()))
                 .willReturn(chatChannelListResponseDtos);
 
         GlobalSuccessResponseDto<Object> globalSuccessResponseDto =

@@ -27,6 +27,9 @@ public class ChatJoinMember {
     @Column(name = "chat_join_member_id")
     private Long id;
 
+    @Column(name = "is_join_member_delete")
+    private Boolean isJoinMemberDelete;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "chat_join_workspace_member_id")
     private WorkSpaceMember joinMember;
@@ -36,7 +39,8 @@ public class ChatJoinMember {
     private Chat chatChannel;
 
     @Builder
-    private ChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
+    private ChatJoinMember(Boolean isJoinMemberDelete, WorkSpaceMember joinMember, Chat chatChannel) {
+        this.isJoinMemberDelete = isJoinMemberDelete;
         this.joinMember = joinMember;
         this.chatChannel = chatChannel;
     }
@@ -44,9 +48,20 @@ public class ChatJoinMember {
     // 참여 멤버 생성
     public static ChatJoinMember createChatJoinMember(WorkSpaceMember joinMember, Chat chatChannel) {
         return ChatJoinMember.builder()
+                .isJoinMemberDelete(false)
                 .joinMember(joinMember)
                 .chatChannel(chatChannel)
                 .build();
+    }
+
+    // 참여한 인원 채팅 채널 삭제 -> true
+    public void deleteJoinMember() {
+        this.isJoinMemberDelete = true;
+    }
+
+    // 참여한 인원 채팅 채널 복구 -> false
+    public void restoreJoinMember() {
+        this.isJoinMemberDelete = false;
     }
 
     @Override

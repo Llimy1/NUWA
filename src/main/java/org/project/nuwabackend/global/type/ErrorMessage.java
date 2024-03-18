@@ -27,7 +27,6 @@ public enum ErrorMessage {
     REDIS_CHAT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 채팅 채널 접속 정보가 존재하지 않습니다."),
     MEMBER_ID_NOT_FOUND("멤버가 존재하지 않습니다."),
     CHANNEL_NOT_FOUND("채널이 존재하지 않습니다."),
-    CREATE_CHANNEL_NOT_FOUND("내가 생성한 채널이 존재하지 않습니다."),
     FILE_NOT_FOUND("파일이 존재하지 않습니다."),
     FILE_EXTENSION_NOT_FOUND("파일의 확장자가 존재하지 않습니다."),
     FILE_EXTENSION_NOT_APPLY("파일의 확장자를 지원하지 않습니다."),
@@ -42,7 +41,8 @@ public enum ErrorMessage {
     CHAT_MESSAGE_DELETE_FAIL("그룹 채팅 메세지 삭제에 실패했습니다."),
     DIRECT_MESSAGE_UPDATE_FAIL("다이렉트 채팅 수정에 실패했습니다."),
     DIRECT_MESSAGE_DELETE_FAIL("다이렉트 채팅 삭제에 실패했습니다."),
-    SEARCH_TITLE_NOT_FOUND("검색어를 입력하지 않았습니다.");
+    SEARCH_TITLE_NOT_FOUND("검색어를 입력하지 않았습니다."),
+    CHAT_JOIN_MEMBER_NOT_FOUND("채널에 참여한 멤버를 찾을 수 없습니다.");
 
     private final String message;
 

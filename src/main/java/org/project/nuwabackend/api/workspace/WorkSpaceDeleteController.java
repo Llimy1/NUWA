@@ -29,10 +29,10 @@ public class WorkSpaceDeleteController {
     @DeleteMapping("/workspace/{workSpaceId}")
     public ResponseEntity<Object> deleteWorkSpace(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                   @MemberEmail String email) {
-        workSpaceDeleteService.deleteWorkSpace(email, workSpaceId);
+        String successMessage = workSpaceDeleteService.deleteWorkSpace(email, workSpaceId);
 
         GlobalSuccessResponseDto<Object> deleteWorkSpaceSuccessResponse =
-                globalService.successResponse(SuccessMessage.DELETE_WORK_SPACE_SUCCESS.getMessage(), null);
+                globalService.successResponse(successMessage, null);
 
         return ResponseEntity.status(OK).body(deleteWorkSpaceSuccessResponse);
     }

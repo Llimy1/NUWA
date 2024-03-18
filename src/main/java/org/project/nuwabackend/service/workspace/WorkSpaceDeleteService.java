@@ -2,10 +2,6 @@ package org.project.nuwabackend.service.workspace;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.domain.workspace.WorkSpace;
-import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.service.channel.ChatChannelService;
 import org.project.nuwabackend.service.channel.DirectChannelService;
 import org.project.nuwabackend.service.message.ChatMessageQueryService;
@@ -15,15 +11,13 @@ import org.project.nuwabackend.service.s3.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_ONLY_MEMBER;
+import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_QUIT_SUCCESS;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class WorkSpaceDeleteService {
-
-    private final WorkSpaceMemberRepository workSpaceMemberRepository;
 
     private final DirectMessageQueryService directMessageQueryService;
     private final ChatMessageQueryService chatMessageQueryService;
@@ -36,23 +30,23 @@ public class WorkSpaceDeleteService {
     // 워크스페이스 삭제
     // TODO: integrated test code
     @Transactional
-    public void deleteWorkSpace(String email, Long workSpaceId) {
-        WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+    public String deleteWorkSpace(String email, Long workSpaceId) {
 
-        WorkSpace workSpace = workSpaceMember.getWorkSpace();
+        Integer memberCount = workSpaceService.quitWorkSpaceMember(email, workSpaceId);
 
-        if (workSpace.getCount().equals(1)) {
+        if (memberCount.equals(0)) {
             directMessageQueryService.deleteDirectMessageWorkSpaceId(workSpaceId);
             chatMessageQueryService.deleteChatMessageWorkSpaceId(workSpaceId);
             fileService.deleteFileWorkSpaceId(workSpaceId);
+            chatChannelService.deleteChatJoinMemberByWorkSpaceId(workSpaceId);
             chatChannelService.deleteChatChannelList(workSpaceId);
             directChannelService.deleteDirectChannelList(workSpaceId);
             notificationService.deleteNotificationWorkSpaceId(workSpaceId);
             workSpaceService.deleteWorkSpaceMember(workSpaceId);
             workSpaceService.deleteWorkSpace(workSpaceId);
+            return DELETE_WORK_SPACE_SUCCESS.getMessage();
         } else {
-            throw new IllegalArgumentException(WORK_SPACE_NOT_ONLY_MEMBER.getMessage());
+            return WORK_SPACE_QUIT_SUCCESS.getMessage();
         }
     }
 }

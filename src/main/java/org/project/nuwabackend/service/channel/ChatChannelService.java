@@ -16,15 +16,16 @@ import org.project.nuwabackend.repository.jpa.ChatJoinMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
-import static org.project.nuwabackend.global.type.ErrorMessage.CREATE_CHANNEL_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.CHAT_JOIN_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 
 @Slf4j
@@ -58,6 +59,7 @@ public class ChatChannelService {
     }
 
     // 채팅 채널 참가
+    @Transactional
     public void joinChatChannel(ChatChannelJoinMemberRequestDto chatChannelJoinMemberRequestDto) {
         List<Long> joinMemberIdList = chatChannelJoinMemberRequestDto.joinMemberIdList();
         Long chatChannelId = chatChannelJoinMemberRequestDto.chatChannelId();
@@ -67,14 +69,28 @@ public class ChatChannelService {
 
         List<ChatJoinMember> chatJoinMemberList = new ArrayList<>();
         for (Long id : joinMemberIdList) {
-            WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+            boolean existJoinMember = chatJoinMemberRepository.findByChatChannelIdAndJoinMemberId(chatChannelId, id).isPresent();
 
-            ChatJoinMember chatJoinMember = ChatJoinMember.createChatJoinMember(workSpaceMember, chatChannel);
-            chatJoinMemberList.add(chatJoinMember);
+            if (chatChannel.getCreateMember().getId().equals(id)) {
+                chatChannel.restoreCreateMember();
+            } else if (existJoinMember) {
+                ChatJoinMember chatJoinMember =
+                        chatJoinMemberRepository.findByChatChannelIdAndJoinMemberId(chatChannelId, id).get();
+                chatJoinMember.restoreJoinMember();
+            } else {
+                WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findById(id)
+                        .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+                ChatJoinMember chatJoinMember = ChatJoinMember.createChatJoinMember(workSpaceMember, chatChannel);
+                chatJoinMemberList.add(chatJoinMember);
+            }
         }
 
         chatJoinMemberRepository.saveAll(chatJoinMemberList);
+
+        int increaseMemberCount = chatJoinMemberList.size();
+
+        chatChannel.increaseChatMemberCount(increaseMemberCount);
     }
 
     // 채팅 채널 INFO
@@ -100,15 +116,66 @@ public class ChatChannelService {
 
     }
 
-    // 채팅방 리스트 조회
-    public Slice<ChatChannelListResponseDto> chatChannelList(Long workSpaceId, Pageable pageable) {
-        return chatChannelRepository.findByWorkSpaceId(workSpaceId, pageable)
-                .map(chat -> ChatChannelListResponseDto.builder()
-                        .workSpaceId(workSpaceId)
-                        .channelId(chat.getId())
-                        .name(chat.getName())
-                        .roomId(chat.getRoomId())
-                        .build());
+    // 채팅방 리스트 조회 (내가 참여된)
+    public Slice<ChatChannelListResponseDto> chatChannelList(String email, Long workSpaceId, Pageable pageable) {
+
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        List<ChatChannelListResponseDto> chatList =
+                chatChannelRepository.findChatListByWorkSpaceMemberId(workSpaceId, findWorkSpaceMemberId)
+                        .stream().map(chat -> ChatChannelListResponseDto.builder()
+                                .workSpaceId(workSpaceId)
+                                .channelId(chat.getId())
+                                .name(chat.getName())
+                                .roomId(chat.getRoomId())
+                                .createdAt(chat.getCreatedAt())
+                                .build()).toList();
+
+        List<ChatChannelListResponseDto> chatJoinMemberList =
+                chatJoinMemberRepository.findChatJoinMemberListByWorkSpaceIdAndWorkSpaceMemberId(workSpaceId, findWorkSpaceMemberId)
+                        .stream().map(chatJoin -> ChatChannelListResponseDto.builder()
+                                .workSpaceId(workSpaceId)
+                                .channelId(chatJoin.getChatChannel().getId())
+                                .name(chatJoin.getChatChannel().getName())
+                                .roomId(chatJoin.getChatChannel().getRoomId())
+                                .createdAt(chatJoin.getChatChannel().getCreatedAt())
+                                .build()).toList();
+
+        List<ChatChannelListResponseDto> chatChannelListResponseDtoList = new ArrayList<>();
+        chatChannelListResponseDtoList.addAll(chatList);
+        chatChannelListResponseDtoList.addAll(chatJoinMemberList);
+        List<ChatChannelListResponseDto> sortedDto = chatChannelListResponseDtoList.stream()
+                .sorted(Comparator.comparing(ChatChannelListResponseDto::createdAt).reversed()).toList();
+
+        return sliceDtoResponse(sortedDto, pageable);
+    }
+
+    // 채팅 채널 나가기
+    @Transactional
+    public String chatChannelQuit(String email, Long workSpaceId, Long channelId) {
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Chat findChat = chatChannelRepository.findById(channelId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+        Long createMemberId = findChat.getCreateMember().getId();
+
+        if (findWorkSpaceMemberId.equals(createMemberId)) {
+            findChat.deleteCreateMember();
+            findChat.decreaseChatMemberCount();
+        } else {
+            ChatJoinMember chatJoinMember = chatJoinMemberRepository.findByChatChannelIdAndWorkSpaceMemberId(channelId, findWorkSpaceMemberId)
+                    .orElseThrow(() -> new NotFoundException(CHAT_JOIN_MEMBER_NOT_FOUND));
+            chatJoinMember.deleteJoinMember();
+            findChat.decreaseChatMemberCount();
+        }
+
+        return findChat.getChatMemberCount() == 0 ? findChat.getRoomId() : null;
     }
 
     // 워크스페이스 id에 해당되는 모든 채팅 채널 삭제
@@ -118,13 +185,35 @@ public class ChatChannelService {
         chatChannelRepository.deleteChatByWorkSpaceId(workSpaceId);
     }
 
-    // 채팅 채널 삭제 -> 생성한 인원만 가능
+    // 채팅 채널 삭제
     // TODO: integrated test code
     @Transactional
-    public void deleteChatChannel(Long workSpaceId, String email, String roomId) {
-        Chat findChatChannel = chatChannelRepository.findByRoomIdAndEmailAndWorkSpaceId(roomId, email ,workSpaceId)
-                .orElseThrow(() -> new NotFoundException(CREATE_CHANNEL_NOT_FOUND));
+    public void deleteChatChannel(Long workSpaceId, String roomId) {
+        Chat findChatChannel = chatChannelRepository.findByRoomIdAndEmailAndWorkSpaceId(roomId, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
         chatChannelRepository.delete(findChatChannel);
+    }
+
+    // 채팅 참여 멤버 전부 삭제
+    @Transactional
+    public void deleteChatJoinMember(String roomId) {
+        List<ChatJoinMember> findJoinMemberList = chatJoinMemberRepository.findByJoinMemberList(roomId);
+        chatJoinMemberRepository.deleteAll(findJoinMemberList);
+    }
+
+    // 워크스페이스에 해당된 채팅 참여 멤버 전부 삭제
+    @Transactional
+    public void deleteChatJoinMemberByWorkSpaceId(Long workSpaceId) {
+        List<ChatJoinMember> chatJoinMemberList = chatJoinMemberRepository.findByWorkSpaceId(workSpaceId);
+        chatJoinMemberRepository.deleteAll(chatJoinMemberList);
+    }
+
+    // Slice(페이징)
+    private Slice<ChatChannelListResponseDto> sliceDtoResponse(List<ChatChannelListResponseDto> chatChannelResponseDtoList, Pageable pageable) {
+        boolean hasNext = chatChannelResponseDtoList.size() > pageable.getPageSize();
+        List<ChatChannelListResponseDto> chatContent = hasNext ? chatChannelResponseDtoList.subList(0, pageable.getPageSize()) : chatChannelResponseDtoList;
+
+        return new SliceImpl<>(chatContent, pageable, hasNext);
     }
 }
