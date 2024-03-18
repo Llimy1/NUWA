@@ -8,6 +8,7 @@ import org.project.nuwabackend.domain.workspace.WorkSpace;
 import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 import org.project.nuwabackend.dto.file.request.FileRequestDto;
 import org.project.nuwabackend.dto.file.response.FileInfoResponseDto;
+import org.project.nuwabackend.dto.file.response.FileSearchInfoResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResponseDto;
 import org.project.nuwabackend.dto.file.response.FileUploadResultDto;
 import org.project.nuwabackend.dto.file.response.FileUrlResponseDto;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.FILE_NOT_FOUND;
@@ -107,6 +109,28 @@ public class FileService {
     public List<TopSevenFileInfoResponseDto> topSevenFileOrderByCreatedAt(Long workSpaceId) {
         log.info("최근 생성 시간 순 7개 파일 조회");
         return fileQueryService.topSevenFileOrderByCreatedAt(workSpaceId);
+    }
+
+    // 파일 검색 (전체 검색)
+    public List<FileSearchInfoResponseDto> fileSearchAll(Long workSpaceId, String fileName) {
+        log.info("대쉬보드 전체 검색 (파일)");
+
+        if (fileName == null) {
+            return null;
+        }
+
+        List<File> fileSearhList = fileRepository.findByWorkSpaceIdAndFileName(workSpaceId, fileName);
+
+        return fileSearhList.stream().map(file -> FileSearchInfoResponseDto.builder()
+                .fileId(file.getId())
+                .fileName(file.getFileName())
+                .fileUrl(file.getUrl())
+                .fileType(file.getFileType())
+                .fileUploadType(file.getFileUploadType())
+                .fileMemberUploadId(file.getWorkSpaceMember().getId())
+                .fileMemberUploadName(file.getWorkSpaceMember().getName())
+                .createdAt(file.getCreatedAt())
+                .build()).toList();
     }
 
     // 워크스페이스 id로 해당된 모든 파일 삭제

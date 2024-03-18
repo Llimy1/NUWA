@@ -18,5 +18,5 @@ public record FileInfoResponseDto(Long fileId,
                                   Long fileMemberUploadId,
                                   String fileMemberUploadName,
                                   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS")
-                                     LocalDateTime createdAt) {
+                                  LocalDateTime createdAt) {
 }

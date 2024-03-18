@@ -1,4 +1,4 @@
-package org.project.nuwabackend.service;
+package org.project.nuwabackend.service.canvas;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CANVAS_DELETE_FAIL;
+import static org.project.nuwabackend.global.type.ErrorMessage.CANVAS_SEARCH_TITLE_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.CANVAS_UPDATE_FAIL;
 
 @Slf4j
@@ -62,6 +63,26 @@ public class CanvasQueryService {
         if (remove.getDeletedCount() == 0) {
             throw new IllegalArgumentException(CANVAS_DELETE_FAIL.getMessage());
         }
+    }
+
+    // 캔버스 검색
+    public List<Canvas> searchCanvas(Long workSpaceId, String canvasTitle) {
+        if (canvasTitle.isEmpty()) {
+            throw new IllegalArgumentException(CANVAS_SEARCH_TITLE_NOT_FOUND.getMessage());
+        }
+
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
+                .and("canvas_title").regex(canvasTitle, "i"));
+
+        return mongoTemplate.find(query, Canvas.class);
+    }
+
+    // 캔버스 검색 (전체 검색)
+    public List<Canvas> searchAllCanvas(Long workSpaceId, String canvasTitle) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId)
+                .and("canvas_title").regex(canvasTitle, "i"));
+
+        return mongoTemplate.find(query, Canvas.class);
     }
 
 }

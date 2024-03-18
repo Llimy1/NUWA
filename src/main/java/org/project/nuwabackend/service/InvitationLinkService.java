@@ -1,15 +1,13 @@
 package org.project.nuwabackend.service;
 
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.domain.Inquire;
 import org.project.nuwabackend.domain.member.Member;
 import org.project.nuwabackend.domain.redis.InvitationLinkRedis;
 import org.project.nuwabackend.domain.workspace.WorkSpace;
-import org.project.nuwabackend.dto.InvitationLinkRequest;
-import org.project.nuwabackend.dto.InviteByMailRequest;
+import org.project.nuwabackend.dto.invite.request.InvitationLinkRequest;
+import org.project.nuwabackend.dto.invite.request.InviteByMailRequest;
 import org.project.nuwabackend.dto.workspace.response.WorkSpaceInfoResponse;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.type.ErrorMessage;
@@ -17,7 +15,6 @@ import org.project.nuwabackend.repository.jpa.MemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.repository.redis.InvitationLinkRedisRepository;
-import org.project.nuwabackend.type.InquireType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -71,10 +68,7 @@ public class InvitationLinkService {
     }
 
     private String createNewInvitation(Long workSpaceId) {
-        //String token = UUID.randomUUID().toString();
-        //InvitationLinkRedis invitation = new InvitationLinkRedis(null,token, workSpaceId);
-        //invitationLinkRedisRepository.save(invitation);
-        String token = "join/"+workSpaceId;
+        String token = "join/" + workSpaceId;
 
         return constructInvitationLink(token);
     }
@@ -82,7 +76,6 @@ public class InvitationLinkService {
     private String constructInvitationLink(String token) {
         // 토큰을 Base64로 인코딩
         String encodedToken = Base64.getEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
-        log.info("인코딩" +encodedToken);
 
         // 인코딩된 토큰을 사용하여 URL 구성
         return "http://localhost:3000/api/invite/" + encodedToken;
@@ -106,12 +99,10 @@ public class InvitationLinkService {
                 .workSpaceName(workSpace.getName())
                 .workSpaceImage(workSpace.getImage())
                 .workSpaceIntroduce(workSpace.getIntroduce()).build();
-
-
-
     }
+
     @Transactional
-    public String inviteByMail(String email, InviteByMailRequest inviteByMailRequest) throws Exception {
+    public List<String> inviteByMail(String email, InviteByMailRequest inviteByMailRequest) throws Exception {
         log.info("초대 링크 이메일 발송 서비스");
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(message, true, "UTF-8");
@@ -125,6 +116,7 @@ public class InvitationLinkService {
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_NOT_FOUND));
 
         messageHelper.setFrom(from); // 보낸 사람
+        messageHelper.setSubject("NUWA에서 초대가 도착했습니다!");
 
         // 받는 사람 설정 (여럿)
         List<String> emailAddressList = inviteByMailRequest.emailAddress();
@@ -134,12 +126,11 @@ public class InvitationLinkService {
 
         String encodedId = createNewInvitation(inviteByMailRequest.workSpaceId());
 
-
         String htmlContent = buildHtmlContent(workSpace, encodedId);
         messageHelper.setText(htmlContent, true);
         mailSender.send(message);
 
-        return encodedId;
+        return emailAddressList;
     }
 
     private String buildHtmlContent(WorkSpace workSpace, String encodedId) {
@@ -170,7 +161,7 @@ public class InvitationLinkService {
                 "                </tr>\n" +
                 "                <tr>\n" +
                 "                    <td style=\"text-align: center\">\n" +
-                "                        <a href=\"http://localhost:3000/api/invite/join/" + encodedId + "\" class=\"openNuwa\" style=\"width: 100%; display: inline-block; border-radius: 10px; padding: 10px 0px; margin-top: 30px; margin-bottom: 20px; text-align: center; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158ff 0%, rgba(81, 88, 255, 0.8) 100%)\">NUWA 열기</a>\n" +
+                "                        <a href=\"" + encodedId + "\"" + "class=\"openNuwa\" style=\"width: 100%; display: inline-block; border-radius: 10px; padding: 10px 0px; margin-top: 30px; margin-bottom: 20px; text-align: center; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158ff 0%, rgba(81, 88, 255, 0.8) 100%)\">NUWA 열기</a>\n" +
                 "                    </td>\n" +
                 "                </tr>\n" +
                 "            </table>\n" +
@@ -211,6 +202,4 @@ public class InvitationLinkService {
                 "</table>";
         return msg;
     }
-
-
 }

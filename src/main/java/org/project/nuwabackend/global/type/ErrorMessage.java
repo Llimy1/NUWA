@@ -37,10 +37,12 @@ public enum ErrorMessage {
     NOTIFICATION_NOT_FOUND("알림이 존재하지 않습니다."),
     CANVAS_UPDATE_FAIL("캔버스를 생성한 인원이 아닙니다."),
     CANVAS_DELETE_FAIL("캔버스를 생성한 인원이 아닙니다."),
+    CANVAS_SEARCH_TITLE_NOT_FOUND("캔버스 검색어를 입력하지 않았습니다."),
     CHAT_MESSAGE_UPDATE_FAIL("그룹 채팅 메세지 수정에 실패했습니다."),
     CHAT_MESSAGE_DELETE_FAIL("그룹 채팅 메세지 삭제에 실패했습니다."),
     DIRECT_MESSAGE_UPDATE_FAIL("다이렉트 채팅 수정에 실패했습니다."),
-    DIRECT_MESSAGE_DELETE_FAIL("다이렉트 채팅 삭제에 실패했습니다.");
+    DIRECT_MESSAGE_DELETE_FAIL("다이렉트 채팅 삭제에 실패했습니다."),
+    SEARCH_TITLE_NOT_FOUND("검색어를 입력하지 않았습니다.");
 
     private final String message;
 

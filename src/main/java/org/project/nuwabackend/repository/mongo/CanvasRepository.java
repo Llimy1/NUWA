@@ -6,8 +6,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.List;
+
 public interface CanvasRepository extends MongoRepository<Canvas, String> {
-
-
-    Slice<Canvas> findCanvasListByWorkSpaceId(Long workSpaceId, Pageable pageable);
 }

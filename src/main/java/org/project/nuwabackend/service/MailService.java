@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.domain.Inquire;
 import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.dto.IntroductionInquiryMailRequestDto;
-import org.project.nuwabackend.dto.ServiceInquiryMailRequestDto;
+import org.project.nuwabackend.dto.inquiry.request.IntroductionInquiryMailRequestDto;
+import org.project.nuwabackend.dto.inquiry.request.ServiceInquiryMailRequestDto;
 import org.project.nuwabackend.global.exception.NotFoundException;
 import org.project.nuwabackend.global.type.ErrorMessage;
 import org.project.nuwabackend.repository.jpa.InquireRepository;
@@ -55,18 +55,12 @@ public class MailService {
 
         messageHelper.setFrom(from);  // 보낸 사람
         messageHelper.setTo(from);  // 받는 사람 관리자 메일주소
-        messageHelper.setSubject("도입문의 " + mailDto.name());  // 제목
+        messageHelper.setSubject("도입문의");  // 제목
 
         // 내용
         String htmlContent = buildHtmlContent(mailDto);
 
         messageHelper.setText(htmlContent, true);
-
-//        // 이미지 파일 추가
-//        addInlineImage("nuwalogo", nuwalogo, messageHelper);
-//        addInlineImage("instagram", instagram, messageHelper);
-//        addInlineImage("facebook", facebook, messageHelper);
-//        addInlineImage("kakaotalk", kakaotalk, messageHelper);
 
         mailSender.send(message);
         Inquire inquire = new Inquire(InquireType.INTRODUCTION, findMember);
@@ -156,7 +150,7 @@ public class MailService {
 
         messageHelper.setFrom(from);  // 보낸 사람
         messageHelper.setTo(from);  // 받는 사람 관리자 메일주소
-        messageHelper.setSubject("서비스문의 " + mailDto.subject());  // 제목
+        messageHelper.setSubject("서비스문의 - " + mailDto.subject());  // 제목
 
         // 파일첨부
         for (MultipartFile multipartFile : multipartFileList) {
@@ -169,14 +163,8 @@ public class MailService {
         }
 
         // 내용
-        String htmlContent = buildHtmlContent(mailDto,multipartFileList);
+        String htmlContent = buildHtmlContent(mailDto);
         messageHelper.setText(htmlContent, true);
-
-//        // 이미지 파일 추가
-//        addInlineImage("nuwalogo", nuwalogo, messageHelper);
-//        addInlineImage("instagram", instagram, messageHelper);
-//        addInlineImage("facebook", facebook, messageHelper);
-//        addInlineImage("kakaotalk", kakaotalk, messageHelper);
 
         mailSender.send(message);
         Inquire inquire = new Inquire(InquireType.SERVICE, findMember);
@@ -185,45 +173,54 @@ public class MailService {
         return saveInquire.getId();
     }
 
-    private String buildHtmlContent(ServiceInquiryMailRequestDto mailDto, List<MultipartFile> multipartFileList) {
+    private String buildHtmlContent(ServiceInquiryMailRequestDto mailDto) {
 
         StringBuilder msgg = new StringBuilder();
 
-            msgg.append("<body><table style=\"margin: 0 auto; padding: 0 12px; max-width: 450px; width: 100%; box-sizing: border-box; font-family: 'pretendard';\">")
+            msgg.append("<table style=\"margin: 0 auto; padding: 0 12px; max-width: 450px; width: 100%; box-sizing: border-box; font-family: 'pretendard';\">")
                 .append("<tr><td style=\"text-align: center;\"><img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\"></td></tr>")
                 .append("<tr><td style=\"color: #242424; letter-spacing: -0.028rem; padding-bottom: 32px;\">")
                 .append("<p style=\"font-weight: 600; font-size: 22px; margin: 0; padding-bottom: 12px; border-bottom: 1px solid #00000010;\">관리자님!<br>서비스가 계속해서 성장할 수 있도록 회원님들의 문의사항을 적극 반영할 수 있도록 노력해야 합니다 🙌</p>")
                 .append("</td></tr>")
                 .append("<tr><td style=\"font-size: 14px; font-weight: 300; line-height: 1.2;\">")
-                .append(mailDto.email()).append("<br>")
-                .append("<br>")
+                .append("<strong>이메일:</strong><br>" + mailDto.email() + "<br><br>")
                 .append("<strong>내용:</strong><br>")
                 .append(mailDto.content())
-                .append("</td></tr>");
-
-            msgg.append("<br>")
-                .append("<img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; box-sizing: border-box;\">")
-                .append("</td></tr>")
-
-                .append("<tr><td style=\"padding-top: 12px; text-align: center;\">")
-                .append("<a href=\"#\" style=\"border-radius: 50px; padding: 12px 0; text-decoration: none; color: #fff; font-size: 18px; font-weight: 600; background: linear-gradient(90deg, #5158FF 0%, rgba(81, 88, 255, 0.80) 100%);\">NUWA 열기</a>")
-                .append("</td></tr>")
-                .append("<tr><td style=\"padding-top: 16px; text-align: center;\">")
-                .append("<img src=\"" + instagramUrl + "\" alt=\"Instagram\" style=\"vertical-align: middle;\">")
-                .append("<img src=\"" + facebookUrl + "\" alt=\"Facebook\" style=\"vertical-align: middle; margin-left: 10px;\">")
-                .append("<img src=\"" + kakaotalkUrl + "\" alt=\"Kakaotalk\" style=\"vertical-align: middle; margin-left: 10px;\">")
-                .append("</td></tr>")
-                .append("<tr><td style=\"font-size: 12px; color: #afafaf; padding-top: 16px; text-align: center;\">")
-                .append("블로그 | 구독취소 | 정책 | 고객지원센터 | NUWA커뮤니티")
-                .append("</td></tr>")
-                .append("<tr><td style=\"font-size: 12px; color: #afafaf; padding-top: 16px; text-align: center;\">")
-                .append("@2024 NUWA Technologies LLC, a Salesforce company<br>415 Mission Street, San Francisco CA94105<br>All rights reserved.")
-                .append("</td></tr>")
-                .append("</table></body>");
+                .append("</td>")
+                .append("<tr>\n" +
+                    "    <td>\n" +
+                    "      <table class=\"conBtm\" style=\"width: 100%;\">\n" +
+                    "        <tr>\n" +
+                    "          <td>\n" +
+                    "            <h1><a href=\"#\"><img src=\"" + nuwaLogoUrl + "\" alt=\"Nuwa\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a></h1>\n" +
+                    "          </td>\n" +
+                    "          <td class=\"sns\" style=\"text-align: right;\">\n" +
+                    "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"" + instagramUrl + "\" alt=\"Instagram\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                    "            <a href=\"#\" style=\"margin-right: 10px;\"><img src=\"" + facebookUrl + "\" alt=\"Facebook\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                    "            <a href=\"#\"><img src=\"" + kakaotalkUrl + "\" alt=\"Kakaotalk\" style=\"margin: 0; padding: 0; font-family: 'pretendard'; box-sizing: border-box;\"></a>\n" +
+                    "          </td>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "          <td colspan=\"2\" class=\"btmR2\" style=\"padding: 16px 0;\">\n" +
+                    "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">블로그</a>\n" +
+                    "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">구독취소</a>\n" +
+                    "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">정책</a>\n" +
+                    "            <a href=\"#\" style=\"margin-right: 12px; text-decoration: none; color: #afafaf; font-size: 12px;\">고객지원센터</a>\n" +
+                    "            <a href=\"#\" style=\"text-decoration: none; color: #afafaf; font-size: 12px;\">NUWA커뮤니티</a>\n" +
+                    "          </td>\n" +
+                    "        </tr>\n" +
+                    "        <tr>\n" +
+                    "          <td colspan=\"2\" id=\"copyright\" class=\"btmR3\">\n" +
+                    "            @2024 NUWA Technologies LLC, a Salesforce company <br>\n" +
+                    "            415 Mission Street, San Francisco CA94105 <br>\n" +
+                    "            All rights reserved.\n" +
+                    "          </td>\n" +
+                    "        </tr>\n" +
+                    "      </table>\n" +
+                    "    </td>\n" +
+                    "  </tr>\n");
 
         return msgg.toString();
-
-
     }
 
     private void addInlineImage(String imageId, String imagePath, MimeMessageHelper messageHelper) throws Exception {
