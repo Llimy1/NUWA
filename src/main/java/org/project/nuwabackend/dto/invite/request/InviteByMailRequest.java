@@ -1,4 +1,4 @@
-package org.project.nuwabackend.dto;
+package org.project.nuwabackend.dto.invite.request;
 
 import java.util.List;
 

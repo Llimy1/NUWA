@@ -64,7 +64,6 @@ public class FileQueryService {
     // 파일 검색
     public Slice<FileInfoResponseDto> searchFileName(Long workSpaceId, String fileName, String fileExtension, FileUploadType fileUploadType, Pageable pageable) {
         log.info("파일 검색 Query");
-        System.out.println(fileName);
         List<FileInfoResponseDto> searchFileInfoResponseDtoList = jpaQueryFactory.select(fileConstructorDto())
                 .from(file)
                 .join(file.workSpaceMember, workSpaceMember)
@@ -76,9 +75,6 @@ public class FileQueryService {
                         directTypeNe()
 
                 )
-                .orderBy(getAllOrderSpecifiers(pageable).toArray(OrderSpecifier[]::new))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
                 .fetch();
 
         return convertSlice(searchFileInfoResponseDtoList, pageable);

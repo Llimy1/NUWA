@@ -1,4 +1,4 @@
-package org.project.nuwabackend.service;
+package org.project.nuwabackend.service.canvas;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -101,6 +101,45 @@ public class CanvasService {
         Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
 
         canvasQueryService.deleteCanvas(canvasId, workSpaceId, findWorkSpaceMemberId);
+    }
+
+    // 캔버스 검색
+    public Slice<CanvasResponseDto> searchCanvas(Long workSpaceId, String canvasTitle, Pageable pageable) {
+        List<CanvasResponseDto> canvasResponseDtoList = canvasQueryService.searchCanvas(workSpaceId, canvasTitle).stream()
+                .map(canvas -> CanvasResponseDto.builder()
+                        .workSpaceId(workSpaceId)
+                        .canvasId(canvas.getId())
+                        .canvasTitle(canvas.getTitle())
+                        .canvasContent(canvas.getContent())
+                        .createMemberId(canvas.getCreateMemberId())
+                        .createMemberName(canvas.getCreateMemberName())
+                        .createdAt(canvas.getCreatedAt()).build()
+                )
+                .sorted(Comparator.comparing(CanvasResponseDto::createdAt).reversed())
+                .toList();
+
+        return canvasResponseDtoSlice(canvasResponseDtoList, pageable);
+    }
+
+    // 캔버스 검색 (전체 검색)
+    public List<CanvasResponseDto> searchAllCanvas(Long workSpaceId, String canvasTitle) {
+        log.info("대쉬보드 전체 검색 (캔버스)");
+
+        if (canvasTitle == null) {
+            return null;
+        }
+
+        return canvasQueryService.searchAllCanvas(workSpaceId, canvasTitle).stream()
+                .map(canvas -> CanvasResponseDto.builder()
+                        .workSpaceId(workSpaceId)
+                        .canvasId(canvas.getId())
+                        .canvasTitle(canvas.getTitle())
+                        .canvasContent(canvas.getContent())
+                        .createMemberId(canvas.getCreateMemberId())
+                        .createMemberName(canvas.getCreateMemberName())
+                        .createdAt(canvas.getCreatedAt()).build()
+                )
+                .toList();
     }
 
     // Slice(페이징)

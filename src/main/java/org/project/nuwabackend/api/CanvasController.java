@@ -8,7 +8,7 @@ import org.project.nuwabackend.global.annotation.CustomPageable;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
-import org.project.nuwabackend.service.CanvasService;
+import org.project.nuwabackend.service.canvas.CanvasService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.type.SuccessMessage.CANVAS_CREATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CANVAS_LIST_RETURN_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.CANVAS_SEARCH_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.DELETE_CANVAS_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.UPDATE_CANVAS_SUCCESS;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -60,6 +61,20 @@ public class CanvasController {
 
         GlobalSuccessResponseDto<Object> canvasSliceSuccessResponseDto =
                 globalService.successResponse(CANVAS_LIST_RETURN_SUCCESS.getMessage(), canvasResponseDtoSlice);
+
+        return ResponseEntity.status(OK).body(canvasSliceSuccessResponseDto);
+    }
+
+    @GetMapping("/canvas/search/{workSpaceId}")
+    public ResponseEntity<Object> canvasSearchList(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                             @RequestParam(value = "title", required = false) String title,
+                                             @CustomPageable Pageable pageable) {
+        log.info("캔버스 검색 API");
+        Slice<CanvasResponseDto> canvasResponseDtoSlice =
+                canvasService.searchCanvas(workSpaceId, title, pageable);
+
+        GlobalSuccessResponseDto<Object> canvasSliceSuccessResponseDto =
+                globalService.successResponse(CANVAS_SEARCH_LIST_RETURN_SUCCESS.getMessage(), canvasResponseDtoSlice);
 
         return ResponseEntity.status(OK).body(canvasSliceSuccessResponseDto);
     }

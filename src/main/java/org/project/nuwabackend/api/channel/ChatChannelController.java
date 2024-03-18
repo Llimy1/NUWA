@@ -83,7 +83,7 @@ public class ChatChannelController {
     }
 
     // RoomId 정보 조회
-    @GetMapping("/channel/chat/Info/{workSpaceId}")
+    @GetMapping("/channel/chat/info/{workSpaceId}")
     public ResponseEntity<Object> chatChannelInfo(@PathVariable(value = "workSpaceId") Long workSpaceId,
                                                   @RequestParam(value = "chatChannelRoomId") String roomId) {
         log.info("채팅 채널 정보 반환 API");

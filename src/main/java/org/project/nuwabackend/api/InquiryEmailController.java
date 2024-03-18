@@ -2,9 +2,9 @@ package org.project.nuwabackend.api;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.dto.InquireIdResponse;
-import org.project.nuwabackend.dto.IntroductionInquiryMailRequestDto;
-import org.project.nuwabackend.dto.ServiceInquiryMailRequestDto;
+import org.project.nuwabackend.dto.inquiry.response.InquireIdResponse;
+import org.project.nuwabackend.dto.inquiry.request.IntroductionInquiryMailRequestDto;
+import org.project.nuwabackend.dto.inquiry.request.ServiceInquiryMailRequestDto;
 import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
@@ -49,7 +49,7 @@ public class InquiryEmailController {
         @PostMapping("/mail/attached")
         public ResponseEntity<Object> mail(@MemberEmail String email,
                                                  @RequestPart(name = "serviceInquiryMailRequestDto") ServiceInquiryMailRequestDto serviceInquiryMailRequestDto,
-                                                 @RequestPart(name = "fileList") List<MultipartFile> multipartFileList) throws Exception {
+                                                 @RequestPart(name = "fileList", required = false) List<MultipartFile> multipartFileList) throws Exception {
             log.info("서비스 문의 메일 발송 API 호출");
 
             Long inquireId = mailService.answerMail(email, serviceInquiryMailRequestDto, multipartFileList);

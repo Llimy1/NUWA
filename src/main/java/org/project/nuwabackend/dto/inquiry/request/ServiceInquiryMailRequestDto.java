@@ -1,4 +1,4 @@
-package org.project.nuwabackend.dto;
+package org.project.nuwabackend.dto.inquiry.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
