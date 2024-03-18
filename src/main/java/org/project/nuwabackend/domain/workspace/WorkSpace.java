@@ -27,8 +27,6 @@ public class WorkSpace extends BaseTimeJpa {
     @Column(name = "workspace_image")
     private String image;
 
-    // 이름이 애매합니다. 좋은 단어 있으면 변경 해주세요.
-    // Lob으로 할지도 애매합니다.
     @Column(name = "workspace_introduce")
     private String introduce;
 

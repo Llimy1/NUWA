@@ -44,15 +44,29 @@ public abstract class Channel extends BaseTimeJpa {
     @JoinColumn(name = "create_member_id")
     private WorkSpaceMember createMember;
 
+    @Column(name = "is_create_member_delete")
+    private Boolean isCreateMemberDelete;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "workspace_id")
     private WorkSpace workSpace;
 
-    protected Channel(String name, WorkSpace workSpace, WorkSpaceMember workSpaceMember) {
+    protected Channel(String name, WorkSpace workSpace, WorkSpaceMember workSpaceMember, Boolean isCreateMemberDelete) {
         this.roomId = UUID.randomUUID().toString();
         this.name = name;
         this.workSpace = workSpace;
         this.createMember = workSpaceMember;
+        this.isCreateMemberDelete = isCreateMemberDelete;
+    }
+
+    // 생성한 인원 채널 삭제 -> true
+    public void deleteCreateMember() {
+        this.isCreateMemberDelete = true;
+    }
+
+    // 생성한 인원 채널 복구 -> false
+    public void restoreCreateMember() {
+        this.isCreateMemberDelete = false;
     }
 
     @Override

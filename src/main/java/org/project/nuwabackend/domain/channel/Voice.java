@@ -19,8 +19,8 @@ import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
 public class Voice extends Channel {
 
     @Builder
-    private Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember) {
-        super(name, workSpace, createMember);
+    private Voice(String name, WorkSpace workSpace, WorkSpaceMember createMember, Boolean isCreateMemberDelete) {
+        super(name, workSpace, createMember, isCreateMemberDelete);
     }
 
     public static Voice createVoiceChannel(String name, WorkSpace workSpace, WorkSpaceMember createMember) {

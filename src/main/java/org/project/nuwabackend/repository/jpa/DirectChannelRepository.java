@@ -58,7 +58,6 @@ public interface DirectChannelRepository extends JpaRepository<Direct, Long> {
     @Query("SELECT d " +
             "FROM Direct d " +
             "JOIN d.workSpace w " +
-            "JOIN d.createMember cm " +
             "WHERE w.id = :workSpaceId AND d.roomId = :roomId")
     Optional<Direct> findByWorkSpaceIdAndRoomIdAndEmail(@Param("workSpaceId") Long workSpaceId, @Param("roomId") String roomId);
 }

@@ -257,6 +257,7 @@ public class DirectChannelService {
 
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
         Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
 
         WorkSpaceMember createMember = findDirectChannel.getCreateMember();

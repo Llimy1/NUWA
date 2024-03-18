@@ -349,17 +349,15 @@ public class WorkSpaceService {
 
     // 워크스페이스 멤버 나가기
     @Transactional
-    public void quitWorkSpaceMember(String email, Long workSpaceId) {
+    public Integer quitWorkSpaceMember(String email, Long workSpaceId) {
         WorkSpaceMember workSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
-
-        if (workSpaceMember.getWorkSpaceMemberType().equals(CREATED))
-            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
 
         workSpaceMember.deleteWorkSpaceMember();
 
         WorkSpace workSpace = workSpaceMember.getWorkSpace();
         workSpace.decreaseWorkSpaceMemberCount();
+        return workSpace.getCount();
     }
 
     // 워크스페이스 id에 해당하는 멤버 전부 삭제

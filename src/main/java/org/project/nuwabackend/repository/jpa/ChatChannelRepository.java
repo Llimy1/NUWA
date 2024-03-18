@@ -19,13 +19,19 @@ public interface ChatChannelRepository extends JpaRepository<Chat, Long> {
             "FROM Chat c " +
             "JOIN c.createMember cm " +
             "JOIN cm.member m " +
-            "WHERE c.roomId = :roomId AND m.email = :email AND cm.workSpace.id = :workSpaceId ")
-    Optional<Chat> findByRoomIdAndEmailAndWorkSpaceId(@Param("roomId") String roomId, @Param("email") String email, @Param("workSpaceId") Long workSpaceId);
+            "WHERE c.roomId = :roomId AND cm.workSpace.id = :workSpaceId ")
+    Optional<Chat> findByRoomIdAndEmailAndWorkSpaceId(@Param("roomId") String roomId, @Param("workSpaceId") Long workSpaceId);
 
     @Query("SELECT c " +
             "FROM Chat c " +
             "WHERE c.workSpace.id = :workSpaceId AND c.roomId = :roomId ")
     Optional<Chat> findByWorkSpaceIdAndRoomId(@Param("workSpaceId") Long workSpaceId, @Param("roomId") String roomId);
+
+    @Query("SELECT c " +
+            "FROM Chat c " +
+            "WHERE c.workSpace.id = :workSpaceId AND c.createMember.id = :workSpaceMemberId AND c.isCreateMemberDelete = false")
+    List<Chat> findChatListByWorkSpaceMemberId(@Param("workSpaceId") Long workSpaceId, @Param("workSpaceMemberId") Long workSpaceMemberId);
+
     Slice<Chat> findByWorkSpaceId(Long workSpaceId, Pageable pageable);
 
     @Query("DELETE FROM Chat c WHERE c.workSpace.id = :workSpaceId")

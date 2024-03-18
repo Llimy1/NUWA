@@ -36,7 +36,7 @@ import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SP
 import static org.project.nuwabackend.global.type.SuccessMessage.READ_MY_WORK_SPACE_MEMBER_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_QUIT_SUCCESS;
+import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_QUIT_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_STATUS_UPDATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
@@ -216,7 +216,7 @@ public class WorkSpaceController {
         workSpaceService.quitWorkSpaceMember(email, workSpaceId);
 
         GlobalSuccessResponseDto<Object> quitWorkSpaceMemberSuccessResponse =
-                globalService.successResponse(WORK_SPACE_MEMBER_QUIT_SUCCESS.getMessage(), null);
+                globalService.successResponse(WORK_SPACE_QUIT_SUCCESS.getMessage(), null);
 
         return ResponseEntity.status(OK).body(quitWorkSpaceMemberSuccessResponse);
     }
