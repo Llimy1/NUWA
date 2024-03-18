@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.project.nuwabackend.global.type.ErrorMessage.CHANNEL_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.CREATE_CHANNEL_NOT_FOUND;
@@ -81,9 +82,20 @@ public class ChatChannelService {
         Chat findChat = chatChannelRepository.findByWorkSpaceIdAndRoomId(workSpaceId, roomId)
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
+        Long findChatId = findChat.getId();
+        Long createMemberId = findChat.getCreateMember().getId();
+        List<Long> joinMemberIdList = new ArrayList<>(chatJoinMemberRepository.findByChatChannelId(findChatId)
+                .stream()
+                .map(ChatJoinMember::getJoinMember)
+                .map(WorkSpaceMember::getId)
+                .toList());
+
+        joinMemberIdList.add(createMemberId);
+
         return ChatChannelInfoResponseDto.builder()
                 .channelId(findChat.getId())
                 .channelName(findChat.getName())
+                .memberList(joinMemberIdList)
                 .build();
 
     }
