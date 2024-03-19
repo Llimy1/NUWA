@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import static org.project.nuwabackend.global.type.SuccessMessage.CANVAS_CREATE_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CANVAS_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.type.SuccessMessage.CANVAS_SEARCH_LIST_RETURN_SUCCESS;
@@ -63,6 +65,17 @@ public class CanvasController {
                 globalService.successResponse(CANVAS_LIST_RETURN_SUCCESS.getMessage(), canvasResponseDtoSlice);
 
         return ResponseEntity.status(OK).body(canvasSliceSuccessResponseDto);
+    }
+
+    @GetMapping("canvas/workspace/{workSpaceId}")
+    public ResponseEntity<Object> canvasListByWorkSpace(@PathVariable(value = "workSpaceId") Long workSpaceId) {
+        log.info("캔버스 조회 (워크스페이스) API");
+        List<CanvasResponseDto> canvasResponseDtoList = canvasService.canvasListByWorkSpace(workSpaceId);
+
+        GlobalSuccessResponseDto<Object> canvasListSuccessResponseDto =
+                globalService.successResponse(CANVAS_LIST_RETURN_SUCCESS.getMessage(), canvasResponseDtoList);
+
+        return ResponseEntity.status(OK).body(canvasListSuccessResponseDto);
     }
 
     @GetMapping("/canvas/search/{workSpaceId}")

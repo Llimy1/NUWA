@@ -16,6 +16,7 @@ import org.project.nuwabackend.global.annotation.MemberEmail;
 import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.service.GlobalService;
 import org.project.nuwabackend.service.workspace.WorkSpaceService;
+import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -198,9 +199,10 @@ public class WorkSpaceController {
     @PatchMapping("/workspace/{workSpaceMemberId}/relocate")
     public ResponseEntity<Object> relocateCreateWorkSpaceMemberType(@PathVariable(value = "workSpaceMemberId") Long workSpaceMemberId,
                                                                     @MemberEmail String email,
-                                                                    @RequestParam(value = "workSpaceId") Long workSpaceId) {
+                                                                    @RequestParam(value = "workSpaceId") Long workSpaceId,
+                                                                    @RequestParam(value = "type") WorkSpaceMemberType type) {
         log.info("권한 변경 API 호출");
-        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMemberId, email, workSpaceId);
+        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMemberId, email, workSpaceId, type);
 
         GlobalSuccessResponseDto<Object> workSpaceMemberTypeRelocateSuccessResponse =
                 globalService.successResponse(WORK_SPACE_MEMBER_TYPE_RELOCATE_SUCCESS.getMessage(), null);

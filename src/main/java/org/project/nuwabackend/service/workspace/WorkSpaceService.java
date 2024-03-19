@@ -23,6 +23,7 @@ import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
 import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
 import org.project.nuwabackend.service.message.DirectMessageQueryService;
 import org.project.nuwabackend.service.notification.NotificationService;
+import org.project.nuwabackend.type.WorkSpaceMemberType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,8 @@ import java.util.stream.Collectors;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
 import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
 import static org.project.nuwabackend.global.type.ErrorMessage.MEMBER_ID_NOT_FOUND;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_ALREADY_CREATE_TYPE;
+import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_ALREADY_JOIN_TYPE;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_BEFORE_QUIT;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_NOT_FOUND;
 import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE;
@@ -326,7 +329,7 @@ public class WorkSpaceService {
 
     // 워크스페이스 권한 넘기기
     @Transactional
-    public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId, String email, Long workSpaceId) {
+    public void relocateCreateWorkSpaceMemberType(Long workSpaceMemberId, String email, Long workSpaceId, WorkSpaceMemberType type) {
 
         WorkSpaceMember createWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
@@ -334,16 +337,30 @@ public class WorkSpaceService {
         WorkSpaceMember joinWorkSpaceMember = workSpaceMemberRepository.findById(workSpaceMemberId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 
+        WorkSpaceMemberType createWorkSpaceMemberType = createWorkSpaceMember.getWorkSpaceMemberType();
+        WorkSpaceMemberType joinWorkSpaceMemberType = joinWorkSpaceMember.getWorkSpaceMemberType();
+
+        if (!createWorkSpaceMemberType.equals(CREATED)) {
+            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+        }
 
         String workSpaceMemberName = joinWorkSpaceMember.getName();
-        if (joinWorkSpaceMember.getWorkSpaceMemberType().equals(JOIN)) {
-            joinWorkSpaceMember.updateCreateWorkSpaceMemberType();
-            createWorkSpaceMember.updateJoinWorkSpaceMemberType();
+        if (type.equals(CREATED)) {
+            if (joinWorkSpaceMemberType.equals(CREATED)) {
+                throw new IllegalArgumentException(WORK_SPACE_ALREADY_CREATE_TYPE.getMessage());
+            }
 
+            joinWorkSpaceMember.updateCreateWorkSpaceMemberType();
             notificationService.send(workSpaceMemberName + "님이 워크스페이스 소유주로 변경되었습니다.",
                     createWorkSpaceUrl(workSpaceId), NOTICE, createWorkSpaceMember, joinWorkSpaceMember);
         } else {
-            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+            if (!joinWorkSpaceMemberType.equals(JOIN)) {
+                throw new IllegalArgumentException(WORK_SPACE_ALREADY_JOIN_TYPE.getMessage());
+            }
+
+            joinWorkSpaceMember.updateJoinWorkSpaceMemberType();
+            notificationService.send(workSpaceMemberName + "님이 워크스페이스 멤버로 변경되었습니다.",
+                    createWorkSpaceUrl(workSpaceId), NOTICE, createWorkSpaceMember, joinWorkSpaceMember);
         }
     }
 

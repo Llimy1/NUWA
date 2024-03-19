@@ -22,6 +22,8 @@ public enum ErrorMessage {
     WORK_SPACE_MEMBER_BEFORE_QUIT("이미 나간 멤버입니다."),
     WORK_SPACE_NOT_CREATED_MEMBER("해당 워크스페이스를 생성한 멤버가 아닙니다."),
     WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE("해당 멤버의 타입은 생성한 인원입니다."),
+    WORK_SPACE_ALREADY_CREATE_TYPE("이미 생성한 멤버 타입입니다."),
+    WORK_SPACE_ALREADY_JOIN_TYPE("이미 참여한 멤버 타입입니다."),
     DIRECT_CHANNEL_NOT_FOUND("다이렉트 채널을 해당 멤버들로 찾을 수 없습니다."),
     REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 다이렉트 채널 접속 정보가 존재하지 않습니다."),
     REDIS_CHAT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 채팅 채널 접속 정보가 존재하지 않습니다."),
