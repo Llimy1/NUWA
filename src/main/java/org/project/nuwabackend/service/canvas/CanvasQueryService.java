@@ -27,14 +27,18 @@ public class CanvasQueryService {
     // 캔버스 조회
     public List<Canvas> canvasList(Long workSpaceId, Long workSpaceMemberId) {
 
-        System.out.println("workSpaceId = " + workSpaceId);
-        System.out.println("workSpaceMemberId = " + workSpaceMemberId);
         Query query = workSpaceMemberId != null ?
                 new Query(Criteria.where("workspace_id").is(workSpaceId)
                         .and("create_member_id").is(workSpaceMemberId))
                 :
                 new Query(Criteria.where("workspace_id").is(workSpaceId));
 
+        return mongoTemplate.find(query, Canvas.class);
+    }
+
+    // 워크스페이스 캔버스 조회
+    public List<Canvas> canvasListByWorkSpace(Long workSpaceId) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
         return mongoTemplate.find(query, Canvas.class);
     }
 

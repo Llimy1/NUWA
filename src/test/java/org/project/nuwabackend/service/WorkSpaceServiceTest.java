@@ -399,7 +399,7 @@ class WorkSpaceServiceTest {
                 .willReturn(Optional.of(workSpaceMember1));
 
         //when
-        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMember1.getId(), email, workspaceId);
+        workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMember1.getId(), email, workspaceId, CREATED);
 
         //then
         assertThat(workSpaceMember.getWorkSpaceMemberType()).isEqualTo(JOIN);

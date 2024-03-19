@@ -80,6 +80,23 @@ public class CanvasService {
         return canvasResponseDtoSlice(canvasResponseDtoList, pageable);
     }
 
+    // 워크스페이스 캔버스 조회
+    public List<CanvasResponseDto> canvasListByWorkSpace(Long workSpaceId) {
+        return canvasQueryService.canvasListByWorkSpace(workSpaceId).stream()
+                .map(canvas -> CanvasResponseDto.builder()
+                        .workSpaceId(canvas.getWorkSpaceId())
+                        .canvasId(canvas.getId())
+                        .canvasTitle(canvas.getTitle())
+                        .canvasContent(canvas.getContent())
+                        .createMemberId(canvas.getCreateMemberId())
+                        .createMemberName(canvas.getCreateMemberName())
+                        .createdAt(canvas.getCreatedAt())
+                        .build())
+                .sorted(Comparator.comparing(CanvasResponseDto::createdAt).reversed())
+                .limit(10)
+                .toList();
+    }
+
     // 캔버스 수정
     public void updateCanvas(String email, Long workSpaceId, String canvasId, CanvasRequestDto canvasRequestDto) {
         String title = canvasRequestDto.title();
