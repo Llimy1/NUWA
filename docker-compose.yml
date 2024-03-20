@@ -1,0 +1,108 @@
+version: '3'
+services:
+
+  green:
+    container_name: green
+    image: llimy1/nuwa
+    ports:
+      - "8081:8080"
+    environment:
+      MARIADB_URL: ${MARIADB_URL}
+      MARIADB_USERNAME: ${MARIADB_USERNAME}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_NAME: ${MARIADB_NAME}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      MONGODB_IP: ${MONGODB_IP}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_NAME: ${MONGODB_NAME}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      SENTRY_KEY: ${SENTRY_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_ID: ${GOOGLE_ID}
+      GOOGLE_SECRET: ${GOOGLE_SECRET}
+      GOOGLE_URI: ${GOOGLE_URI}
+      NAVER_ID: ${NAVER_ID}
+      NAVER_SECRET: ${NAVER_SECRET}
+      NAVER_URI: ${NAVER_URI}
+      KAKAO_ID: ${KAKAO_ID}
+      KAKAO_URI: ${KAKAO_URI}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
+      GMAIL_ADDRESS: ${GMAIL_ADDRESS}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
+      ADMIN_URL: ${ADMIN_URL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SERVICE_URL: ${SERVICE_URL}
+    networks:
+      - nuwa-net
+
+  blue:
+    container_name: blue
+    image: llimy1/nuwa
+    ports:
+      - "8082:8080"
+    environment:
+      MARIADB_URL: ${MARIADB_URL}
+      MARIADB_USERNAME: ${MARIADB_USERNAME}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_NAME: ${MARIADB_NAME}
+      REDIS_USERNAME: ${REDIS_USERNAME}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      MONGODB_IP: ${MONGODB_IP}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_NAME: ${MONGODB_NAME}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      SENTRY_KEY: ${SENTRY_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_ID: ${GOOGLE_ID}
+      GOOGLE_SECRET: ${GOOGLE_SECRET}
+      GOOGLE_URI: ${GOOGLE_URI}
+      NAVER_ID: ${NAVER_ID}
+      NAVER_SECRET: ${NAVER_SECRET}
+      NAVER_URI: ${NAVER_URI}
+      KAKAO_ID: ${KAKAO_ID}
+      KAKAO_URI: ${KAKAO_URI}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      AWS_BUCKET: ${AWS_BUCKET}
+      GMAIL_ADDRESS: ${GMAIL_ADDRESS}
+      GMAIL_PASSWORD: ${GMAIL_PASSWORD}
+      ADMIN_URL: ${ADMIN_URL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SERVICE_URL: ${SERVICE_URL}
+    networks:
+      - nuwa-net
+
+  monitor:
+    container_name: monitoring
+    image: llimy1/monitor
+    ports:
+      - "8085:8085"
+    networks:
+      - nuwa-net
+
+  redis:
+    image: redis:alpine
+    command: redis-server /usr/local/etc/nuwa-redis/redis.conf --requirepass ${REDIS_PASSWORD}
+    container_name: nuwa-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/nuwa-redis:/data
+      - ./data/nuwa-redis/redis.conf:/usr/local/etc/nuwa-redis/redis.conf
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - nuwa-net
+
+networks:
+  nuwa-net:
+    driver: bridge

@@ -1,1 +1,67 @@
+spring:
+  profiles:
+    active: dev
+    include:
+      - db
+      - sentry
+      - jwt
+      - oauth
+      - aws
 
+  boot:
+    admin:
+      client:
+        url:
+          - ${ADMIN_URL}
+        auto-registration: true
+        username: ${ADMIN_USERNAME}
+        password: ${ADMIN_PASSWORD}
+        instance:
+          service-url: ${SERVICE_URL}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show_sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 50MB
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_ADDRESS}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  com:
+    amazonaws:
+      util:
+        EC2MetadataUtils: error
+
+logging:
+  config:
+    classpath: logback-dev.xml
+  file:
+    name: ./logs/logFile.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
