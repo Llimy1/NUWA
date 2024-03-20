@@ -35,6 +35,8 @@ services:
       GMAIL_ADDRESS: ${GMAIL_ADDRESS}
       GMAIL_PASSWORD: ${GMAIL_PASSWORD}
       ADMIN_URL: ${ADMIN_URL}
+    networks:
+      - nuwa-net
 
   blue:
     container_name: blue
@@ -70,6 +72,8 @@ services:
       GMAIL_ADDRESS: ${GMAIL_ADDRESS}
       GMAIL_PASSWORD: ${GMAIL_PASSWORD}
       ADMIN_URL: ${ADMIN_URL}
+    networks:
+      - nuwa-net
 
   redis:
     image: redis:alpine
@@ -82,3 +86,7 @@ services:
       - ./data/nuwa-redis/redis.conf:/usr/local/etc/nuwa-redis/redis.conf
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+
+networks:
+  nuwa-net:
+    driver: bridge
