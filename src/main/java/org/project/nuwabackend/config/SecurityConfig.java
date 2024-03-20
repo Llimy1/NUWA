@@ -50,12 +50,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
+                        .requestMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**", "/favicon.ico", "/logs/**").permitAll()
                         .requestMatchers("/api/signup/**").permitAll()
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/check/**").permitAll()
                         .requestMatchers("/socket/**").permitAll()
                         .requestMatchers("/notification/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e ->
@@ -90,7 +91,4 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
-
-
-
 }

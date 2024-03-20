@@ -4,6 +4,10 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
+ext {
+    springBootAdminVersion = "3.2.1"
+}
+
 group = 'org.project'
 version = '0.0.1-SNAPSHOT'
 
@@ -41,6 +45,9 @@ dependencies {
     // WebSocket
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
+    // admin
+    implementation 'de.codecentric:spring-boot-admin-starter-client:3.2.2'
+
     // AWS
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.673'
 
@@ -73,6 +80,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 }
+
+dependencyManagement {
+    imports {
+        mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
+    }
+}
+
 
 tasks.named('test') {
     useJUnitPlatform()

@@ -8,6 +8,12 @@ spring:
       - oauth
       - aws
 
+  boot:
+    admin:
+      client:
+        url:
+          - ${ADMIN_URL}
+
   jpa:
     hibernate:
       ddl-auto: none
@@ -17,8 +23,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
     open-in-view: false
-  #    database-platform: org.hibernate.dialect.MariaDB106Dialect
-#        dialect: org.hibernate.dialect.MySQLDialect
 
   servlet:
     multipart:
@@ -37,13 +41,22 @@ spring:
           starttls:
             enable: true
 
-#logging:
-#  level:
-#    org.hibernate.sql: debug
-#    com.zaxxer.hikari.HikariConfig: DEBUG
-#    com.zaxxer.hikari: TRACE
-
   com:
     amazonaws:
       util:
         EC2MetadataUtils: error
+
+logging:
+  config:
+    classpath: logback-dev.xml
+  file:
+    name: logFile.log
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
