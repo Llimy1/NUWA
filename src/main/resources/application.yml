@@ -60,3 +60,6 @@ management:
   endpoint:
     health:
       show-details: always
+
+ip:
+  address: ${LOCAL_IP_ADDRESS}
