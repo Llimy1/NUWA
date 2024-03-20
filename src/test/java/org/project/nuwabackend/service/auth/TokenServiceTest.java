@@ -6,11 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.domain.redis.RefreshToken;
-import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
-import org.project.nuwabackend.global.exception.NotFoundException;
-import org.project.nuwabackend.repository.redis.RefreshTokenRepository;
-import org.project.nuwabackend.type.Role;
+import org.project.nuwabackend.nuwa.auth.service.token.JwtUtil;
+import org.project.nuwabackend.nuwa.auth.service.token.TokenService;
+import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
+import org.project.nuwabackend.nuwa.auth.dto.GeneratedTokenDto;
+import org.project.nuwabackend.global.exception.custom.NotFoundException;
+import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
+import org.project.nuwabackend.nuwa.auth.type.Role;
 
 import java.util.Optional;
 
@@ -20,7 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.project.nuwabackend.global.type.ErrorMessage.REFRESH_TOKEN_NOT_FOUND;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.REFRESH_TOKEN_NOT_FOUND;
 
 @DisplayName("[Service] Token Service Test")
 @ExtendWith(MockitoExtension.class)

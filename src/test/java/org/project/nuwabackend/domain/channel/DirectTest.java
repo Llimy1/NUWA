@@ -3,9 +3,10 @@ package org.project.nuwabackend.domain.channel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.domain.workspace.WorkSpace;
-import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.nuwa.domain.channel.Direct;
+import org.project.nuwabackend.nuwa.domain.member.Member;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpace;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpaceMember;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

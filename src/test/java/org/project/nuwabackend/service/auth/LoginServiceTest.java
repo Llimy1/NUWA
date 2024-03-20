@@ -7,12 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.dto.auth.request.LoginRequestDto;
-import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
-import org.project.nuwabackend.global.exception.LoginException;
-import org.project.nuwabackend.repository.jpa.MemberRepository;
-import org.project.nuwabackend.type.Role;
+import org.project.nuwabackend.nuwa.auth.service.LoginService;
+import org.project.nuwabackend.nuwa.auth.service.token.JwtUtil;
+import org.project.nuwabackend.nuwa.domain.member.Member;
+import org.project.nuwabackend.nuwa.auth.dto.request.LoginRequestDto;
+import org.project.nuwabackend.nuwa.auth.dto.GeneratedTokenDto;
+import org.project.nuwabackend.global.exception.custom.LoginException;
+import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
+import org.project.nuwabackend.nuwa.auth.type.Role;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.project.nuwabackend.global.type.ErrorMessage.*;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.*;
 
 @DisplayName("[Service] Login Service Test")
 @ExtendWith(MockitoExtension.class)

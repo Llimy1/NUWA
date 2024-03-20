@@ -3,14 +3,15 @@ package org.project.nuwabackend.domain.multimedia;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.project.nuwabackend.domain.channel.Channel;
-import org.project.nuwabackend.domain.channel.Chat;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.domain.workspace.WorkSpace;
-import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.type.FileType;
-import org.project.nuwabackend.type.FileUploadType;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.project.nuwabackend.nuwa.domain.channel.Channel;
+import org.project.nuwabackend.nuwa.domain.channel.Chat;
+import org.project.nuwabackend.nuwa.domain.member.Member;
+import org.project.nuwabackend.nuwa.domain.multimedia.File;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpace;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.nuwa.file.type.FileType;
+import org.project.nuwabackend.nuwa.file.type.FileUploadType;
+import org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -2,8 +2,7 @@ package org.project.nuwabackend.domain.redis;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
+import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
