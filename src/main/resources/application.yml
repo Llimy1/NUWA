@@ -13,6 +13,11 @@ spring:
       client:
         url:
           - ${ADMIN_URL}
+        auto-registration: true
+        username: ${ADMIN_USERNAME}
+        password: ${ADMIN_PASSWORD}
+        instance:
+          service-url: ${SERVICE_URL}
 
   jpa:
     hibernate:
@@ -50,7 +55,7 @@ logging:
   config:
     classpath: logback-dev.xml
   file:
-    name: ./log/logFile.log
+    name: ./logs/logFile.log
 
 management:
   endpoints:

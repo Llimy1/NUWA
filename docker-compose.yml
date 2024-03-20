@@ -35,6 +35,9 @@ services:
       GMAIL_ADDRESS: ${GMAIL_ADDRESS}
       GMAIL_PASSWORD: ${GMAIL_PASSWORD}
       ADMIN_URL: ${ADMIN_URL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SERVICE_URL: ${SERVICE_URL}
     networks:
       - nuwa-net
 
@@ -72,6 +75,9 @@ services:
       GMAIL_ADDRESS: ${GMAIL_ADDRESS}
       GMAIL_PASSWORD: ${GMAIL_PASSWORD}
       ADMIN_URL: ${ADMIN_URL}
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      SERVICE_URL: ${SERVICE_URL}
     networks:
       - nuwa-net
 
