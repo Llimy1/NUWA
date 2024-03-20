@@ -6,7 +6,7 @@
 </div>
 </br>
 
-## <div align="center">[NUWA 실시간 협업툴로 이동하기(배포 전)]()<div>
+## <div align="center">[NUWA 실시간 협업툴로 이동하기(배포 전)](https://nu-wa.online/)<div>
 <br>
 
 ## 👏 Introduce
@@ -51,11 +51,12 @@
 - [MongoDB 해킹](https://classruntime.tistory.com/entry/Nuwa-Project-MongoDB-%ED%95%B4%ED%82%B9-issue)
 - [AWS S3 파일 삭제](https://classruntime.tistory.com/entry/Nuwa-Project-S3-Delete-File-issue)
 - [EC2 메모리 부족 현상](https://classruntime.tistory.com/entry/Nuwa-Project-EC2-%EB%A9%94%EB%AA%A8%EB%A6%AC-%EB%B6%80%EC%A1%B1-%ED%98%84%EC%83%81)
+- [HikariCP pool 리소스 해제](https://classruntime.tistory.com/entry/Nuwa-Project-HikariCP-pool-%EB%A6%AC%EC%86%8C%EC%8A%A4-%ED%95%B4%EC%A0%9Cissue)
 <br>
 
 
 
 ### ERD
-  ![ERD](https://github.com/NU-WA-Project/BE/assets/122381580/b925aba3-1e1f-4b96-9bcb-53ab1b1dd83d)
+  ![ERD](https://github.com/NU-WA-Project/BE/assets/122381580/12c8e1cb-5f0d-46bb-b491-fc6514e766e5)
 ### Backend Architecture
   ![Backend Architecture](https://github.com/NU-WA-Project/BE/assets/122381580/a3620bf4-233b-4f5a-a6a4-5c9581e3968b)
