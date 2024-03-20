@@ -35,7 +35,8 @@ services:
       GMAIL_ADDRESS: ${GMAIL_ADDRESS}
       GMAIL_PASSWORD: ${GMAIL_PASSWORD}
       ADMIN_URL: ${ADMIN_URL}
-      LOCAL_IP_ADDRESS: ${LOCAL_IP_ADDRESS}
+    networks:
+      - nuwa-net
 
   blue:
     container_name: blue
@@ -71,7 +72,16 @@ services:
       GMAIL_ADDRESS: ${GMAIL_ADDRESS}
       GMAIL_PASSWORD: ${GMAIL_PASSWORD}
       ADMIN_URL: ${ADMIN_URL}
-      LOCAL_IP_ADDRESS: ${LOCAL_IP_ADDRESS}
+    networks:
+      - nuwa-net
+
+  monitor:
+    container_name: monitoring
+    image: llimy1/monitor
+    ports:
+      - "8085:8085"
+    networks:
+      - nuwa-net
 
   redis:
     image: redis:alpine
@@ -84,3 +94,9 @@ services:
       - ./data/nuwa-redis/redis.conf:/usr/local/etc/nuwa-redis/redis.conf
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - nuwa-net
+
+networks:
+  nuwa-net:
+    driver: bridge

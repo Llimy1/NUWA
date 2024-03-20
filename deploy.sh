@@ -9,13 +9,13 @@ else
     echo "Redis container is already running."
 fi
 
-# Mongo 컨테이너 상태 확인 및 시작
-IS_MONGO_RUNNING=$(docker ps | grep mongo) # 변수명 오타 수정
-if [ -z "$IS_MONGO_RUNNING" ]; then
-    echo "Starting Mongo container..."
-    docker-compose up -d mongo
+# Monitoring 컨테이너 상태 확인
+IS_MONITOR_RUNNING=$(docker ps | grep monitor)
+if [ -z "$IS_MONITOR_RUNNING" ]; then
+  echo "Starting Monitoring container..."
+  docker-compose up -d monitor
 else
-    echo "Mongo container is already running."
+  echo "Monitor container is already running."
 fi
 
 IS_GREEN=$(docker ps | grep green)

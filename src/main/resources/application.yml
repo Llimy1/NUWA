@@ -50,7 +50,7 @@ logging:
   config:
     classpath: logback-dev.xml
   file:
-    name: logFile.log
+    name: ./log/logFile.log
 
 management:
   endpoints:
@@ -60,6 +60,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-ip:
-  address: ${LOCAL_IP_ADDRESS}
