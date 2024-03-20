@@ -1,13 +1,10 @@
 package org.project.nuwabackend.domain.workspace;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpace;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("[Domain] WorkSpace Domain Test")
 class WorkSpaceTest {

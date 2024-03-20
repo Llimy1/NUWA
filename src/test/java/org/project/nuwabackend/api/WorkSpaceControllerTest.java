@@ -9,19 +9,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.api.workspace.WorkSpaceController;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponseDto;
-import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
-import org.project.nuwabackend.dto.workspace.response.WorkSpaceIdResponse;
-import org.project.nuwabackend.dto.workspace.response.WorkSpaceMemberIdResponse;
-import org.project.nuwabackend.global.dto.GlobalSuccessResponseDto;
-import org.project.nuwabackend.global.service.GlobalService;
-import org.project.nuwabackend.service.workspace.WorkSpaceService;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.project.nuwabackend.nuwa.workspace.api.WorkSpaceController;
+import org.project.nuwabackend.nuwa.workspace.api.WorkSpaceInquiryController;
+import org.project.nuwabackend.nuwa.workspace.service.WorkSpaceInquiryService;
+import org.project.nuwabackend.nuwa.workspacemember.api.WorkSpaceMemberController;
+import org.project.nuwabackend.nuwa.workspacemember.dto.request.WorkSpaceMemberRequestDto;
+import org.project.nuwabackend.nuwa.workspacemember.dto.request.WorkSpaceMemberUpdateRequestDto;
+import org.project.nuwabackend.nuwa.workspace.dto.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.nuwa.workspace.dto.request.WorkSpaceUpdateRequestDto;
+import org.project.nuwabackend.nuwa.workspace.dto.response.inquiry.FavoriteWorkSpaceMemberInfoResponseDto;
+import org.project.nuwabackend.nuwa.workspace.dto.response.inquiry.IndividualWorkSpaceMemberInfoResponseDto;
+import org.project.nuwabackend.nuwa.workspace.dto.response.workspace.WorkSpaceIdResponse;
+import org.project.nuwabackend.nuwa.workspacemember.dto.response.WorkSpaceMemberIdResponse;
+import org.project.nuwabackend.global.response.dto.GlobalSuccessResponseDto;
+import org.project.nuwabackend.global.response.service.GlobalService;
+import org.project.nuwabackend.nuwa.workspace.service.WorkSpaceService;
+import org.project.nuwabackend.nuwa.workspacemember.service.WorkSpaceMemberService;
+import org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -32,14 +36,14 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.project.nuwabackend.global.type.GlobalResponseStatus.SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
-import static org.project.nuwabackend.global.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
+import static org.project.nuwabackend.global.response.type.GlobalResponseStatus.SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.CREATE_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.FAVORITE_WORK_SPACE_MEMBER_LIST_RETURN_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.INDIVIDUAL_WORK_SPACE_MEMBER_INFO_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.JOIN_WORK_SPACE_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.WORK_SPACE_INFO_UPDATE_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.WORK_SPACE_MEMBER_INFO_UPDATE_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.WORK_SPACE_USE_SUCCESS;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -54,12 +58,20 @@ class WorkSpaceControllerTest {
 
     @Mock
     WorkSpaceService workSpaceService;
+    @Mock
+    WorkSpaceMemberService workSpaceMemberService;
+    @Mock
+    WorkSpaceInquiryService workSpaceInquiryService;
 
     @Mock
     GlobalService globalService;
 
     @InjectMocks
     WorkSpaceController workSpaceController;
+    @InjectMocks
+    WorkSpaceInquiryController workSpaceInquiryController;
+    @InjectMocks
+    WorkSpaceMemberController workSpaceMemberController;
 
     private MockMvc mvc;
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -85,7 +97,7 @@ class WorkSpaceControllerTest {
 
     @BeforeEach
     void setup() {
-       mvc = MockMvcBuilders.standaloneSetup(workSpaceController).build();
+       mvc = MockMvcBuilders.standaloneSetup(workSpaceController, workSpaceInquiryController, workSpaceMemberController).build();
     }
 
     @Test
@@ -138,7 +150,7 @@ class WorkSpaceControllerTest {
                         .data(workSpaceMemberIdResponse)
                         .build();
 
-        given(workSpaceService.joinWorkSpaceMember(any(), any()))
+        given(workSpaceMemberService.joinWorkSpaceMember(any(), any()))
                 .willReturn(workSpaceMemberId);
         given(globalService.successResponse(anyString(), any()))
                 .willReturn(joinWorkSpaceMemberSuccessResponse);
@@ -209,7 +221,7 @@ class WorkSpaceControllerTest {
                         .workSpaceMemberType(WorkSpaceMemberType.CREATED)
                         .build();
 
-        given(workSpaceService.individualWorkSpaceMemberInfo(any(), any()))
+        given(workSpaceInquiryService.individualWorkSpaceMemberInfo(any(), any()))
                 .willReturn(individualWorkSpaceMemberInfoResponseDto);
 
         GlobalSuccessResponseDto<Object> individualWorkSpaceMemberInfoSuccessResponse =
@@ -322,7 +334,7 @@ class WorkSpaceControllerTest {
         List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtoList =
                 new ArrayList<>(List.of(build));
 
-        given(workSpaceService.favoriteWorkSpaceMemberList(any(), any()))
+        given(workSpaceInquiryService.favoriteWorkSpaceMemberList(any(), any()))
                 .willReturn(favoriteWorkSpaceMemberInfoResponseDtoList);
 
         GlobalSuccessResponseDto<Object> globalSuccessResponseDto =

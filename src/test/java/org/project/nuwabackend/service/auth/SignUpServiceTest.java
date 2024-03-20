@@ -7,12 +7,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.dto.auth.GeneratedTokenDto;
-import org.project.nuwabackend.dto.auth.request.SingUpRequestDto;
-import org.project.nuwabackend.dto.auth.request.SocialSignUpRequestDto;
-import org.project.nuwabackend.global.exception.DuplicationException;
-import org.project.nuwabackend.repository.jpa.MemberRepository;
+import org.project.nuwabackend.nuwa.auth.service.SignUpService;
+import org.project.nuwabackend.nuwa.auth.service.token.JwtUtil;
+import org.project.nuwabackend.nuwa.domain.member.Member;
+import org.project.nuwabackend.nuwa.auth.dto.GeneratedTokenDto;
+import org.project.nuwabackend.nuwa.auth.dto.request.SingUpRequestDto;
+import org.project.nuwabackend.nuwa.auth.dto.request.SocialSignUpRequestDto;
+import org.project.nuwabackend.global.exception.custom.DuplicationException;
+import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,8 +24,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
-import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_NICKNAME;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_EMAIL;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_NICKNAME;
 
 
 @DisplayName("[Service] SignUp Service Test")

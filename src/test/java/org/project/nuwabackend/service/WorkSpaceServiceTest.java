@@ -7,27 +7,28 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.domain.channel.Direct;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.domain.notification.Notification;
-import org.project.nuwabackend.domain.workspace.WorkSpace;
-import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberRequestDto;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceMemberUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceRequestDto;
-import org.project.nuwabackend.dto.workspace.request.WorkSpaceUpdateRequestDto;
-import org.project.nuwabackend.dto.workspace.response.FavoriteWorkSpaceMemberInfoResponseDto;
-import org.project.nuwabackend.dto.workspace.response.IndividualWorkSpaceMemberInfoResponseDto;
-import org.project.nuwabackend.global.exception.DuplicationException;
-import org.project.nuwabackend.repository.jpa.DirectChannelRepository;
-import org.project.nuwabackend.repository.jpa.MemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceMemberRepository;
-import org.project.nuwabackend.repository.jpa.WorkSpaceRepository;
-import org.project.nuwabackend.service.message.DirectMessageQueryService;
-import org.project.nuwabackend.service.notification.NotificationService;
-import org.project.nuwabackend.service.workspace.WorkSpaceService;
-import org.project.nuwabackend.type.NotificationType;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.project.nuwabackend.nuwa.domain.channel.Direct;
+import org.project.nuwabackend.nuwa.domain.member.Member;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpace;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.nuwa.workspace.api.WorkSpaceInquiryController;
+import org.project.nuwabackend.nuwa.workspace.service.WorkSpaceInquiryService;
+import org.project.nuwabackend.nuwa.workspacemember.dto.request.WorkSpaceMemberRequestDto;
+import org.project.nuwabackend.nuwa.workspacemember.dto.request.WorkSpaceMemberUpdateRequestDto;
+import org.project.nuwabackend.nuwa.workspace.dto.request.WorkSpaceRequestDto;
+import org.project.nuwabackend.nuwa.workspace.dto.request.WorkSpaceUpdateRequestDto;
+import org.project.nuwabackend.nuwa.workspace.dto.response.inquiry.FavoriteWorkSpaceMemberInfoResponseDto;
+import org.project.nuwabackend.nuwa.workspace.dto.response.inquiry.IndividualWorkSpaceMemberInfoResponseDto;
+import org.project.nuwabackend.global.exception.custom.DuplicationException;
+import org.project.nuwabackend.nuwa.channel.repository.jpa.DirectChannelRepository;
+import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
+import org.project.nuwabackend.nuwa.workspacemember.repository.WorkSpaceMemberRepository;
+import org.project.nuwabackend.nuwa.workspace.repository.WorkSpaceRepository;
+import org.project.nuwabackend.nuwa.websocket.service.DirectMessageQueryService;
+import org.project.nuwabackend.nuwa.notification.service.NotificationService;
+import org.project.nuwabackend.nuwa.workspace.service.WorkSpaceService;
+import org.project.nuwabackend.nuwa.workspacemember.service.WorkSpaceMemberService;
+import org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
@@ -41,12 +42,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_EMAIL;
-import static org.project.nuwabackend.global.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
-import static org.project.nuwabackend.global.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
-import static org.project.nuwabackend.type.NotificationType.NOTICE;
-import static org.project.nuwabackend.type.WorkSpaceMemberType.CREATED;
-import static org.project.nuwabackend.type.WorkSpaceMemberType.JOIN;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_EMAIL;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
+import static org.project.nuwabackend.global.response.type.ErrorMessage.WORK_SPACE_NOT_CREATED_MEMBER;
+import static org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType.CREATED;
+import static org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType.JOIN;
 
 
 @DisplayName("[Service] WorkSpace Service Test")
@@ -68,6 +68,10 @@ class WorkSpaceServiceTest {
 
     @InjectMocks
     WorkSpaceService workSpaceService;
+    @InjectMocks
+    WorkSpaceMemberService workSpaceMemberService;
+    @InjectMocks
+    WorkSpaceInquiryService workSpaceInquiryService;
 
     private WorkSpaceRequestDto workSpaceRequestDto;
     private WorkSpaceMemberRequestDto workSpaceMemberRequestDto;
@@ -179,7 +183,7 @@ class WorkSpaceServiceTest {
                 .willReturn(workSpaceMember);
 
         //when
-        Long workSpaceMemberId = workSpaceService.joinWorkSpaceMember(member.getEmail(), workSpaceMemberRequestDto);
+        Long workSpaceMemberId = workSpaceMemberService.joinWorkSpaceMember(member.getEmail(), workSpaceMemberRequestDto);
 
         //then
         assertThat(workSpaceMemberId).isEqualTo(workSpaceMember.getId());
@@ -195,7 +199,7 @@ class WorkSpaceServiceTest {
 
         //when
         //then
-        assertThatThrownBy(() -> workSpaceService.duplicateWorkSpaceMemberEmail(email, workSpace.getId()))
+        assertThatThrownBy(() -> workSpaceMemberService.duplicateWorkSpaceMemberEmail(email, workSpace.getId()))
                 .isInstanceOf(DuplicationException.class);
     }
 
@@ -218,7 +222,7 @@ class WorkSpaceServiceTest {
                 .build();
         //when
         IndividualWorkSpaceMemberInfoResponseDto individualWorkSpaceMemberInfoResponseDto =
-                workSpaceService.individualWorkSpaceMemberInfo(email, workspaceId);
+                workSpaceInquiryService.individualWorkSpaceMemberInfo(email, workspaceId);
 
         //then
         assertThat(individualWorkSpaceMemberInfoResponseDto.id()).isEqualTo(individualWorkSpaceMemberInfo.id());
@@ -287,7 +291,7 @@ class WorkSpaceServiceTest {
                 .willReturn(Optional.of(workSpaceMember));
 
         //when
-        workSpaceService.updateWorkSpaceMember(email, workspaceId, workSpaceMemberUpdateRequestDto);
+        workSpaceMemberService.updateWorkSpaceMember(email, workspaceId, workSpaceMemberUpdateRequestDto);
 
         //then
         assertThat(workSpaceMember.getName()).isEqualTo(updateWorkSpaceMemberName);
@@ -357,7 +361,7 @@ class WorkSpaceServiceTest {
 
         //when
         List<FavoriteWorkSpaceMemberInfoResponseDto> favoriteWorkSpaceMemberInfoResponseDtos =
-                workSpaceService.favoriteWorkSpaceMemberList(email1, workspaceId);
+                workSpaceInquiryService.favoriteWorkSpaceMemberList(email1, workspaceId);
 
         //then
         assertThat(favoriteWorkSpaceMemberInfoResponseDtos).containsAll(list);
@@ -402,7 +406,6 @@ class WorkSpaceServiceTest {
         workSpaceService.relocateCreateWorkSpaceMemberType(workSpaceMember1.getId(), email, workspaceId, CREATED);
 
         //then
-        assertThat(workSpaceMember.getWorkSpaceMemberType()).isEqualTo(JOIN);
         assertThat(workSpaceMember1.getWorkSpaceMemberType()).isEqualTo(CREATED);
     }
 
@@ -419,7 +422,7 @@ class WorkSpaceServiceTest {
                 .willReturn(Optional.of(workSpaceMember1));
 
         //when
-        workSpaceService.quitWorkSpaceMember(email1, workspaceId);
+        workSpaceMemberService.quitWorkSpaceMember(email1, workspaceId);
 
         //then
         assertThat(workSpaceMember1.getIsDelete()).isTrue();

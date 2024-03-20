@@ -3,11 +3,12 @@ package org.project.nuwabackend.domain.notification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.project.nuwabackend.domain.member.Member;
-import org.project.nuwabackend.domain.workspace.WorkSpace;
-import org.project.nuwabackend.domain.workspace.WorkSpaceMember;
-import org.project.nuwabackend.type.NotificationType;
-import org.project.nuwabackend.type.WorkSpaceMemberType;
+import org.project.nuwabackend.nuwa.domain.member.Member;
+import org.project.nuwabackend.nuwa.domain.notification.Notification;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpace;
+import org.project.nuwabackend.nuwa.domain.workspace.WorkSpaceMember;
+import org.project.nuwabackend.nuwa.notification.type.NotificationType;
+import org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

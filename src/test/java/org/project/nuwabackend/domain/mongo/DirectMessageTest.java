@@ -3,7 +3,8 @@ package org.project.nuwabackend.domain.mongo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.project.nuwabackend.type.MessageType;
+import org.project.nuwabackend.nuwa.domain.mongo.DirectMessage;
+import org.project.nuwabackend.nuwa.websocket.type.MessageType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

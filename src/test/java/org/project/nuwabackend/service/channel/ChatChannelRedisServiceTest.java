@@ -6,8 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.project.nuwabackend.domain.redis.ChatChannelRedis;
-import org.project.nuwabackend.repository.redis.ChatChannelRedisRepository;
+import org.project.nuwabackend.nuwa.domain.redis.ChatChannelRedis;
+import org.project.nuwabackend.nuwa.channel.service.ChatChannelRedisService;
+import org.project.nuwabackend.nuwa.channel.repository.redis.ChatChannelRedisRepository;
 
 import java.util.ArrayList;
 import java.util.List;

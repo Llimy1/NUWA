@@ -2,6 +2,7 @@ package org.project.nuwabackend.domain.redis;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.project.nuwabackend.nuwa.domain.redis.DirectChannelRedis;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
