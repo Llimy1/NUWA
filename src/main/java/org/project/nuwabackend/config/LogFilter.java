@@ -23,9 +23,13 @@ public class LogFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) servletResponse;
         long startTime = System.currentTimeMillis();
 
-        filterChain.doFilter(servletRequest, servletResponse);
-
-        long duration = System.currentTimeMillis() - startTime;
-        log.info("Request: " + req.getMethod() + " " + req.getRequestURI() + " | Response: " + res.getStatus() + " | Duration: " + duration + " ms");
+        if (!req.getRequestURI().startsWith("/actuator")) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            long duration = System.currentTimeMillis() - startTime;
+            log.info("Request: " + req.getMethod() + " " + req.getRequestURI() + " | Response: " + res.getStatus() + " | Duration: " + duration + " ms");
+        } else {
+            // Actuator 요청의 경우 로그를 남기지 않고 필터 체인을 계속 진행
+            filterChain.doFilter(servletRequest, servletResponse);
+        }
     }
 }
