@@ -3,6 +3,7 @@ package org.project.nuwabackend.global.exception.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
+import org.project.nuwabackend.global.exception.custom.SseException;
 import org.project.nuwabackend.global.response.dto.GlobalErrorResponseDto;
 import org.project.nuwabackend.global.exception.custom.DuplicationException;
 import org.project.nuwabackend.global.exception.custom.JwtException;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
+import java.io.IOException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -140,6 +143,16 @@ public class GlobalExceptionAdviceController {
                 globalService.errorResponse(cae.getMessage());
 
         return ResponseEntity.status(BAD_REQUEST).body(clientAbortExceptionResponse);
+    }
+
+    // SseException
+    @ExceptionHandler(SseException.class)
+    public ResponseEntity<Object> sseException(SseException sec) {
+        log.error("SSE Exception = {}", sec.getMessage());
+        GlobalErrorResponseDto sseExceptionResponse =
+                globalService.errorResponse(sec.getMessage());
+
+        return ResponseEntity.status(BAD_REQUEST).body(sseExceptionResponse);
     }
 
     // Exception
