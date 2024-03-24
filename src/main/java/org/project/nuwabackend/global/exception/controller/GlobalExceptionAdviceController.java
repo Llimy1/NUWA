@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -118,6 +119,16 @@ public class GlobalExceptionAdviceController {
                 globalService.errorResponse(mse.getMessage());
 
         return ResponseEntity.status(BAD_REQUEST).body(maxUploadSizeExceededExceptionResponse);
+    }
+
+    // AsyncRequestTimeoutException
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    public ResponseEntity<Object> asyncRequestTimeoutException(AsyncRequestTimeoutException ate) {
+        log.error("AsyncRequestTimeoutException = {}", ate.getMessage());
+        GlobalErrorResponseDto asyncRequestTimeoutExceptionResponse =
+                globalService.errorResponse(ate.getMessage());
+
+        return ResponseEntity.status(BAD_REQUEST).body(asyncRequestTimeoutExceptionResponse);
     }
 
     // Exception
