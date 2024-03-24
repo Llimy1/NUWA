@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
-@RedisHash(value = "directChannel", timeToLive = 30)
+@RedisHash(value = "directChannel")
 public class DirectChannelRedis {
 
     @Id
