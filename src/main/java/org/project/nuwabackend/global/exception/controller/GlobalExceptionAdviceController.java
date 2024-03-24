@@ -2,6 +2,7 @@ package org.project.nuwabackend.global.exception.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.project.nuwabackend.global.response.dto.GlobalErrorResponseDto;
 import org.project.nuwabackend.global.exception.custom.DuplicationException;
 import org.project.nuwabackend.global.exception.custom.JwtException;
@@ -129,6 +130,16 @@ public class GlobalExceptionAdviceController {
                 globalService.errorResponse(ate.getMessage());
 
         return ResponseEntity.status(BAD_REQUEST).body(asyncRequestTimeoutExceptionResponse);
+    }
+
+    // ClientAbortException
+    @ExceptionHandler(ClientAbortException.class)
+    public ResponseEntity<Object> clientAbortException(ClientAbortException cae) {
+        log.error("ClientAbortException = {}", cae.getMessage());
+        GlobalErrorResponseDto clientAbortExceptionResponse =
+                globalService.errorResponse(cae.getMessage());
+
+        return ResponseEntity.status(BAD_REQUEST).body(clientAbortExceptionResponse);
     }
 
     // Exception
