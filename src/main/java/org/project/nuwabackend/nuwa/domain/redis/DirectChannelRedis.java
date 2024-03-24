@@ -34,16 +34,4 @@ public class DirectChannelRedis {
                 .email(email)
                 .build();
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DirectChannelRedis that)) return false;
-        return Objects.equals(directRoomId, that.directRoomId) && Objects.equals(email, that.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(directRoomId, email);
-    }
 }
