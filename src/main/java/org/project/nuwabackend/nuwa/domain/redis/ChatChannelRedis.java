@@ -34,16 +34,4 @@ public class ChatChannelRedis {
                 .email(email)
                 .build();
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChatChannelRedis that)) return false;
-        return Objects.equals(chatRoomId, that.chatRoomId) && Objects.equals(email, that.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(chatRoomId, email);
-    }
 }
