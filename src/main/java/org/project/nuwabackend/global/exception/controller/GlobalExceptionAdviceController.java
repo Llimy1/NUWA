@@ -12,6 +12,7 @@ import org.project.nuwabackend.global.response.service.GlobalService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -125,6 +126,7 @@ public class GlobalExceptionAdviceController {
 
     // AsyncRequestTimeoutException
     @ExceptionHandler(AsyncRequestTimeoutException.class)
+    @ResponseBody
     public SseEmitter asyncRequestTimeoutException(AsyncRequestTimeoutException ate) {
         log.error("AsyncRequestTimeoutException = {}", ate.getMessage());
 

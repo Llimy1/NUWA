@@ -126,6 +126,7 @@ public class NotificationService {
                                         .notificationSenderName(saveNotification.getSender().getName())
                                         .notificationReceiverId(saveNotification.getReceiver().getId())
                                         .notificationReceiverName(saveNotification.getReceiver().getName())
+                                        .isRead(saveNotification.getIsRead())
                                         .createdAt(saveNotification.getCreatedAt())
                                         .build());
                     }
