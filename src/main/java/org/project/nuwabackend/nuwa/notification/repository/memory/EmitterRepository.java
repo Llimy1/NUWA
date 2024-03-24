@@ -69,6 +69,17 @@ public class EmitterRepository {
         );
     }
 
+    public void deleteAllEventCacheStartWithEmitterId(String emitterId) {
+        eventCache.forEach(
+                (key, data) -> {
+                    if (key.equals(emitterId)) {
+                        eventCache.remove(key);
+                    }
+                }
+        );
+    }
+
+
     public void clearAll(){
         emitters.clear();
     }

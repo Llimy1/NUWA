@@ -3,7 +3,6 @@ package org.project.nuwabackend.nuwa.notification.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.project.nuwabackend.global.exception.custom.NotFoundException;
-import org.project.nuwabackend.global.exception.custom.SseException;
 import org.project.nuwabackend.nuwa.channel.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.nuwa.domain.channel.Channel;
 import org.project.nuwabackend.nuwa.domain.notification.Notification;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -144,10 +144,10 @@ public class NotificationService {
                             .name("sse")
                             .data(data)
                             .build());
-        } catch (Exception e) {
+        } catch (IOException e) {
             emitterRepository.deleteById(emitterId);
+            emitterRepository.deleteAllEventCacheStartWithEmitterId(emitterId);
             log.error("SSE 연결 오류", e);
-            throw new SseException("SSE 연결에 문제가 생겼습니다. cause = " + e.getMessage());
         }
     }
 

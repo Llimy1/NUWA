@@ -3,7 +3,6 @@ package org.project.nuwabackend.global.exception.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
-import org.project.nuwabackend.global.exception.custom.SseException;
 import org.project.nuwabackend.global.response.dto.GlobalErrorResponseDto;
 import org.project.nuwabackend.global.exception.custom.DuplicationException;
 import org.project.nuwabackend.global.exception.custom.JwtException;
@@ -16,8 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-
-import java.io.IOException;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CONFLICT;
@@ -127,32 +125,10 @@ public class GlobalExceptionAdviceController {
 
     // AsyncRequestTimeoutException
     @ExceptionHandler(AsyncRequestTimeoutException.class)
-    public ResponseEntity<Object> asyncRequestTimeoutException(AsyncRequestTimeoutException ate) {
+    public SseEmitter asyncRequestTimeoutException(AsyncRequestTimeoutException ate) {
         log.error("AsyncRequestTimeoutException = {}", ate.getMessage());
-        GlobalErrorResponseDto asyncRequestTimeoutExceptionResponse =
-                globalService.errorResponse(ate.getMessage());
 
-        return ResponseEntity.status(BAD_REQUEST).body(asyncRequestTimeoutExceptionResponse);
-    }
-
-    // ClientAbortException
-    @ExceptionHandler(ClientAbortException.class)
-    public ResponseEntity<Object> clientAbortException(ClientAbortException cae) {
-        log.error("ClientAbortException = {}", cae.getMessage());
-        GlobalErrorResponseDto clientAbortExceptionResponse =
-                globalService.errorResponse(cae.getMessage());
-
-        return ResponseEntity.status(BAD_REQUEST).body(clientAbortExceptionResponse);
-    }
-
-    // SseException
-    @ExceptionHandler(SseException.class)
-    public ResponseEntity<Object> sseException(SseException sec) {
-        log.error("SSE Exception = {}", sec.getMessage());
-        GlobalErrorResponseDto sseExceptionResponse =
-                globalService.errorResponse(sec.getMessage());
-
-        return ResponseEntity.status(BAD_REQUEST).body(sseExceptionResponse);
+        return null;
     }
 
     // Exception
