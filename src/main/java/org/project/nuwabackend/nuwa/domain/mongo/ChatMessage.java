@@ -69,18 +69,6 @@ public class ChatMessage {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChatMessage that)) return false;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
     public static ChatMessage createChatMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String senderImage, String content, List<String> rawString, MessageType messageType, LocalDateTime createdAt) {
         return ChatMessage.builder()
                 .workSpaceId(workSpaceId)

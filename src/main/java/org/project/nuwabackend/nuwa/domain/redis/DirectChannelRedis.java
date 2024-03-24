@@ -11,7 +11,7 @@ import java.util.Objects;
 
 @Getter
 @NoArgsConstructor
-@RedisHash(value = "directChannel")
+@RedisHash(value = "directChannel", timeToLive = 30)
 public class DirectChannelRedis {
 
     @Id
@@ -26,18 +26,6 @@ public class DirectChannelRedis {
     private DirectChannelRedis(String directRoomId, String email) {
         this.directRoomId = directRoomId;
         this.email = email;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DirectChannelRedis that)) return false;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 
     public static DirectChannelRedis createDirectChannelRedis(String directRoomId, String email) {

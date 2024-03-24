@@ -68,16 +68,4 @@ public abstract class Channel extends BaseTimeJpa {
     public void restoreCreateMember() {
         this.isCreateMemberDelete = false;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Channel channel)) return false;
-        return Objects.equals(id, channel.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }
