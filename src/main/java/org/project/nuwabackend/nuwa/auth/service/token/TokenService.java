@@ -2,13 +2,19 @@ package org.project.nuwabackend.nuwa.auth.service.token;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.global.response.type.ErrorMessage;
 import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
 import org.project.nuwabackend.nuwa.auth.dto.GeneratedTokenDto;
 import org.project.nuwabackend.global.exception.custom.NotFoundException;
 import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
+import org.project.nuwabackend.nuwa.notification.repository.memory.EmitterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+
+import static org.project.nuwabackend.global.response.type.ErrorMessage.REFRESH_TOKEN_EXPIRED;
 import static org.project.nuwabackend.global.response.type.ErrorMessage.REFRESH_TOKEN_NOT_FOUND;
 
 @Slf4j
@@ -35,23 +41,20 @@ public class TokenService {
         refreshTokenRepository.delete(refreshToken);
     }
 
-    public String reissueToken(String accessToken) {
+    public String reissueToken(String email) {
         log.info("Reissue Token Service 호출");
 
-        String email = jwtUtil.getEmail(accessToken);
-        String role = jwtUtil.getRole(accessToken);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByEmail(email);
 
-        GeneratedTokenDto generatedToken = jwtUtil.generatedToken(email, role);
+        if (optionalRefreshToken.isPresent() && jwtUtil.verifyToken(optionalRefreshToken.get().getRefreshToken())) {
+            RefreshToken resultToken = optionalRefreshToken.get();
 
-        RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(REFRESH_TOKEN_NOT_FOUND));
+            String refreshToken = resultToken.getRefreshToken();
+            String role = jwtUtil.getRole(refreshToken);
 
-        String newAccessToken = generatedToken.accessToken();
-        String newRefreshToken = generatedToken.refreshToken();
-
-        // Refresh Token Update
-        refreshToken.updateRefreshToken(newRefreshToken);
-
-        return newAccessToken;
+            return "Bearer " + jwtUtil.generateAccessToken(email, role);
+        } else {
+            throw new IllegalStateException(REFRESH_TOKEN_EXPIRED.getMessage());
+        }
     }
 }

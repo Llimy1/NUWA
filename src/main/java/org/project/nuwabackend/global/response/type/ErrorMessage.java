@@ -22,8 +22,9 @@ public enum ErrorMessage {
     WORK_SPACE_MEMBER_BEFORE_QUIT("이미 나간 멤버입니다."),
     WORK_SPACE_NOT_CREATED_MEMBER("해당 워크스페이스를 생성한 멤버가 아닙니다."),
     WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE("해당 멤버의 타입은 생성한 인원입니다."),
-    WORK_SPACE_ALREADY_CREATE_TYPE("이미 생성한 멤버 타입입니다."),
-    WORK_SPACE_ALREADY_JOIN_TYPE("이미 참여한 멤버 타입입니다."),
+    WORK_SPACE_ALREADY_CREATE_TYPE("해당 사용자는 이미 운영자입니다."),
+    WORK_SPACE_ALREADY_JOIN_TYPE("해당 사용자는 이미 멤버입니다."),
+    CURRENT_WORK_SPACE_TYPE_BY_JOIN("현재 권한은 일반 멤버 타입입니다."),
     DIRECT_CHANNEL_NOT_FOUND("다이렉트 채널을 해당 멤버들로 찾을 수 없습니다."),
     REDIS_DIRECT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 다이렉트 채널 접속 정보가 존재하지 않습니다."),
     REDIS_CHAT_CHANNEL_AND_EMAIL_NOT_FOUND_INFO("레디스에 채팅 채널 접속 정보가 존재하지 않습니다."),
@@ -45,7 +46,8 @@ public enum ErrorMessage {
     DIRECT_MESSAGE_DELETE_FAIL("다이렉트 채팅 삭제에 실패했습니다."),
     SEARCH_TITLE_NOT_FOUND("검색어를 입력하지 않았습니다."),
     CHAT_JOIN_MEMBER_NOT_FOUND("채널에 참여한 멤버를 찾을 수 없습니다."),
-    DUPLICATE_LOGIN_BY_WEB("다른 웹에서 이미 로그인 중입니다.");
+    DUPLICATE_LOGIN_BY_WEB("다른 웹에서 이미 로그인 중입니다."),
+    REFRESH_TOKEN_EXPIRED("인증 토큰이 만료되었습니다. 재로그인 해주세요.");
 
     private final String message;
 

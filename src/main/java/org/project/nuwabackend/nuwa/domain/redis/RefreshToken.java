@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Getter
-@RedisHash(value = "jwtToken", timeToLive = 60 * 60 * 24 * 14)
+@RedisHash(value = "jwtToken", timeToLive = 60 * 60 * 24)
 public class RefreshToken implements Serializable {
 
     @Id
@@ -20,7 +20,7 @@ public class RefreshToken implements Serializable {
     @Indexed
     private final String email;
 
-    private String refreshToken;
+    private final String refreshToken;
 
     @Builder
     private RefreshToken(String id, String email, String refreshToken) {
@@ -35,9 +35,5 @@ public class RefreshToken implements Serializable {
                 .email(email)
                 .refreshToken(refreshToken)
                 .build();
-    }
-
-    public void updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 }

@@ -66,9 +66,9 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<Object> reissue(@RequestHeader("Authorization") String accessToken) {
+    public ResponseEntity<Object> reissue(@RequestParam(value = "email") String email) {
         log.info("Token Reissue API 호출");
-        String newAccessToken = tokenService.reissueToken(accessToken);
+        String newAccessToken = tokenService.reissueToken(email);
 
         GlobalSuccessResponseDto<Object> reissueSuccessResponse =
                 globalService.successResponse(REISSUE_TOKEN_SUCCESS.getMessage()

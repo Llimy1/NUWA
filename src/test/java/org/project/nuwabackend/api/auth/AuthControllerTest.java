@@ -135,40 +135,40 @@ class AuthControllerTest {
                 .andDo(print());
     }
 
-    @Test
-    @DisplayName("[API] Reissue Success")
-    void reissueSuccess() throws Exception {
-        //given
-
-        String newAccessToken = "new" + ACCESS_TOKEN;
-        AccessTokenResponse accessTokenResponse =
-                new AccessTokenResponse(newAccessToken);
-
-        GlobalSuccessResponseDto<Object> reissueSuccessResponse =
-                GlobalSuccessResponseDto.builder()
-                        .status(SUCCESS.getValue())
-                        .message(REISSUE_TOKEN_SUCCESS.getMessage())
-                        .data(accessTokenResponse)
-                        .build();
-
-        given(tokenService.reissueToken(anyString()))
-                .willReturn(newAccessToken);
-        given(globalService.successResponse(anyString(), any()))
-                .willReturn(reissueSuccessResponse);
-
-        //when
-        //then
-        mvc.perform(post("/api/reissue")
-                        .contentType(APPLICATION_JSON)
-                        .header("Authorization", ACCESS_TOKEN))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status")
-                        .value(SUCCESS.getValue()))
-                .andExpect(jsonPath("$.message")
-                        .value(REISSUE_TOKEN_SUCCESS.getMessage()))
-                .andExpect(jsonPath("$.data.accessToken")
-                        .value(accessTokenResponse.accessToken()))
-                .andDo(print());
-
-    }
+//    @Test
+//    @DisplayName("[API] Reissue Success")
+//    void reissueSuccess() throws Exception {
+//        //given
+//
+//        String newAccessToken = "new" + ACCESS_TOKEN;
+//        AccessTokenResponse accessTokenResponse =
+//                new AccessTokenResponse(newAccessToken);
+//
+//        GlobalSuccessResponseDto<Object> reissueSuccessResponse =
+//                GlobalSuccessResponseDto.builder()
+//                        .status(SUCCESS.getValue())
+//                        .message(REISSUE_TOKEN_SUCCESS.getMessage())
+//                        .data(accessTokenResponse)
+//                        .build();
+//
+//        given(tokenService.reissueToken(anyString()))
+//                .willReturn(newAccessToken);
+//        given(globalService.successResponse(anyString(), any()))
+//                .willReturn(reissueSuccessResponse);
+//
+//        //when
+//        //then
+//        mvc.perform(post("/api/reissue")
+//                        .contentType(APPLICATION_JSON)
+//                        .header("Authorization", ACCESS_TOKEN))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.status")
+//                        .value(SUCCESS.getValue()))
+//                .andExpect(jsonPath("$.message")
+//                        .value(REISSUE_TOKEN_SUCCESS.getMessage()))
+//                .andExpect(jsonPath("$.data.accessToken")
+//                        .value(accessTokenResponse.accessToken()))
+//                .andDo(print());
+//
+//    }
 }

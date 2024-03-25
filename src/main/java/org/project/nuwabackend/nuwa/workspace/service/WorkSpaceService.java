@@ -18,6 +18,7 @@ import org.project.nuwabackend.nuwa.workspacemember.type.WorkSpaceMemberType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.project.nuwabackend.global.response.type.ErrorMessage.CURRENT_WORK_SPACE_TYPE_BY_JOIN;
 import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_WORK_SPACE_NAME;
 import static org.project.nuwabackend.global.response.type.ErrorMessage.WORK_SPACE_ALREADY_CREATE_TYPE;
 import static org.project.nuwabackend.global.response.type.ErrorMessage.WORK_SPACE_ALREADY_JOIN_TYPE;
@@ -123,21 +124,23 @@ public class WorkSpaceService {
         WorkSpaceMemberType createWorkSpaceMemberType = createWorkSpaceMember.getWorkSpaceMemberType();
         WorkSpaceMemberType joinWorkSpaceMemberType = joinWorkSpaceMember.getWorkSpaceMemberType();
 
-        if (!createWorkSpaceMemberType.equals(CREATED)) {
-            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+        if (createWorkSpaceMemberType.equals(JOIN)) {
+            throw new IllegalArgumentException(CURRENT_WORK_SPACE_TYPE_BY_JOIN.getMessage());
         }
 
         String workSpaceMemberName = joinWorkSpaceMember.getName();
+
         if (type.equals(CREATED)) {
+
             if (joinWorkSpaceMemberType.equals(CREATED)) {
                 throw new IllegalArgumentException(WORK_SPACE_ALREADY_CREATE_TYPE.getMessage());
             }
 
             joinWorkSpaceMember.updateCreateWorkSpaceMemberType();
-            notificationService.send(workSpaceMemberName + "님이 워크스페이스 소유주로 변경되었습니다.",
+            notificationService.send(workSpaceMemberName + "님이 워크스페이스 운영자로 변경되었습니다.",
                     createWorkSpaceUrl(workSpaceId), NOTICE, createWorkSpaceMember, joinWorkSpaceMember);
         } else {
-            if (!joinWorkSpaceMemberType.equals(JOIN)) {
+            if (joinWorkSpaceMemberType.equals(JOIN)) {
                 throw new IllegalArgumentException(WORK_SPACE_ALREADY_JOIN_TYPE.getMessage());
             }
 
