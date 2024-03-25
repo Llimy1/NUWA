@@ -7,7 +7,7 @@ import org.project.nuwabackend.nuwa.channel.dto.request.ChatChannelJoinMemberReq
 import org.project.nuwabackend.nuwa.channel.dto.request.ChatChannelRequestDto;
 import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelInfoResponseDto;
 import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelListResponseDto;
-import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelRoomIdResponseDto;
+import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelIdResponseDto;
 import org.project.nuwabackend.global.annotation.custom.CustomPageable;
 import org.project.nuwabackend.global.annotation.custom.MemberEmail;
 import org.project.nuwabackend.global.response.dto.GlobalSuccessResponseDto;
@@ -47,13 +47,13 @@ public class ChatChannelController {
     public ResponseEntity<Object> createChatChannel(@MemberEmail String email,
                                                     @RequestBody ChatChannelRequestDto chatChannelRequestDto) {
         log.info("채팅 채널 생성 API");
-        String chatChannelRoomId = chatChannelService.createChatChannel(email, chatChannelRequestDto);
+        Long chatChannelId = chatChannelService.createChatChannel(email, chatChannelRequestDto);
 
-        ChatChannelRoomIdResponseDto chatChannelRoomIdResponseDto = new ChatChannelRoomIdResponseDto(chatChannelRoomId);
+        ChatChannelIdResponseDto chatChannelIdResponseDto = new ChatChannelIdResponseDto(chatChannelId);
         GlobalSuccessResponseDto<Object> createChatChannelSuccessResponse =
                 globalService.successResponse(
                         CREATE_CHAT_CHANNEL_SUCCESS.getMessage(),
-                        chatChannelRoomIdResponseDto);
+                        chatChannelIdResponseDto);
 
         return ResponseEntity.status(CREATED).body(createChatChannelSuccessResponse);
     }

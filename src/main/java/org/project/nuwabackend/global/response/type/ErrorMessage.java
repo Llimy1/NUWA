@@ -44,7 +44,8 @@ public enum ErrorMessage {
     DIRECT_MESSAGE_UPDATE_FAIL("다이렉트 채팅 수정에 실패했습니다."),
     DIRECT_MESSAGE_DELETE_FAIL("다이렉트 채팅 삭제에 실패했습니다."),
     SEARCH_TITLE_NOT_FOUND("검색어를 입력하지 않았습니다."),
-    CHAT_JOIN_MEMBER_NOT_FOUND("채널에 참여한 멤버를 찾을 수 없습니다.");
+    CHAT_JOIN_MEMBER_NOT_FOUND("채널에 참여한 멤버를 찾을 수 없습니다."),
+    DUPLICATE_LOGIN_BY_WEB("다른 웹에서 이미 로그인 중입니다.");
 
     private final String message;
 

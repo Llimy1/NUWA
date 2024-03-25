@@ -2,6 +2,8 @@ package org.project.nuwabackend.nuwa.auth.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.global.exception.custom.LoginException;
+import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
 import org.project.nuwabackend.nuwa.domain.member.Member;
 import org.project.nuwabackend.nuwa.domain.member.OAuth2Attribute;
 import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
@@ -20,6 +22,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_LOGIN_BY_WEB;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ import java.util.Optional;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -57,6 +62,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 사용자 email 정보를 가져온다
         String email = (String) userAttribute.get("email");
+
+        refreshTokenRepository.findByEmail(email).ifPresent(e -> {
+            throw new LoginException(DUPLICATE_LOGIN_BY_WEB);
+        });
 
         Optional<Member> findMember = memberRepository.findByEmail(email);
 

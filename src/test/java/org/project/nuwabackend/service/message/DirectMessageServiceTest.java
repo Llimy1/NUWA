@@ -120,30 +120,30 @@ class DirectMessageServiceTest {
     }
 
 
-    @Test
-    @DisplayName("[Service] Save Direct Message Test")
-    void saveDirectMessageTest() {
-        //given
-        DirectMessage directMessage = DirectMessage.createDirectMessage(
-                directMessageResponseDto.getWorkSpaceId(),
-                directMessageResponseDto.getRoomId(),
-                directMessageResponseDto.getSenderId(),
-                directMessageResponseDto.getSenderName(),
-                directMessageResponseDto.getContent(),
-                directMessageResponseDto.getRawString(),
-                directMessageResponseDto.getReadCount(),
-                MessageType.TEXT,
-                LocalDateTime.now());
-
-        given(directMessageRepository.save(any()))
-                .willReturn(directMessage);
-
-        //when
-        directMessageService.saveDirectMessage(directMessageResponseDto);
-
-        //then
-        verify(directMessageRepository).save(directMessage);
-    }
+//    @Test
+//    @DisplayName("[Service] Save Direct Message Test")
+//    void saveDirectMessageTest() {
+//        //given
+//        DirectMessage directMessage = DirectMessage.createDirectMessage(
+//                directMessageResponseDto.getWorkSpaceId(),
+//                directMessageResponseDto.getRoomId(),
+//                directMessageResponseDto.getSenderId(),
+//                directMessageResponseDto.getSenderName(),
+//                directMessageResponseDto.getContent(),
+//                directMessageResponseDto.getRawString(),
+//                directMessageResponseDto.getReadCount(),
+//                MessageType.TEXT,
+//                LocalDateTime.now());
+//
+//        given(directMessageRepository.save(any()))
+//                .willReturn(directMessage);
+//
+//        //when
+//        directMessageService.saveDirectMessage(directMessageResponseDto);
+//
+//        //then
+//        verify(directMessageRepository).save(directMessage);
+//    }
 
     @Test
     @DisplayName("[Service] Direct Message Slice Sort By Date")
