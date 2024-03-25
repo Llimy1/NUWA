@@ -2,6 +2,8 @@ package org.project.nuwabackend.nuwa.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.global.exception.custom.NotFoundException;
+import org.project.nuwabackend.nuwa.channel.repository.jpa.ChannelRepository;
 import org.project.nuwabackend.nuwa.domain.channel.Channel;
 import org.project.nuwabackend.nuwa.domain.notification.Notification;
 import org.project.nuwabackend.nuwa.domain.workspace.WorkSpaceMember;
@@ -9,12 +11,10 @@ import org.project.nuwabackend.nuwa.notification.dto.request.NotificationIdListR
 import org.project.nuwabackend.nuwa.notification.dto.response.NotificationGroupResponseDto;
 import org.project.nuwabackend.nuwa.notification.dto.response.NotificationListResponseDto;
 import org.project.nuwabackend.nuwa.notification.dto.response.NotificationResponseDto;
-import org.project.nuwabackend.global.exception.custom.NotFoundException;
-import org.project.nuwabackend.nuwa.channel.repository.jpa.ChannelRepository;
-import org.project.nuwabackend.nuwa.workspacemember.repository.WorkSpaceMemberRepository;
-import org.project.nuwabackend.nuwa.notification.repository.memory.EmitterRepository;
 import org.project.nuwabackend.nuwa.notification.repository.jpa.NotificationRepository;
+import org.project.nuwabackend.nuwa.notification.repository.memory.EmitterRepository;
 import org.project.nuwabackend.nuwa.notification.type.NotificationType;
+import org.project.nuwabackend.nuwa.workspacemember.repository.WorkSpaceMemberRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -73,8 +73,6 @@ public class NotificationService {
         // 완료
         saveEmitter.onCompletion(() -> {
             emitterRepository.deleteById(emitterId);
-            emitterRepository.deleteAllStartWithId(String.valueOf(workSpaceMemberId));
-            emitterRepository.deleteAllEventCacheStartWithId(String.valueOf(workSpaceMemberId));
         });
         // 타임아웃
         saveEmitter.onTimeout(() -> {
@@ -128,6 +126,7 @@ public class NotificationService {
                                         .notificationSenderName(saveNotification.getSender().getName())
                                         .notificationReceiverId(saveNotification.getReceiver().getId())
                                         .notificationReceiverName(saveNotification.getReceiver().getName())
+                                        .isRead(saveNotification.getIsRead())
                                         .createdAt(saveNotification.getCreatedAt())
                                         .build());
                     }
@@ -148,6 +147,7 @@ public class NotificationService {
                             .build());
         } catch (IOException e) {
             emitterRepository.deleteById(emitterId);
+            emitterRepository.deleteAllEventCacheStartWithEmitterId(emitterId);
             log.error("SSE 연결 오류", e);
         }
     }

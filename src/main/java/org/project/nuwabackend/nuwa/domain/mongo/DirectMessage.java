@@ -69,18 +69,6 @@ public class DirectMessage {
         this.createdAt = createdAt;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DirectMessage that)) return false;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
     public static DirectMessage createDirectMessage(Long workSpaceId, String roomId, Long senderId, String senderName, String content, List<String> rawString, Long readCount, MessageType messageType, LocalDateTime createdAt) {
         return DirectMessage.builder()
                 .workSpaceId(workSpaceId)

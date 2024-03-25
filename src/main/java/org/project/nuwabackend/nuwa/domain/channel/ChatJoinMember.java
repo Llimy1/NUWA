@@ -63,16 +63,4 @@ public class ChatJoinMember {
     public void restoreJoinMember() {
         this.isJoinMemberDelete = false;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChatJoinMember that)) return false;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.project.nuwabackend.nuwa.channel.dto.request.ChatChannelJoinMemberRequestDto;
 import org.project.nuwabackend.nuwa.channel.dto.request.ChatChannelRequestDto;
 import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelListResponseDto;
-import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelRoomIdResponseDto;
+import org.project.nuwabackend.nuwa.channel.dto.response.ChatChannelIdResponseDto;
 import org.project.nuwabackend.global.response.dto.GlobalSuccessResponseDto;
 import org.project.nuwabackend.global.annotation.resolver.CustomPageableHandlerMethodArgumentResolver;
 import org.project.nuwabackend.global.response.service.GlobalService;
@@ -76,17 +76,17 @@ class ChatChannelControllerTest {
         String body = objectMapper.writeValueAsString(chatChannelRequestDto);
 
         //given
-        String chatChannelRoomId = "roomId";
+        Long chatChannelId = 1L;
         given(chatChannelService.createChatChannel(any(), any()))
-                .willReturn(chatChannelRoomId);
+                .willReturn(chatChannelId);
 
-        ChatChannelRoomIdResponseDto chatChannelRoomIdResponseDto = new ChatChannelRoomIdResponseDto(chatChannelRoomId);
+        ChatChannelIdResponseDto chatChannelIdResponseDto = new ChatChannelIdResponseDto(chatChannelId);
 
         GlobalSuccessResponseDto<Object> globalSuccessResponseDto =
                 GlobalSuccessResponseDto.builder()
                         .status(SUCCESS.getValue())
                         .message(CREATE_CHAT_CHANNEL_SUCCESS.getMessage())
-                        .data(chatChannelRoomIdResponseDto)
+                        .data(chatChannelIdResponseDto)
                         .build();
        given(globalService.successResponse(anyString(), any()))
                .willReturn(globalSuccessResponseDto);

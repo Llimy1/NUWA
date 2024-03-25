@@ -40,18 +40,4 @@ public class RefreshToken implements Serializable {
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof RefreshToken that)) return false;
-        return Objects.equals(email, that.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(email);
-    }
-
-
 }

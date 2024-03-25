@@ -41,7 +41,7 @@ public class ChatChannelService {
 
     // 채팅 채널 생성
     @Transactional
-    public String createChatChannel(String email, ChatChannelRequestDto chatChannelRequestDto) {
+    public Long createChatChannel(String email, ChatChannelRequestDto chatChannelRequestDto) {
         Long workSpaceId = chatChannelRequestDto.workSpaceId();
         String chatChannelName = chatChannelRequestDto.chatChannelName();
 
@@ -55,7 +55,7 @@ public class ChatChannelService {
 
         Chat saveChatChannel = chatChannelRepository.save(chatChannel);
 
-        return saveChatChannel.getRoomId();
+        return saveChatChannel.getId();
     }
 
     // 채팅 채널 참가
