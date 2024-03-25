@@ -71,10 +71,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-//    @Override
-//    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-//        return request.getRequestURI().contains("/api/reissue");
-//    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return request.getRequestURI().contains("/api/reissue");
+    }
 
     public Authentication getAuthentication(SecurityMemberDto securityMemberDto) {
         return new UsernamePasswordAuthenticationToken(securityMemberDto, null,

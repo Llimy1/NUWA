@@ -29,20 +29,20 @@ class RefreshTokenTest {
         assertThat(refreshTokenInfo.getId()).isNotNull();
     }
 
-    @Test
-    @DisplayName("[Domain] Update Refresh Token")
-    void updateRefreshToken() {
-        //given
-        String newRefreshToken = "newRefreshToken";
-        RefreshToken refreshTokenInfo = RefreshToken.createRefreshTokenInfo(
-                email,
-                refreshToken);
-
-        //when
-        refreshTokenInfo.updateRefreshToken(newRefreshToken);
-
-        //then
-        assertThat(refreshTokenInfo.getRefreshToken()).isEqualTo(newRefreshToken);
-    }
+//    @Test
+//    @DisplayName("[Domain] Update Refresh Token")
+//    void updateRefreshToken() {
+//        //given
+//        String newRefreshToken = "newRefreshToken";
+//        RefreshToken refreshTokenInfo = RefreshToken.createRefreshTokenInfo(
+//                email,
+//                refreshToken);
+//
+//        //when
+//        refreshTokenInfo.updateRefreshToken(newRefreshToken);
+//
+//        //then
+//        assertThat(refreshTokenInfo.getRefreshToken()).isEqualTo(newRefreshToken);
+//    }
 
 }

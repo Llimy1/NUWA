@@ -38,7 +38,7 @@ public class JwtUtil implements InitializingBean {
     public GeneratedTokenDto generatedToken(String email, String role) {
         log.info("토큰 생성");
         String accessToken = generateAccessToken(email, role);
-        String refreshToken = generateRefreshToken();
+        String refreshToken = generateRefreshToken(email, role);
 
         return GeneratedTokenDto.builder()
                 .accessToken(PREFIX + accessToken)
@@ -46,9 +46,11 @@ public class JwtUtil implements InitializingBean {
                 .build();
     }
 
-    public String generateRefreshToken() {
+    public String generateRefreshToken(String email, String role) {
         // 토큰 유효기간을 밀리초 단위로 설정
-        long refreshPeriod = 1000L * 60L * 60L * 24L * 14; // 2주
+        long refreshPeriod = 1000L * 60L * 60L * 24L; // 1일
+        Claims claims = Jwts.claims().setSubject(email);
+        claims.put("role", role);
 
         // 현재 시간과 날짜를 가져온다
         Date now = new Date();
@@ -66,7 +68,6 @@ public class JwtUtil implements InitializingBean {
 
     public String generateAccessToken(String email, String role) {
         long tokenPeriod = 1000L * 60L * 30L; // 30분
-//        long tokenPeriod = 1000L * 2L; // 2초
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
 
