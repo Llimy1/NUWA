@@ -124,7 +124,7 @@ public class WorkSpaceService {
         WorkSpaceMemberType joinWorkSpaceMemberType = joinWorkSpaceMember.getWorkSpaceMemberType();
 
         if (!createWorkSpaceMemberType.equals(CREATED)) {
-            throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
+            throw new IllegalArgumentException(WORK_SPACE_ALREADY_JOIN_TYPE.getMessage());
         }
 
         String workSpaceMemberName = joinWorkSpaceMember.getName();
@@ -138,7 +138,7 @@ public class WorkSpaceService {
                     createWorkSpaceUrl(workSpaceId), NOTICE, createWorkSpaceMember, joinWorkSpaceMember);
         } else {
             if (!joinWorkSpaceMemberType.equals(JOIN)) {
-                throw new IllegalArgumentException(WORK_SPACE_ALREADY_JOIN_TYPE.getMessage());
+                throw new IllegalArgumentException(WORK_SPACE_MEMBER_TYPE_EQUAL_CREATE.getMessage());
             }
 
             joinWorkSpaceMember.updateJoinWorkSpaceMemberType();
