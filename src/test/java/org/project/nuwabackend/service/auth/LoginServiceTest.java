@@ -7,6 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
 import org.project.nuwabackend.nuwa.auth.service.LoginService;
 import org.project.nuwabackend.nuwa.auth.service.token.JwtUtil;
 import org.project.nuwabackend.nuwa.domain.member.Member;
@@ -40,6 +41,9 @@ class LoginServiceTest {
 
     @Mock
     JwtUtil jwtUtil;
+
+    @Mock
+    RefreshTokenRepository refreshTokenRepository;
 
     @Mock
     AuthenticationManager authenticationManager;

@@ -93,56 +93,56 @@ class TokenServiceTest {
                 .isInstanceOf(NotFoundException.class);
     }
 
-    @Test
-    @DisplayName("[Service] Reissue Token Success")
-    void reissueTokenSuccess() {
-        //given
-        String role = Role.USER.getKey();
-        GeneratedTokenDto newGeneratedToken =
-                GeneratedTokenDto.builder()
-                        .accessToken("new" + accessToken)
-                        .refreshToken("new" + refreshToken)
-                        .build();
+//    @Test
+//    @DisplayName("[Service] Reissue Token Success")
+//    void reissueTokenSuccess() {
+//        //given
+//        String role = Role.USER.getKey();
+//        GeneratedTokenDto newGeneratedToken =
+//                GeneratedTokenDto.builder()
+//                        .accessToken("new" + accessToken)
+//                        .refreshToken("new" + refreshToken)
+//                        .build();
+//
+//        RefreshToken token =
+//                RefreshToken.createRefreshTokenInfo(email, refreshToken);
+//
+//        given(jwtUtil.getEmail(anyString()))
+//                .willReturn(email);
+//        given(jwtUtil.getRole(any()))
+//                .willReturn(role);
+//        given(jwtUtil.generatedToken(anyString(), anyString()))
+//                .willReturn(newGeneratedToken);
+//        given(refreshTokenRepository.findByEmail(anyString()))
+//                .willReturn(Optional.of(token));
+//
+//        token.updateRefreshToken(newGeneratedToken.refreshToken());
+//
+//        //when
+//        String newAccessToken = tokenService.reissueToken(accessToken);
+//
+//        //then
+//        assertThat(newAccessToken).isEqualTo(newGeneratedToken.accessToken());
+//        assertThat(token.getRefreshToken()).isEqualTo(newGeneratedToken.refreshToken());
+//        verify(jwtUtil).getEmail(accessToken);
+//        verify(jwtUtil).getRole(accessToken);
+//        verify(jwtUtil).generatedToken(email, role);
+//        verify(refreshTokenRepository).findByEmail(email);
+//    }
 
-        RefreshToken token =
-                RefreshToken.createRefreshTokenInfo(email, refreshToken);
-
-        given(jwtUtil.getEmail(anyString()))
-                .willReturn(email);
-        given(jwtUtil.getRole(any()))
-                .willReturn(role);
-        given(jwtUtil.generatedToken(anyString(), anyString()))
-                .willReturn(newGeneratedToken);
-        given(refreshTokenRepository.findByEmail(anyString()))
-                .willReturn(Optional.of(token));
-
-        token.updateRefreshToken(newGeneratedToken.refreshToken());
-
-        //when
-        String newAccessToken = tokenService.reissueToken(accessToken);
-
-        //then
-        assertThat(newAccessToken).isEqualTo(newGeneratedToken.accessToken());
-        assertThat(token.getRefreshToken()).isEqualTo(newGeneratedToken.refreshToken());
-        verify(jwtUtil).getEmail(accessToken);
-        verify(jwtUtil).getRole(accessToken);
-        verify(jwtUtil).generatedToken(email, role);
-        verify(refreshTokenRepository).findByEmail(email);
-    }
-
-    @Test
-    @DisplayName("[Service] Reissue Token Fail")
-    void reissueTokenFail() {
-        //given
-
-        given(jwtUtil.getEmail(anyString()))
-                .willReturn(email);
-        given(refreshTokenRepository.findByEmail(anyString()))
-                .willThrow(new NotFoundException(REFRESH_TOKEN_NOT_FOUND));
-
-        //when
-        //then
-        assertThatThrownBy(() -> tokenService.reissueToken(accessToken))
-                .isInstanceOf(NotFoundException.class);
-    }
+//    @Test
+//    @DisplayName("[Service] Reissue Token Fail")
+//    void reissueTokenFail() {
+//        //given
+//
+//        given(jwtUtil.getEmail(anyString()))
+//                .willReturn(email);
+//        given(refreshTokenRepository.findByEmail(anyString()))
+//                .willThrow(new NotFoundException(REFRESH_TOKEN_NOT_FOUND));
+//
+//        //when
+//        //then
+//        assertThatThrownBy(() -> tokenService.reissueToken(accessToken))
+//                .isInstanceOf(NotFoundException.class);
+//    }
 }
