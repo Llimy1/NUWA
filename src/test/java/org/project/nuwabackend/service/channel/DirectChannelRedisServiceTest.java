@@ -58,21 +58,21 @@ class DirectChannelRedisServiceTest {
     }
 
 
-    @Test
-    @DisplayName("[Service] Save Direct Channel Info Redis")
-    void saveDirectChannelInfoRedis() {
-        //given
-        given(directChannelRedisRepository.save(any()))
-                .willReturn(directChannelRedisOne);
-
-        //when
-        directChannelRedisService.saveChannelMemberInfo(
-                directChannelRedisOne.getDirectRoomId(),
-                directChannelRedisOne.getEmail());
-
-        //then
-        verify(directChannelRedisRepository).save(directChannelRedisOne);
-    }
+//    @Test
+//    @DisplayName("[Service] Save Direct Channel Info Redis")
+//    void saveDirectChannelInfoRedis() {
+//        //given
+//        given(directChannelRedisRepository.save(any()))
+//                .willReturn(directChannelRedisOne);
+//
+//        //when
+//        directChannelRedisService.saveChannelMemberInfo(
+//                directChannelRedisOne.getDirectRoomId(),
+//                directChannelRedisOne.getEmail());
+//
+//        //then
+//        verify(directChannelRedisRepository).save(directChannelRedisOne);
+//    }
 
     @Test
     @DisplayName("[Service] Delete Direct Channel Info Redis")

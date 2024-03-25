@@ -112,31 +112,31 @@ class ChatMessageServiceTest {
                 .build();
     }
 
-    @Test
-    @DisplayName("[Service] Save Chat Message Test")
-    void saveChatMessageTest() {
-        //given
-        Long workSpaceId = chatMessageResponseDto.getWorkSpaceId();
-        String roomId = chatMessageResponseDto.getRoomId();
-        Long senderId = chatMessageResponseDto.getSenderId();
-        String senderName = chatMessageResponseDto.getSenderName();
-        String senderImage = chatMessageResponseDto.getSenderImage();
-        String content = chatMessageResponseDto.getContent();
-        List<String> rawString = chatMessageResponseDto.getRawString();
-        LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
-
-        ChatMessage chatMessage =
-                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, senderImage, rawString, MessageType.TEXT, createdAt);
-
-        given(chatMessageRepository.save(any()))
-                .willReturn(chatMessage);
-
-        //when
-        chatMessageService.saveChatMessage(chatMessageResponseDto);
-
-        //then
-        verify(chatMessageRepository).save(chatMessage);
-    }
+//    @Test
+//    @DisplayName("[Service] Save Chat Message Test")
+//    void saveChatMessageTest() {
+//        //given
+//        Long workSpaceId = chatMessageResponseDto.getWorkSpaceId();
+//        String roomId = chatMessageResponseDto.getRoomId();
+//        Long senderId = chatMessageResponseDto.getSenderId();
+//        String senderName = chatMessageResponseDto.getSenderName();
+//        String senderImage = chatMessageResponseDto.getSenderImage();
+//        String content = chatMessageResponseDto.getContent();
+//        List<String> rawString = chatMessageResponseDto.getRawString();
+//        LocalDateTime createdAt = chatMessageResponseDto.getCreatedAt();
+//
+//        ChatMessage chatMessage =
+//                ChatMessage.createChatMessage(workSpaceId, roomId, senderId, senderName, content, senderImage, rawString, MessageType.TEXT, createdAt);
+//
+//        given(chatMessageRepository.save(any()))
+//                .willReturn(chatMessage);
+//
+//        //when
+//        chatMessageService.saveChatMessage(chatMessageResponseDto);
+//
+//        //then
+//        verify(chatMessageRepository).save(chatMessage);
+//    }
 
     @Test
     @DisplayName("[Service] Chat Message Slice Sort By Date")

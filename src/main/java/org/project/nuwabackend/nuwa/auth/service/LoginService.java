@@ -2,7 +2,9 @@ package org.project.nuwabackend.nuwa.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
 import org.project.nuwabackend.nuwa.auth.service.token.JwtUtil;
+import org.project.nuwabackend.nuwa.auth.service.token.TokenService;
 import org.project.nuwabackend.nuwa.domain.member.Member;
 import org.project.nuwabackend.nuwa.auth.dto.request.LoginRequestDto;
 import org.project.nuwabackend.nuwa.auth.dto.GeneratedTokenDto;
@@ -30,12 +32,17 @@ public class LoginService {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Transactional
     public GeneratedTokenDto login(LoginRequestDto loginRequestDto) {
         log.info("Login Service 호출");
         String email = loginRequestDto.email();
         String password = loginRequestDto.password();
+
+        refreshTokenRepository.findByEmail(email).ifPresent(e -> {
+            throw new LoginException(DUPLICATE_LOGIN_BY_WEB);
+        });
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(EMAIL_NOT_FOUND_ID.getMessage()));

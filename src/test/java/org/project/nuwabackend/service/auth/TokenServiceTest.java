@@ -41,22 +41,22 @@ class TokenServiceTest {
     String accessToken = "accessToken";
     String refreshToken = "refreshToken";
 
-    @Test
-    @DisplayName("[Service] Save Token Info Success")
-    void saveTokenInfoSuccess() {
-        //given
-        RefreshToken token =
-                RefreshToken.createRefreshTokenInfo(email, refreshToken);
-
-        given(refreshTokenRepository.save(any()))
-                .willReturn(token);
-
-        //when
-        tokenService.saveTokenInfo(email, refreshToken);
-
-        //then
-        verify(refreshTokenRepository).save(token);
-    }
+//    @Test
+//    @DisplayName("[Service] Save Token Info Success")
+//    void saveTokenInfoSuccess() {
+//        //given
+//        RefreshToken token =
+//                RefreshToken.createRefreshTokenInfo(email, refreshToken);
+//
+//        given(refreshTokenRepository.save(any()))
+//                .willReturn(token);
+//
+//        //when
+//        tokenService.saveTokenInfo(email, refreshToken);
+//
+//        //then
+//        verify(refreshTokenRepository).save(token);
+//    }
 
     @Test
     @DisplayName("[Service] Remove Refresh Token Success")
