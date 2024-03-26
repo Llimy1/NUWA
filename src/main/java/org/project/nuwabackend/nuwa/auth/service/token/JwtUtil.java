@@ -48,7 +48,8 @@ public class JwtUtil implements InitializingBean {
 
     public String generateRefreshToken(String email, String role) {
         // 토큰 유효기간을 밀리초 단위로 설정
-        long refreshPeriod = 1000L * 60L * 60L * 24L; // 1일
+//        long refreshPeriod = 1000L * 60L * 60L * 24L; // 1일
+        long refreshPeriod = 1000L * 60L * 31L; // 31분
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
 
