@@ -52,7 +52,16 @@ public class TokenService {
             String refreshToken = resultToken.getRefreshToken();
             String role = jwtUtil.getRole(refreshToken);
 
-            return "Bearer " + jwtUtil.generateAccessToken(email, role);
+            GeneratedTokenDto generatedToken = jwtUtil.generatedToken(email, role);
+            String generatedAccessToken = generatedToken.accessToken();
+            String generatedRefreshToken = generatedToken.refreshToken();
+
+            refreshTokenRepository.delete(resultToken);
+
+            RefreshToken saveToken = RefreshToken.createRefreshTokenInfo(email, generatedRefreshToken);
+            refreshTokenRepository.save(saveToken);
+
+            return generatedAccessToken;
         } else {
             throw new IllegalStateException(REFRESH_TOKEN_EXPIRED.getMessage());
         }
