@@ -12,6 +12,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Slf4j
 @Component
@@ -20,8 +21,10 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         // 인증 실패시 로그인 페이지로 이동
+        String encodeError = Base64.getEncoder().encodeToString(exception.getMessage().getBytes(StandardCharsets.UTF_8));
+
         String target = UriComponentsBuilder.fromUriString("https://nu-wa.online/login")
-                .queryParam("error", exception.getMessage())
+                .queryParam("error", encodeError)
                 .build()
                 .encode(StandardCharsets.UTF_8)
                 .toUriString();
