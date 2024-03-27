@@ -135,7 +135,7 @@ public class DirectMessageQueryService {
         Update update = new Update().set("direct_content", content).set("is_edited", isEdited);
         UpdateResult updateResult = mongoTemplate.updateMulti(query, update, DirectMessage.class);
 
-        if (updateResult.getMatchedCount() == 0) {
+        if (updateResult.getMatchedCount() == 0 && !isEdited) {
             log.error("다이렉트 채널 메세지 수정 중 오류 = {}", DIRECT_MESSAGE_UPDATE_FAIL.getMessage());
             throw new IllegalArgumentException(DIRECT_MESSAGE_UPDATE_FAIL.getMessage());
         }

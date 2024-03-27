@@ -87,7 +87,7 @@ public class ChatMessageQueryService {
         Update update = new Update().set("chat_content", content).set("is_edited", isEdited);
         UpdateResult updateResult = mongoTemplate.updateMulti(query, update, ChatMessage.class);
 
-        if (updateResult.getMatchedCount() == 0) {
+        if (updateResult.getMatchedCount() == 0 && !isEdited) {
             log.error("채팅 채널 메세지 수정 중 오류 = {}", CHAT_MESSAGE_UPDATE_FAIL.getMessage());
             throw new IllegalArgumentException(CHAT_MESSAGE_UPDATE_FAIL.getMessage());
         }
