@@ -41,6 +41,14 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         // CustomOAuth2UserService에서 셋팅한 로그인 회원 존재 여부를 가져온다.
         boolean isExist = Boolean.TRUE.equals(oAuth2User.getAttribute("exist"));
         boolean isBasic = Boolean.TRUE.equals(oAuth2User.getAttribute("basic"));
+        boolean isGoogle = Boolean.TRUE.equals(oAuth2User.getAttribute("google"));
+        boolean isKakao = Boolean.TRUE.equals(oAuth2User.getAttribute("kakao"));
+
+        if (isGoogle) {
+            throw new IllegalArgumentException("Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.");
+        } else if (isKakao) {
+            throw new IllegalArgumentException("Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.");
+        }
 
         // OAuth2User로 부터 Role을 얻어온다.
         String role = oAuth2User.getAuthorities().stream()
