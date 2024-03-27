@@ -239,14 +239,10 @@ public class NotificationService {
     // 그룹채팅 접속 시 관련 알림 전부 읽음 처리
     @Transactional
     public void updateReadNotificationByChatRoomId(String email, Long workSpaceId, String roomId) {
+        log.info("그룹 채팅 관련 알림 전부 읽음 처리");
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
         Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
-
-        channelRepository.
-                findByRoomId(roomId).ifPresent(e -> {
-                    throw new NotFoundException(CHANNEL_NOT_FOUND);
-                });
 
         String notificationUrl = chatUrl(roomId);
 
@@ -256,6 +252,7 @@ public class NotificationService {
     // 현재 워크스페이스에 나한테 온 알림 전체 읽음 처리
     @Transactional
     public void updateReadNotificationAll(String email, Long workSpaceId) {
+        log.info("전체 알림 읽음 처리");
         WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
 

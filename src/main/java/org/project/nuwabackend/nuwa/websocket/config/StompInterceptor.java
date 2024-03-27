@@ -51,9 +51,8 @@ public class StompInterceptor implements ChannelInterceptor {
         String roomId = getRoomId(accessor);
 
         try {
-            switch (command) {
-                case CONNECT -> connect(accessor, email);
-                case DISCONNECT -> directChannelRedisService.deleteChannelMemberInfo(roomId, email);
+            if (Objects.requireNonNull(command) == StompCommand.CONNECT) {
+                connect(accessor, email);
             }
         } catch (Exception e) {
             log.error("STOMP 명령 처리 중 예외 발생 = {}", e.getMessage());
