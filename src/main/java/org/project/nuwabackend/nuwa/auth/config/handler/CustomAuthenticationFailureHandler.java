@@ -19,6 +19,5 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
         log.error("Social Login Authentication Fail = {}", exception.getMessage());
         // 인증 실패시 로그인 페이지로 이동
         response.sendError(400, exception.getMessage());
-        response.sendRedirect("https://nu-wa.online/login");
     }
 }
