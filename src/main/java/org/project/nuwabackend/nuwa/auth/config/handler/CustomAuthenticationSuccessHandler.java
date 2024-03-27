@@ -45,9 +45,13 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         boolean isKakao = Boolean.TRUE.equals(oAuth2User.getAttribute("kakao"));
 
         if (isGoogle) {
-            throw new IllegalArgumentException("Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.");
+            log.info("이미 가입된 구글 계정");
+            response.sendRedirect("https://nu-wa.online/login");
+            response.sendError(400, "Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.");
         } else if (isKakao) {
-            throw new IllegalArgumentException("Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.");
+            log.info("이미 가입된 카카오 계정");
+            response.sendRedirect("https://nu-wa.online/login");
+            response.sendError(400, "Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.");
         }
 
         // OAuth2User로 부터 Role을 얻어온다.
