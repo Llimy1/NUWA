@@ -48,8 +48,6 @@ public class StompInterceptor implements ChannelInterceptor {
     }
 
     private void handleMessage(StompCommand command, StompHeaderAccessor accessor, String email) {
-        String roomId = getRoomId(accessor);
-
         try {
             if (Objects.requireNonNull(command) == StompCommand.CONNECT) {
                 connect(accessor, email);
