@@ -53,7 +53,6 @@ public class StompInterceptor implements ChannelInterceptor {
         try {
             switch (command) {
                 case CONNECT -> connect(accessor, email);
-                case SUBSCRIBE, SEND -> verifyToken(getAccessToken(accessor));
                 case DISCONNECT -> directChannelRedisService.deleteChannelMemberInfo(roomId, email);
             }
         } catch (Exception e) {

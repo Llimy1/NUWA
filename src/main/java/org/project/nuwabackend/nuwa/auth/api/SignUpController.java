@@ -53,7 +53,7 @@ public class SignUpController {
         String email = socialSignUpRequestDto.email();
 
         log.info("Redis 토큰 저장");
-        tokenService.saveTokenInfo(email, refreshToken);
+        tokenService.saveTokenInfo(email, accessToken, refreshToken);
 
         AccessTokenResponse accessTokenResponse = new AccessTokenResponse(accessToken);
 

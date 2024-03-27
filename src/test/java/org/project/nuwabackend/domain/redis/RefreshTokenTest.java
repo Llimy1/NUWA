@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RefreshTokenTest {
 
     String email = "email";
+    String accessToken = "accessToken";
     String refreshToken = "refreshToken";
 
     @Test
@@ -21,6 +22,7 @@ class RefreshTokenTest {
         //when
         RefreshToken refreshTokenInfo = RefreshToken.createRefreshTokenInfo(
                 email,
+                accessToken,
                 refreshToken);
 
         //then

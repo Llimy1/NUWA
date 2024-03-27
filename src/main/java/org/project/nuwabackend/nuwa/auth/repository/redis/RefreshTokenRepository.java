@@ -10,4 +10,6 @@ public interface RefreshTokenRepository extends CrudRepository<RefreshToken, Str
 
     Optional<RefreshToken> findByEmail(String email);
 
+    Optional<RefreshToken> findByAccessToken(String accessToken);
+
 }

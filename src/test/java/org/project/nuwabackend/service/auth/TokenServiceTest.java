@@ -63,7 +63,7 @@ class TokenServiceTest {
     void removeRefreshTokenSuccess() {
         //given
         RefreshToken token =
-                RefreshToken.createRefreshTokenInfo(email, refreshToken);
+                RefreshToken.createRefreshTokenInfo(email, accessToken, refreshToken);
 //
 //        given(jwtUtil.getEmail(anyString()))
 //                .willReturn(email);

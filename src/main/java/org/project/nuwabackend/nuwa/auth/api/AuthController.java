@@ -46,7 +46,7 @@ public class AuthController {
         String refreshToken = tokenDto.refreshToken();
 
         log.info("Redis에 TokenInfo 저장");
-        tokenService.saveTokenInfo(email, refreshToken);
+        tokenService.saveTokenInfo(email, accessToken, refreshToken);
 
         GlobalSuccessResponseDto<Object> loginSuccessResponse =
                 globalService.successResponse(LOGIN_SUCCESS.getMessage(), new AccessTokenResponse(accessToken));
@@ -66,9 +66,10 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<Object> reissue(@RequestParam(value = "email") String email) {
+    public ResponseEntity<Object> reissue(@RequestHeader(value = "Authorization") String accessToken,
+                                          @RequestParam(value = "email") String email) {
         log.info("Token Reissue API 호출");
-        String newAccessToken = tokenService.reissueToken(email);
+        String newAccessToken = tokenService.reissueToken(accessToken, email);
 
         GlobalSuccessResponseDto<Object> reissueSuccessResponse =
                 globalService.successResponse(REISSUE_TOKEN_SUCCESS.getMessage()

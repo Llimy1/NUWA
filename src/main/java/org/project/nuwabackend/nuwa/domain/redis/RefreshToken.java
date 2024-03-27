@@ -20,19 +20,24 @@ public class RefreshToken implements Serializable {
     @Indexed
     private final String email;
 
+    @Indexed
+    private final String accessToken;
+
     private final String refreshToken;
 
     @Builder
-    private RefreshToken(String id, String email, String refreshToken) {
+    private RefreshToken(String id, String email, String accessToken, String refreshToken) {
         this.id = id;
         this.email = email;
+        this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
 
-    public static RefreshToken createRefreshTokenInfo(String email, String refreshToken) {
+    public static RefreshToken createRefreshTokenInfo(String email, String accessToken, String refreshToken) {
         return RefreshToken.builder()
                 .id(UUID.randomUUID().toString())
                 .email(email)
+                .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }

@@ -26,9 +26,9 @@ public class TokenService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
 
-    public void saveTokenInfo(String email, String refreshToken) {
+    public void saveTokenInfo(String email, String accessToken, String refreshToken) {
         log.info("Save Token Info Service 호출");
-        refreshTokenRepository.save(RefreshToken.createRefreshTokenInfo(email, refreshToken));
+        refreshTokenRepository.save(RefreshToken.createRefreshTokenInfo(email, accessToken, refreshToken));
     }
 
 
@@ -41,10 +41,10 @@ public class TokenService {
         refreshTokenRepository.delete(refreshToken);
     }
 
-    public String reissueToken(String email) {
+    public String reissueToken(String accessToken, String email) {
         log.info("Reissue Token Service 호출");
 
-        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByEmail(email);
+        Optional<RefreshToken> optionalRefreshToken = refreshTokenRepository.findByAccessToken(accessToken);
 
         if (optionalRefreshToken.isPresent() && jwtUtil.verifyToken(optionalRefreshToken.get().getRefreshToken())) {
             RefreshToken resultToken = optionalRefreshToken.get();
@@ -58,7 +58,7 @@ public class TokenService {
 
             refreshTokenRepository.delete(resultToken);
 
-            RefreshToken saveToken = RefreshToken.createRefreshTokenInfo(email, generatedRefreshToken);
+            RefreshToken saveToken = RefreshToken.createRefreshTokenInfo(email, generatedAccessToken, generatedRefreshToken);
             refreshTokenRepository.save(saveToken);
 
             return generatedAccessToken;

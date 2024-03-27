@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import static org.project.nuwabackend.global.response.type.SuccessMessage.NOTIFICATION_ALL_READ_SUCCESS;
 import static org.project.nuwabackend.global.response.type.SuccessMessage.NOTIFICATION_LIST_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.response.type.SuccessMessage.NOTIFICATION_READ_SUCCESS;
 import static org.springframework.http.HttpStatus.OK;
@@ -104,29 +105,14 @@ public class NotificationController {
         return ResponseEntity.status(OK).body(notificationReadSuccessResponse);
     }
 
-    @PatchMapping("/api/notification/read/v2/test/{workSpaceId}")
-    public ResponseEntity<Object> notificationReadV21(@MemberEmail String email,
-                                                     @RequestParam String roomId,
-                                                     @PathVariable Long workSpaceId) {
-        log.info("알림 읽음 API 호출");
-        notificationService.updateReadNotificationByDirectRoomId(email, workSpaceId, roomId);
-
-        GlobalSuccessResponseDto<Object> notificationReadSuccessResponse =
-                globalService.successResponse(NOTIFICATION_READ_SUCCESS.getMessage(),
-                        null);
-
-        return ResponseEntity.status(OK).body(notificationReadSuccessResponse);
-    }
-
-    @PatchMapping("/api/notification/read/v2/test2/{workSpaceId}")
+    @PatchMapping("/api/notification/read/all/{workSpaceId}")
     public ResponseEntity<Object> notificationReadV212(@MemberEmail String email,
-                                                     @RequestParam String roomId,
-                                                     @PathVariable Long workSpaceId) {
+                                                       @PathVariable Long workSpaceId) {
         log.info("알림 읽음 API 호출");
-        notificationService.updateReadNotificationByChatRoomId(email, workSpaceId, roomId);
+        notificationService.updateReadNotificationAll(email, workSpaceId);
 
         GlobalSuccessResponseDto<Object> notificationReadSuccessResponse =
-                globalService.successResponse(NOTIFICATION_READ_SUCCESS.getMessage(),
+                globalService.successResponse(NOTIFICATION_ALL_READ_SUCCESS.getMessage(),
                         null);
 
         return ResponseEntity.status(OK).body(notificationReadSuccessResponse);

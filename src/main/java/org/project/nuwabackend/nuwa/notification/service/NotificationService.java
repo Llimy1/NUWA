@@ -243,13 +243,25 @@ public class NotificationService {
                 .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
         Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
 
-        Channel findChannel = channelRepository.findByRoomId(roomId)
-                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+        channelRepository.
+                findByRoomId(roomId).ifPresent(e -> {
+                    throw new NotFoundException(CHANNEL_NOT_FOUND);
+                });
 
-        Long channelId = findChannel.getId();
-        String notificationUrl = chatUrl(roomId, channelId);
+        String notificationUrl = chatUrl(roomId);
 
         notificationRepository.updateIsReadByRoomId(notificationUrl, findWorkSpaceMemberId);
+    }
+
+    // 현재 워크스페이스에 나한테 온 알림 전체 읽음 처리
+    @Transactional
+    public void updateReadNotificationAll(String email, Long workSpaceId) {
+        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
+                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+
+        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
+
+        notificationRepository.updateIsReadAll(workSpaceId, findWorkSpaceMemberId);
     }
 
     // Slice(페이징)
@@ -264,8 +276,8 @@ public class NotificationService {
         return DIRECT_PREFIX + roomId;
     }
 
-    private String chatUrl(String roomId, Long channelId) {
-        return CHAT_PREFIX + roomId + "/" + channelId;
+    private String chatUrl(String roomId) {
+        return CHAT_PREFIX + roomId;
     }
 
 }

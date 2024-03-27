@@ -55,7 +55,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             String refreshToken = tokenDto.refreshToken();
 
             log.info("redis 토큰 저장");
-            tokenService.saveTokenInfo(email, refreshToken);
+            tokenService.saveTokenInfo(email, accessToken, refreshToken);
 
             log.info("redirect 준비");
             // accessToken을 쿼리스트링에 담는 url 생성
