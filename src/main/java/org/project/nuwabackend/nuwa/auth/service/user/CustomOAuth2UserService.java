@@ -2,12 +2,11 @@ package org.project.nuwabackend.nuwa.auth.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.project.nuwabackend.global.exception.custom.LoginException;
+import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
 import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
+import org.project.nuwabackend.nuwa.auth.type.Role;
 import org.project.nuwabackend.nuwa.domain.member.Member;
 import org.project.nuwabackend.nuwa.domain.member.OAuth2Attribute;
-import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
-import org.project.nuwabackend.nuwa.auth.type.Role;
 import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -23,12 +22,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.project.nuwabackend.global.response.type.ErrorMessage.DUPLICATE_LOGIN_BY_WEB;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final MemberRepository memberRepository;
@@ -64,6 +61,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 사용자 email 정보를 가져온다
         String email = (String) userAttribute.get("email");
 
+        // provider 정보를 가져온다
+        String provider = (String) userAttribute.get("provider");
+
         Optional<RefreshToken> optionalToken = refreshTokenRepository.findByEmail(email);
         if (optionalToken.isPresent()) {
             RefreshToken refreshToken = optionalToken.get();
@@ -72,17 +72,38 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         Optional<Member> findMember = memberRepository.findByEmail(email);
 
+        // 회원이 없는 경우
         if (findMember.isEmpty()) {
-            // 회원이 없는 경우
             userAttribute.put("exist", false);
             return new DefaultOAuth2User(
                     Collections.singleton(new SimpleGrantedAuthority(Role.USER.getKey())),
-                            userAttribute, "email");
+                    userAttribute, "email");
         }
+
+        Member member = findMember.get();
+        String findProvider = member.getProvider();
+
+        // 일반 회원가입이 되어 있는 경우 -> provider를 삽입해 소셜로그인도 가능하게 만든다.
+        if (findProvider.isEmpty()) {
+            userAttribute.put("basic", true);
+            member.updateProvider(provider);
+            return new DefaultOAuth2User(
+                    Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
+                    userAttribute, "email");
+        }
+
         // 회원이 있는 경우
+        if (!provider.equals(findMember.get().getProvider())) {
+            if (provider.equals("kakao")) {
+                throw new IllegalArgumentException("Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.");
+            } else {
+                throw new IllegalArgumentException("Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.");
+            }
+        }
+
         userAttribute.put("exist", true);
         return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority(findMember.get().getRoleKey())),
+                Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
                 userAttribute, "email");
     }
 }

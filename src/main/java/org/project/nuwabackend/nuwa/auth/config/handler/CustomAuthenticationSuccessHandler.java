@@ -40,6 +40,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         String provider = oAuth2User.getAttribute("provider");
         // CustomOAuth2UserService에서 셋팅한 로그인 회원 존재 여부를 가져온다.
         boolean isExist = Boolean.TRUE.equals(oAuth2User.getAttribute("exist"));
+        boolean isBasic = Boolean.TRUE.equals(oAuth2User.getAttribute("basic"));
 
         // OAuth2User로 부터 Role을 얻어온다.
         String role = oAuth2User.getAuthorities().stream()
@@ -48,7 +49,7 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .getAuthority();
 
         // 회원이 존재를 하면
-        if (isExist) {
+        if (isExist || isBasic) {
             // jwt 토큰 발행
             GeneratedTokenDto tokenDto = jwtUtil.generatedToken(email, role);
             String accessToken = tokenDto.accessToken();

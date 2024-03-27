@@ -71,6 +71,11 @@ public class Member extends BaseTimeJpa {
         this.password = password;
     }
 
+    // 제공자 업데이트
+    public void updateProvider(String provider) {
+        this.provider = provider;
+    }
+
     // 비밀번호 암호화
     public void passwordEncoder(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
