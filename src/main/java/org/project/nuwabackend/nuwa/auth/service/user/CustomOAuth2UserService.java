@@ -8,6 +8,7 @@ import org.project.nuwabackend.nuwa.auth.type.Role;
 import org.project.nuwabackend.nuwa.domain.member.Member;
 import org.project.nuwabackend.nuwa.domain.member.OAuth2Attribute;
 import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -27,14 +28,14 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User>{
 
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     private static final String REDIRECT_URL = "https://nu-wa.online/login";
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws AuthenticationException {
         log.info("Social LoadUser 호출");
         // 기본 OAuth2UserService 객체 생성
         OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService =
@@ -96,13 +97,18 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 회원이 있는 경우
         if (!provider.equals(findMember.get().getProvider())) {
-            OAuth2Error oAuth2Error;
+            String oAuth2Error = "";
             if (provider.equals("kakao")) {
-                oAuth2Error = new OAuth2Error("400", "Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.", REDIRECT_URL);
+                oAuth2Error = "Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.";
             } else {
-                oAuth2Error = new OAuth2Error("400", "Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.", REDIRECT_URL);
+                oAuth2Error = "Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.";
             }
-            throw new OAuth2AuthenticationException(oAuth2Error);
+            throw new AuthenticationException(oAuth2Error) {
+                @Override
+                public String getMessage() {
+                    return super.getMessage();
+                }
+            };
         }
 
         userAttribute.put("exist", true);
