@@ -3,6 +3,7 @@ package org.project.nuwabackend.global.exception.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.ClientAbortException;
+import org.project.nuwabackend.global.exception.custom.OAuth2Exception;
 import org.project.nuwabackend.global.response.dto.GlobalErrorResponseDto;
 import org.project.nuwabackend.global.exception.custom.DuplicationException;
 import org.project.nuwabackend.global.exception.custom.JwtException;
@@ -10,6 +11,7 @@ import org.project.nuwabackend.global.exception.custom.LoginException;
 import org.project.nuwabackend.global.exception.custom.NotFoundException;
 import org.project.nuwabackend.global.response.service.GlobalService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -130,6 +132,16 @@ public class GlobalExceptionAdviceController {
     public SseEmitter asyncRequestTimeoutException(AsyncRequestTimeoutException ate) {
         log.error("AsyncRequestTimeoutException = {}", ate.getMessage());
         return null;
+    }
+
+    // OAUTH2 Exception
+    @ExceptionHandler(OAuth2Exception.class)
+    public ResponseEntity<Object> oAuth2Exception(OAuth2Exception oae) {
+        log.error("OAuth2 Exception = {}", oae.getMessage());
+        GlobalErrorResponseDto oAuth2ExceptionResponse =
+                globalService.errorResponse(oae.getMessage());
+
+        return ResponseEntity.status(UNAUTHORIZED).body(oAuth2ExceptionResponse);
     }
 
     // Exception

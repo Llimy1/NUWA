@@ -16,8 +16,7 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        log.error("Social Login Authentication Fail = {}", exception.getMessage());
         // 인증 실패시 로그인 페이지로 이동
-        response.sendError(400, exception.getMessage());
+        response.sendRedirect("https://nu-wa.online/login");
     }
 }

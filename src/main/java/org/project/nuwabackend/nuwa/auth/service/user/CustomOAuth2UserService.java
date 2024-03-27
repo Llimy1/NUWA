@@ -2,19 +2,17 @@ package org.project.nuwabackend.nuwa.auth.service.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.global.exception.custom.OAuth2Exception;
 import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
 import org.project.nuwabackend.nuwa.auth.repository.redis.RefreshTokenRepository;
 import org.project.nuwabackend.nuwa.auth.type.Role;
 import org.project.nuwabackend.nuwa.domain.member.Member;
 import org.project.nuwabackend.nuwa.domain.member.OAuth2Attribute;
 import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -33,9 +31,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    private static final String REDIRECT_URL = "https://nu-wa.online/login";
     @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws AuthenticationException {
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         log.info("Social LoadUser 호출");
         // 기본 OAuth2UserService 객체 생성
         OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService =
@@ -103,12 +100,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             } else {
                 oAuth2Error = "Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.";
             }
-            throw new AuthenticationException(oAuth2Error) {
-                @Override
-                public String getMessage() {
-                    return super.getMessage();
-                }
-            };
+            throw new OAuth2Exception(oAuth2Error);
         }
 
         userAttribute.put("exist", true);
