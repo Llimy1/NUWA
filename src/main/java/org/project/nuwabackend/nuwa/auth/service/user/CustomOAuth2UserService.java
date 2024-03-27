@@ -8,6 +8,7 @@ import org.project.nuwabackend.nuwa.domain.member.Member;
 import org.project.nuwabackend.nuwa.domain.member.OAuth2Attribute;
 import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
 import org.project.nuwabackend.nuwa.auth.type.Role;
+import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -63,9 +64,11 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 사용자 email 정보를 가져온다
         String email = (String) userAttribute.get("email");
 
-        refreshTokenRepository.findByEmail(email).ifPresent(e -> {
-            throw new LoginException(DUPLICATE_LOGIN_BY_WEB);
-        });
+        Optional<RefreshToken> optionalToken = refreshTokenRepository.findByEmail(email);
+        if (optionalToken.isPresent()) {
+            RefreshToken refreshToken = optionalToken.get();
+            refreshTokenRepository.delete(refreshToken);
+        }
 
         Optional<Member> findMember = memberRepository.findByEmail(email);
 

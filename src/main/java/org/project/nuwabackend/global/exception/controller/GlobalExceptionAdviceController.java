@@ -129,7 +129,6 @@ public class GlobalExceptionAdviceController {
     @ResponseBody
     public SseEmitter asyncRequestTimeoutException(AsyncRequestTimeoutException ate) {
         log.error("AsyncRequestTimeoutException = {}", ate.getMessage());
-
         return null;
     }
 

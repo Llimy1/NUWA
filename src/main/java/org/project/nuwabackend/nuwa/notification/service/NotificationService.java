@@ -18,6 +18,7 @@ import org.project.nuwabackend.nuwa.workspacemember.repository.WorkSpaceMemberRe
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -108,6 +109,7 @@ public class NotificationService {
             String receiverId = String.valueOf(receiver.getId());
             // 알림 저장
             Notification saveNotification = notificationRepository.save(notification);
+            log.info("알림 저장 성공");
             // 워크스페이스에 들어온 유저 SseEmitter 모두 가져오기
             Map<String, SseEmitter> emitterMap = emitterRepository.findAllStartWithById(receiverId);
             emitterMap.forEach(
@@ -131,9 +133,9 @@ public class NotificationService {
                                         .build());
                     }
             );
+            log.info("알림 전송 성공");
         } catch (Exception e) {
-            log.error("알림 전송 실패 = {}", e.getMessage());
-            throw new IllegalStateException("알림 전송 실패 = " + e.getMessage());
+            log.error("알림 전송 실패 = {}, 스택 트레이스 = {}", e.getMessage(), e.getStackTrace());
         }
     }
 
@@ -143,12 +145,12 @@ public class NotificationService {
             sseEmitter.send(SseEmitter.event()
                             .id(emitterId)
                             .name("sse")
-                            .data(data)
+                            .data(data, MediaType.APPLICATION_JSON)
                             .build());
         } catch (IOException e) {
             emitterRepository.deleteById(emitterId);
             emitterRepository.deleteAllEventCacheStartWithEmitterId(emitterId);
-            log.error("SSE 연결 오류", e);
+            log.error("SSE 연결 오류 = {}, 스택 트레이스 = {}", e.getMessage(), e.getStackTrace());
         }
     }
 

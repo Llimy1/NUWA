@@ -11,6 +11,7 @@ import org.project.nuwabackend.nuwa.auth.dto.GeneratedTokenDto;
 import org.project.nuwabackend.global.exception.custom.LoginException;
 import org.project.nuwabackend.global.exception.custom.NotFoundException;
 import org.project.nuwabackend.nuwa.auth.repository.jpa.MemberRepository;
+import org.project.nuwabackend.nuwa.domain.redis.RefreshToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 import static org.project.nuwabackend.global.response.type.ErrorMessage.*;
 
@@ -40,9 +43,12 @@ public class LoginService {
         String email = loginRequestDto.email();
         String password = loginRequestDto.password();
 
-        refreshTokenRepository.findByEmail(email).ifPresent(e -> {
-            throw new LoginException(DUPLICATE_LOGIN_BY_WEB);
-        });
+        Optional<RefreshToken> optionalToken = refreshTokenRepository.findByEmail(email);
+
+        if (optionalToken.isPresent()) {
+            RefreshToken refreshToken = optionalToken.get();
+            refreshTokenRepository.delete(refreshToken);
+        }
 
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(EMAIL_NOT_FOUND_ID.getMessage()));
