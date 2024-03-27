@@ -97,7 +97,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // 회원이 있는 경우
         if (!provider.equals(findMember.get().getProvider())) {
-            String oAuth2Error = "";
+            String oAuth2Error;
             if (provider.equals("kakao")) {
                 oAuth2Error = "Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.";
             } else {
