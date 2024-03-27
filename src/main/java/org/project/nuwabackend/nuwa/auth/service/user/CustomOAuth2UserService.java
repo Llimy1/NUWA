@@ -95,13 +95,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 회원이 있는 경우
         if (!provider.equals(findMember.get().getProvider())) {
             if (provider.equals("kakao")) {
-                userAttribute.put("google", true);
+//                userAttribute.put("google", true);
+                throw new OAuth2AuthenticationException("Google 계정으로 이미 가입되어 있습니다. Google 계정으로 로그인 해주세요.");
             } else {
-                userAttribute.put("kakao", true);
+//                userAttribute.put("kakao", true);
+                throw new OAuth2AuthenticationException("Kakao 계정으로 이미 가입되어 있습니다. Kakao 계정으로 로그인 해주세요.");
             }
-            return new DefaultOAuth2User(
-                    Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
-                    userAttribute, "email");
+//            return new DefaultOAuth2User(
+//                    Collections.singleton(new SimpleGrantedAuthority(member.getRoleKey())),
+//                    userAttribute, "email");
         }
 
         userAttribute.put("exist", true);
