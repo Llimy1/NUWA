@@ -84,7 +84,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String findProvider = member.getProvider();
 
         // 일반 회원가입이 되어 있는 경우 -> provider를 삽입해 소셜로그인도 가능하게 만든다.
-        if (findProvider.isEmpty()) {
+        if (findProvider == null) {
             userAttribute.put("basic", true);
             member.updateProvider(provider);
             return new DefaultOAuth2User(
