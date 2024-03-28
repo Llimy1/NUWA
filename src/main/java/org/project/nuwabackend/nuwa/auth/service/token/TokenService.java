@@ -31,9 +31,17 @@ public class TokenService {
         refreshTokenRepository.save(RefreshToken.createRefreshTokenInfo(email, accessToken, refreshToken));
     }
 
+    public void removeRefreshToken(String accessToken) {
+        log.info("Remove(accessToken) Refresh Token Service 호출");
 
-    public void removeRefreshToken(String email) {
-        log.info("Remove Refresh Token Service 호출");
+        RefreshToken refreshToken = refreshTokenRepository.findByAccessToken(accessToken)
+                .orElseThrow(() -> new NotFoundException(REFRESH_TOKEN_NOT_FOUND));
+
+        refreshTokenRepository.delete(refreshToken);
+    }
+
+    public void removeRefreshTokenEmail(String email) {
+        log.info("Remove(email) Refresh Token Service 호출");
 
         RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(REFRESH_TOKEN_NOT_FOUND));

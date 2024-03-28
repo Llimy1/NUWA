@@ -55,6 +55,8 @@ public class CustomAuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             String accessToken = tokenDto.accessToken();
             String refreshToken = tokenDto.refreshToken();
 
+            tokenService.removeRefreshTokenEmail(email);
+
             log.info("redis 토큰 저장");
             tokenService.saveTokenInfo(email, accessToken, refreshToken);
 

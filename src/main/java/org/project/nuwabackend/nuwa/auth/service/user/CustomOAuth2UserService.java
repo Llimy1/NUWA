@@ -29,8 +29,6 @@ import java.util.Optional;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User>{
 
     private final MemberRepository memberRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
-
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         log.info("Social LoadUser 호출");
@@ -67,17 +65,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         // provider 정보를 가져온다
         String provider = (String) userAttribute.get("provider");
-
-//        Optional<RefreshToken> optionalToken = refreshTokenRepository.findByEmail(email);
-//
-//        if (optionalToken.isEmpty()) {
-//
-//        }
-//
-//        if (optionalToken.isPresent()) {
-//            RefreshToken refreshToken = optionalToken.get();
-//            refreshTokenRepository.delete(refreshToken);
-//        }
 
         Optional<Member> findMember = memberRepository.findByEmail(email);
 

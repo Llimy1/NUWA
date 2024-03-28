@@ -11,6 +11,7 @@ import org.project.nuwabackend.global.response.service.GlobalService;
 import org.project.nuwabackend.nuwa.auth.service.LoginService;
 import org.project.nuwabackend.nuwa.auth.service.token.TokenService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -55,9 +56,9 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Object> logout(@MemberEmail String email) {
+    public ResponseEntity<Object> logout(@RequestHeader(value = "Authorization") String accessToken) {
         log.info("Logout API 호출");
-        tokenService.removeRefreshToken(email);
+        tokenService.removeRefreshToken(accessToken);
 
         GlobalSuccessResponseDto<Object> logoutSuccessResponse =
                 globalService.successResponse(LOGOUT_SUCCESS.getMessage(), null);
