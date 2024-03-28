@@ -11,7 +11,12 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 @Configuration
-@EnableRedisRepositories
+@EnableRedisRepositories(basePackages = {
+        "org.project.nuwabackend.nuwa.auth.repository.redis",
+        "org.project.nuwabackend.nuwa.invite.repository",
+        "org.project.nuwabackend.nuwa.channel.repository.redis",
+
+})
 @RequiredArgsConstructor
 public class RedisConfig {
 

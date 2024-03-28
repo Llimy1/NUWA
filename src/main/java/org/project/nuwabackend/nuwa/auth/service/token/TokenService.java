@@ -43,10 +43,7 @@ public class TokenService {
     public void removeRefreshTokenEmail(String email) {
         log.info("Remove(email) Refresh Token Service 호출");
 
-        RefreshToken refreshToken = refreshTokenRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(REFRESH_TOKEN_NOT_FOUND));
-
-        refreshTokenRepository.delete(refreshToken);
+        refreshTokenRepository.findByEmail(email).ifPresent(refreshTokenRepository::delete);
     }
 
     public String reissueToken(String accessToken, String email) {
