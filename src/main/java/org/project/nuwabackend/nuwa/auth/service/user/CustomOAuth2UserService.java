@@ -61,6 +61,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         // 사용자 email 정보를 가져온다
         String email = (String) userAttribute.get("email");
 
+        if (email == null) {
+            throw new OAuth2Exception("email 정보가 존재하지 않습니다.");
+        }
+
         // provider 정보를 가져온다
         String provider = (String) userAttribute.get("provider");
 
