@@ -99,14 +99,16 @@ public class ChatChannelService {
                 .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
 
         Long findChatId = findChat.getId();
-        Long createMemberId = findChat.getCreateMember().getId();
         List<Long> joinMemberIdList = new ArrayList<>(chatJoinMemberRepository.findByChatChannelId(findChatId)
                 .stream()
                 .map(ChatJoinMember::getJoinMember)
                 .map(WorkSpaceMember::getId)
                 .toList());
 
-        joinMemberIdList.add(createMemberId);
+        if (!findChat.getIsCreateMemberDelete()) {
+            Long createMemberId = findChat.getCreateMember().getId();
+            joinMemberIdList.add(createMemberId);
+        }
 
         return ChatChannelInfoResponseDto.builder()
                 .channelId(findChat.getId())
