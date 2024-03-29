@@ -116,6 +116,33 @@ public class ChatChannelService {
 
     }
 
+    // 채팅 채널 멤버 INFO
+    public ChatChannelInfoResponseDto joinChatChannelMemberInfo(Long workSpaceId, String roomId) {
+        Chat findChat = chatChannelRepository.findByWorkSpaceIdAndRoomId(workSpaceId, roomId)
+                .orElseThrow(() -> new NotFoundException(CHANNEL_NOT_FOUND));
+
+        Long findChatId = findChat.getId();
+        Long createMemberId = findChat.getCreateMember().getId();
+        List<Long> joinMemberIdList = new ArrayList<>(chatJoinMemberRepository.findByChatChannelId(findChatId)
+                .stream()
+                .map(ChatJoinMember::getJoinMember)
+                .map(WorkSpaceMember::getId)
+                .toList());
+
+        joinMemberIdList.add(createMemberId);
+
+        List<Long> notJoinMemberIdList = workSpaceMemberRepository.findListByNotJoinMember(joinMemberIdList)
+                .stream()
+                .map(WorkSpaceMember::getId)
+                .toList();
+
+        return ChatChannelInfoResponseDto.builder()
+                .channelId(findChat.getId())
+                .channelName(findChat.getName())
+                .memberList(notJoinMemberIdList)
+                .build();
+    }
+
     // 채팅방 리스트 조회 (내가 참여된)
     public Slice<ChatChannelListResponseDto> chatChannelList(String email, Long workSpaceId, Pageable pageable) {
 

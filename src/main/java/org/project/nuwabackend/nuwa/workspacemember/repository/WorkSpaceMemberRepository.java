@@ -35,6 +35,7 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
 
     @Query("SELECT wsm.workSpace FROM WorkSpaceMember wsm WHERE wsm.member = :member")
     List<WorkSpace> findWorkSpacesByMember(@Param("member") Member member);
+
     // 워크스페이스멤버에서 조인으로 멤버랑 워크스페이스를 가져온다
     // 워크스페이스 레파지토리에서
     @Query("SELECT wm " +
@@ -52,6 +53,12 @@ public interface WorkSpaceMemberRepository extends JpaRepository<WorkSpaceMember
             "FROM WorkSpaceMember wm " +
             "WHERE wm.workSpace.id = :workSpaceId AND wm.isDelete = false AND wm.id != :workSpaceMemberId")
     List<WorkSpaceMember> findListByWorkSpaceIdNot(@Param("workSpaceId") Long workSpaceId, @Param("workSpaceMemberId") Long workSpaceMemberId);
+
+    // 채팅방의 참여한 멤버를 제외한 전체 워크스페이스 멤버
+    @Query("SELECT wm " +
+            "FROM WorkSpaceMember wm " +
+            "WHERE wm.id NOT IN :joinMemberIdList AND wm.isDelete = false ")
+    List<WorkSpaceMember> findListByNotJoinMember(@Param("joinMemberIdList") List<Long> joinMemberIdList);
 
     @Query("DELETE FROM WorkSpaceMember wm WHERE wm.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)

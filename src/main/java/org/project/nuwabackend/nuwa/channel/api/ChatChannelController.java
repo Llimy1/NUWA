@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import static org.project.nuwabackend.global.response.type.SuccessMessage.CHAT_CHANNEL_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.response.type.SuccessMessage.CHAT_CHANNEL_LIST_RETURN_SUCCESS;
+import static org.project.nuwabackend.global.response.type.SuccessMessage.CHAT_CHANNEL_MEMBER_INFO_RETURN_SUCCESS;
 import static org.project.nuwabackend.global.response.type.SuccessMessage.CREATE_CHAT_CHANNEL_SUCCESS;
 import static org.project.nuwabackend.global.response.type.SuccessMessage.DELETE_CHAT_CHANNEL_MEMBER_INFO_SUCCESS;
 import static org.project.nuwabackend.global.response.type.SuccessMessage.JOIN_CHAT_CHANNEL_SUCCESS;
@@ -95,6 +96,20 @@ public class ChatChannelController {
                 globalService.successResponse(CHAT_CHANNEL_INFO_RETURN_SUCCESS.getMessage(), chatChannelInfoResponseDto);
 
         return ResponseEntity.status(OK).body(chatChannelInfoReturnSuccess);
+    }
+
+    // RoomId로 가입이 안된 정보 조회
+    @GetMapping("/channel/chat/info/member/{workSpaceId}")
+    public ResponseEntity<Object> chatChannelMemberInfo(@PathVariable(value = "workSpaceId") Long workSpaceId,
+                                                  @RequestParam(value = "chatChannelRoomId") String roomId) {
+        log.info("채팅 채널 정보 반환 API");
+        ChatChannelInfoResponseDto chatChannelMemberInfoResponseDto =
+                chatChannelService.joinChatChannelMemberInfo(workSpaceId, roomId);
+
+        GlobalSuccessResponseDto<Object> chatChannelMemberInfoReturnSuccess =
+                globalService.successResponse(CHAT_CHANNEL_MEMBER_INFO_RETURN_SUCCESS.getMessage(), chatChannelMemberInfoResponseDto);
+
+        return ResponseEntity.status(OK).body(chatChannelMemberInfoReturnSuccess);
     }
 
     // 채팅창 나가기 (Redis 정보 삭제)

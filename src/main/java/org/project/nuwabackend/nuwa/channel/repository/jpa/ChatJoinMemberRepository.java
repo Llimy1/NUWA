@@ -10,6 +10,9 @@ import java.util.Optional;
 
 public interface ChatJoinMemberRepository extends JpaRepository<ChatJoinMember, Long> {
 
+    @Query("SELECT cj " +
+            "FROM ChatJoinMember cj " +
+            "WHERE cj.chatChannel.id = :chatChannelId AND cj.isJoinMemberDelete = false")
     List<ChatJoinMember> findByChatChannelId(Long chatChannelId);
 
     @Query("SELECT cj " +
