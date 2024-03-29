@@ -42,7 +42,7 @@ public interface ChatJoinMemberRepository extends JpaRepository<ChatJoinMember, 
             "WHERE ch.roomId = :roomId")
     List<ChatJoinMember> findByJoinMemberList(@Param("roomId") String roomId);
 
-    @Query("DELETE FROM ChatJoinMember cj WHERE cj.chatChannel.workSpace.id = :workSpaceId")
+    @Query("DELETE FROM ChatJoinMember cj WHERE cj.joinMember.workSpace.id = :workSpaceId")
     @Modifying(clearAutomatically = true)
     void deleteByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
 }
