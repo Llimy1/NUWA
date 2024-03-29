@@ -230,6 +230,7 @@ public class FileService {
         }
         return fileRepository.saveAll(fileList).stream().map(file -> FileUploadResponseDto.builder()
                         .fileId(file.getId())
+                        .fileUrl(file.getUrl())
                         .fileUploadType(file.getFileUploadType())
                         .fileType(file.getFileType())
                         .build())
