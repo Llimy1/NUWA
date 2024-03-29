@@ -102,12 +102,11 @@ public class CanvasService {
         String title = canvasRequestDto.title();
         String content = canvasRequestDto.content();
 
-        WorkSpaceMember findWorkSpaceMember = workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId)
-                .orElseThrow(() -> new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND));
+        workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId).ifPresent(e -> {
+                throw new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND);
+                });
 
-        Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
-
-        canvasQueryService.updateCanvas(canvasId, findWorkSpaceMemberId, workSpaceId, title, content);
+        canvasQueryService.updateCanvas(canvasId, workSpaceId, title, content);
     }
 
     // 캔버스 삭제

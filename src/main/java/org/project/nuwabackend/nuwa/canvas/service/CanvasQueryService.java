@@ -43,17 +43,12 @@ public class CanvasQueryService {
     }
 
     // 캔버스 수정
-    public void updateCanvas(String canvasId, Long workSpaceMemberId, Long workSpaceId, String title, String content) {
+    public void updateCanvas(String canvasId, Long workSpaceId, String title, String content) {
         Query query = new Query(Criteria.where("id").is(canvasId)
-                .and("workspace_id").is(workSpaceId)
-                .and("create_member_id").is(workSpaceMemberId));
+                .and("workspace_id").is(workSpaceId));
 
         Update update = new Update().set("canvas_title", title).set("canvas_content", content);
-        UpdateResult updateResult = mongoTemplate.updateMulti(query, update, Canvas.class);
-
-        if (updateResult.getMatchedCount() == 0) {
-            throw new IllegalArgumentException(CANVAS_UPDATE_FAIL.getMessage());
-        }
+        mongoTemplate.updateMulti(query, update, Canvas.class);
     }
 
     // 캔버스 삭제
