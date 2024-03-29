@@ -68,7 +68,8 @@ public class JwtUtil implements InitializingBean {
     }
 
     public String generateAccessToken(String email, String role) {
-        long tokenPeriod = 1000L * 60L * 30L; // 30분
+//        long tokenPeriod = 1000L * 60L * 30L; // 30분
+        long tokenPeriod = 1000L * 60L * 5L; // 5분
         Claims claims = Jwts.claims().setSubject(email);
         claims.put("role", role);
 
