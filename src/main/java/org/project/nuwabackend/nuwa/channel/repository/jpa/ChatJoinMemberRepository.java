@@ -2,6 +2,7 @@ package org.project.nuwabackend.nuwa.channel.repository.jpa;
 
 import org.project.nuwabackend.nuwa.domain.channel.ChatJoinMember;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -41,9 +42,7 @@ public interface ChatJoinMemberRepository extends JpaRepository<ChatJoinMember, 
             "WHERE ch.roomId = :roomId")
     List<ChatJoinMember> findByJoinMemberList(@Param("roomId") String roomId);
 
-    @Query("SELECT cj " +
-            "FROM ChatJoinMember cj " +
-            "JOIN cj.joinMember jm " +
-            "WHERE jm.workSpace.id = :workSpaceId ")
-    List<ChatJoinMember> findByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
+    @Query("DELETE FROM ChatJoinMember cj WHERE cj.chatChannel.workSpace.id = :workSpaceId")
+    @Modifying(clearAutomatically = true)
+    void deleteByWorkSpaceId(@Param("workSpaceId") Long workSpaceId);
 }

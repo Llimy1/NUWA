@@ -230,8 +230,7 @@ public class ChatChannelService {
     // 워크스페이스에 해당된 채팅 참여 멤버 전부 삭제
     @Transactional
     public void deleteChatJoinMemberByWorkSpaceId(Long workSpaceId) {
-        List<ChatJoinMember> chatJoinMemberList = chatJoinMemberRepository.findByWorkSpaceId(workSpaceId);
-        chatJoinMemberRepository.deleteAll(chatJoinMemberList);
+        chatJoinMemberRepository.deleteByWorkSpaceId(workSpaceId);
     }
 
     // Slice(페이징)

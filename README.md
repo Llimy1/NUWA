@@ -6,7 +6,7 @@
 </div>
 </br>
 
-## <div align="center">[NUWA 실시간 협업툴로 이동하기(배포 전)](https://nu-wa.online/)<div>
+## <div align="center">[NUWA 실시간 협업툴로 이동하기](https://nu-wa.online/)<div>
 <br>
 
 ## 👏 Introduce
