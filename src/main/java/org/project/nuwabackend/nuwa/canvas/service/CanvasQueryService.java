@@ -64,6 +64,13 @@ public class CanvasQueryService {
         }
     }
 
+    // 워크스페이스 캔버스 삭제
+    public void deleteCanvasByWorkSpace(Long workSpaceId) {
+        Query query = new Query(Criteria.where("workspace_id").is(workSpaceId));
+
+        mongoTemplate.remove(query, Canvas.class);
+    }
+
     // 캔버스 검색
     public List<Canvas> searchCanvas(Long workSpaceId, String canvasTitle) {
         if (canvasTitle.isEmpty()) {

@@ -98,13 +98,9 @@ public class CanvasService {
     }
 
     // 캔버스 수정
-    public void updateCanvas(String email, Long workSpaceId, String canvasId, CanvasRequestDto canvasRequestDto) {
+    public void updateCanvas(Long workSpaceId, String canvasId, CanvasRequestDto canvasRequestDto) {
         String title = canvasRequestDto.title();
         String content = canvasRequestDto.content();
-
-        workSpaceMemberRepository.findByMemberEmailAndWorkSpaceId(email, workSpaceId).ifPresent(e -> {
-                throw new NotFoundException(WORK_SPACE_MEMBER_NOT_FOUND);
-                });
 
         canvasQueryService.updateCanvas(canvasId, workSpaceId, title, content);
     }
@@ -117,6 +113,11 @@ public class CanvasService {
         Long findWorkSpaceMemberId = findWorkSpaceMember.getId();
 
         canvasQueryService.deleteCanvas(canvasId, workSpaceId, findWorkSpaceMemberId);
+    }
+
+    // 캔버스 삭제
+    public void deleteCanvasByWorkSpace(Long workSpaceId) {
+        canvasQueryService.deleteCanvasByWorkSpace(workSpaceId);
     }
 
     // 캔버스 검색

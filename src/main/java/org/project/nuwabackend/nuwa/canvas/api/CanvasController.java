@@ -94,11 +94,10 @@ public class CanvasController {
 
     @PatchMapping("/canvas/{workSpaceId}")
     public ResponseEntity<Object> updateCanvas(@PathVariable(value = "workSpaceId") Long workSpaceId,
-                                               @MemberEmail String email,
                                                @RequestParam(value = "canvasId") String canvasId,
                                                @RequestBody CanvasRequestDto canvasRequestDto) {
         log.info("캔버스 수정 API");
-        canvasService.updateCanvas(email, workSpaceId, canvasId, canvasRequestDto);
+        canvasService.updateCanvas(workSpaceId, canvasId, canvasRequestDto);
 
         GlobalSuccessResponseDto<Object> canvasUpdateSuccessResponseDto =
                 globalService.successResponse(UPDATE_CANVAS_SUCCESS.getMessage(), null);

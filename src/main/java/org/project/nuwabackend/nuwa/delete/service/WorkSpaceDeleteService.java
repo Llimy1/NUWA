@@ -2,6 +2,7 @@ package org.project.nuwabackend.nuwa.delete.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.project.nuwabackend.nuwa.canvas.service.CanvasService;
 import org.project.nuwabackend.nuwa.channel.service.ChatChannelService;
 import org.project.nuwabackend.nuwa.channel.service.DirectChannelService;
 import org.project.nuwabackend.nuwa.websocket.service.ChatMessageQueryService;
@@ -28,6 +29,7 @@ public class WorkSpaceDeleteService {
     private final NotificationService notificationService;
     private final ChatChannelService chatChannelService;
     private final WorkSpaceService workSpaceService;
+    private final CanvasService canvasService;
     private final FileService fileService;
 
     // 워크스페이스 삭제
@@ -39,6 +41,7 @@ public class WorkSpaceDeleteService {
         if (memberCount.equals(0)) {
             directMessageQueryService.deleteDirectMessageWorkSpaceId(workSpaceId);
             chatMessageQueryService.deleteChatMessageWorkSpaceId(workSpaceId);
+            canvasService.deleteCanvasByWorkSpace(workSpaceId);
             fileService.deleteFileWorkSpaceId(workSpaceId);
             chatChannelService.deleteChatJoinMemberByWorkSpaceId(workSpaceId);
             chatChannelService.deleteChatChannelList(workSpaceId);
